@@ -1,99 +1,104 @@
-# 🧠 SynapDrive-AI
+**SynapDrive-AI** is a **simulation-first** prototype of an **intent → safety → actuation** control pipeline inspired by BCI/autonomy workflows.
 
-**Human-AGI Synergy for Real-Time Physical Control**
-
-A simulated research architecture fusing Brain-Computer Interface (BCI) signals with modular Generalized Artificial Intelligence (AGI) to drive safe, interpretable, and autonomous control over physical infrastructure — from next-gen vehicles to aerospace systems and future hyperloops.
-
-> *"A proof-of-concept worthy of serious engineering attention — bridging AGI cognition and real-time control with human intent at the center."*
+This repo **does not** claim medical/clinical functionality. It is intentionally built to be runnable on any machine without hardware:
+- **Text pathway** = “decoded intent” (what a BCI decoder *could* output)
+- **Signal pathway** = simulated EEG-like waveforms + label-driven reasoning
 
 ---
 
-## 🚀 Purpose
+## What you can do with it (today)
 
-This project is a **technical simulation** of a system that:
-- Accepts intent-like signals from hypothetical brain interfaces
-- Processes context using vision, memory, and cognitive reasoning
-- Routes decisions to simulated control systems
-- Logs everything, evaluates performance, and blocks unsafe behavior
-
----
-
-## ⚙️ Architecture Overview
-
-SynapDrive-AI is structured as a modular cognitive stack:
-
-[Brain Input] ➜ Intent Generator ➜ Cognitive Optimizer ➜ Safety Guard ➜ Decision Router
-                                                                                  ⬇
-                                                              Episodic Memory ⬅ Meta Evaluator
-                                                                                  ⬇
-                                                                             Execution Feedback
-
-### Core Components
-| Module                | Purpose                                                   |
-|-----------------------|------------------------------------------------------------|
-| `intent_generator.py` | Simulates BCI-driven intent extraction                    |
-| `vision_adapter.py`   | Adds visual grounding (label-based only)                 |
-| `cognitive_optimizer.py` | Enriches decisions with memory + perceptual context   |
-| `safety_guard.py`     | Blocks dangerous or irrational decisions                 |
-| `decision_router.py`  | Simulates routing decisions to physical interfaces       |
-| `episodic_memory.py`  | Stores contextual memory across runs                     |
-| `meta_evaluator.py`   | Tracks AGI performance across actions                    |
-| `integration_runner.py` | Orchestrates end-to-end cognition pipeline             |
-| `test_simulation.py`  | CLI interface for testing AGI loop manually              |
-| `dashboard_stub.py`   | Minimal web interface for AGI loop control               |
+- Run a full end-to-end loop: **intent → context → safety gate → actuation → evaluation**
+- Verify safety gating blocks low-confidence actions
+- View stable telemetry logs (intended for dashboards/tests)
+- Extend it with real adapters later (robotics, vehicles, BCI devices)
 
 ---
 
-## 📦 Installation
+## Architecture (canonical pipeline)
 
-> Requirements: Python 3.9+, Flask (for optional UI)
+```mermaid
+flowchart LR
+  A[Input: decoded text OR simulated signal] --> B[Intent decode / reasoning]
+  B --> C[Optimizer: memory + vision context]
+  C --> D[SafetyGuard]
+  D -->|safe| E[DecisionRouter]
+  D -->|blocked| X[Blocked result]
+  E --> F[ActuationEngine (simulated)]
+  F --> G[EpisodicMemory]
+  F --> H[MetaEvaluator]
+  G --> C
+Single source of truth wiring: synapdrive_ai/pipeline.py
 
-```bash
-git clone https://github.com/YOUR_HANDLE/synapdrive-ai.git
-cd synapdrive-ai
+Quickstart
+1) Install
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 
-(We simulate only. There is no real hardware or neuro-interface.)
+2) Run one cycle (decoded intent text)
+python -m synapdrive_ai --text "move left" --image road
+python -m synapdrive_ai --text "stop" --image hazard
 
-🧪 Run Simulation (CLI)
-python synapdrive_ai/main/test_simulation.py
+3) Run one cycle (simulated signal label)
+python -m synapdrive_ai --signal walk --count 3 --interval 1
+python -m synapdrive_ai --signal stop
 
-🌐 Run Dashboard (Web)
-python synapdrive_ai/interface/dashboard_stub.py
-Then open http://127.0.0.1:5000 in your browser.
+4) Run tests
+pytest -q
 
-📈 Use Case Examples
-BCI-assisted navigation decisions
+Repo map (what matters)
 
-High-risk AGI safety evaluation pipelines
+synapdrive_ai/pipeline.py
+Canonical end-to-end pipeline.
 
-Vision-assisted memory-anchored commands
+synapdrive_ai/bci/signal_simulator.py
+Generates EEG-like synthetic waveforms.
 
-Future reinforcement learning fine-tuning
+synapdrive_ai/agi/core_reasoning.py
+Label + waveform → structured intent packet (uses RMS energy for confidence).
 
-🧠 Audience
-Designed for:
+synapdrive_ai/agi/cognitive_optimizer.py
+Injects memory + vision context into intent.
 
-Neural interface engineers
+synapdrive_ai/safety/safety_guard.py
+Blocks low-confidence or suspicious actions.
 
-Aerospace AI researchers
+synapdrive_ai/action/decision_router.py
+Normalizes results and routes to actuation.
 
-Tesla/SpaceX-level control theorists
+synapdrive_ai/control/actuation_engine.py
+Simulated actuator + telemetry log schema.
 
-AGI and human cognition labs
+synapdrive_ai/tests/
+Contract tests enforcing stable output + telemetry.
 
-⚖️ License
-This simulation is released under the Apache License 2.0.
+Safety stance
 
-🚫 Real-World Caution
-This is a simulated proof-of-concept. It does not interface with any live systems. All safety-critical elements are modeled for demonstration purposes only.
+This project enforces a conservative safety default:
 
-🌌 Final Word
-This repository represents a vision:
+Unknown / low-confidence intents are blocked
 
-That BCI + AGI working together in real-time, governed by memory, safety, and transparency, can eventually lead to intelligent control systems capable of helping humanity move faster, safer, and more intuitively.
+Telemetry schema is treated as a contract (dashboard/tests depend on it)
 
-If that interests you, you know who to Contact; "This guy".
+Roadmap (credible next steps)
 
+Add optional integration adapters (not enabled by default):
 
+BrainFlow input stream (device or replay)
 
+MNE-based feature extraction for offline datasets
+
+LSL (Lab Streaming Layer) bridge for research setups
+
+Add real actuator adapters:
+
+ROS2 topic publisher
+
+MAVLink command emitter
+
+Game/Sim environment interface
+
+License
+
+Apache-2.0 (see LICENSE)
