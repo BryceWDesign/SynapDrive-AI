@@ -1,0 +1,14 @@
+{
+  "pythonVersion": "3.9",
+  "typeCheckingMode": "basic",
+  "reportMissingImports": false,
+  "reportMissingTypeStubs": false,
+  "include": ["synapdrive_ai"],
+  "exclude": [
+    "**/__pycache__",
+    ".venv",
+    "venv",
+    "build",
+    "dist"
+  ]
+}
