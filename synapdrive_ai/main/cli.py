@@ -5,6 +5,7 @@ import json
 import time
 
 from synapdrive_ai.pipeline import SynapDrivePipeline
+from synapdrive_ai.replay.recording import JsonlRecorder, iter_jsonl, make_record
 
 
 def _print_summary(out: dict) -> None:
@@ -29,44 +30,66 @@ def build_parser() -> argparse.ArgumentParser:
     mode = p.add_mutually_exclusive_group(required=True)
     mode.add_argument("--text", help='Run one cycle using decoded intent text (e.g. "move left", "stop").')
     mode.add_argument("--signal", nargs="?", const="RANDOM", help="Run one cycle using a signal label (or RANDOM).")
-    mode.add_argument(
-        "--brainflow",
-        action="store_true",
-        help="Run one cycle using BrainFlow input (optional dependency; defaults to Synthetic board).",
-    )
-    mode.add_argument(
-        "--lsl",
-        action="store_true",
-        help="Run one cycle using LSL (pylsl) stream input (optional dependency).",
-    )
+    mode.add_argument("--brainflow", action="store_true", help="Run one cycle using BrainFlow input (optional).")
+    mode.add_argument("--lsl", action="store_true", help="Run one cycle using LSL input (optional).")
+    mode.add_argument("--replay", help="Replay JSONL records from a prior --record run.")
 
     p.add_argument("--image", default=None, help='Optional simulated vision label (road, hazard, person, vehicle).')
     p.add_argument("--count", type=int, default=1, help="How many cycles to run (default: 1).")
     p.add_argument("--interval", type=float, default=0.0, help="Seconds between cycles (default: 0).")
 
-    # BrainFlow options (only used if --brainflow)
-    p.add_argument("--bf-board-id", type=int, default=0, help="BrainFlow board_id (0 = Synthetic board).")
-    p.add_argument("--bf-serial-port", default=None, help="Optional serial port for supported boards.")
-    p.add_argument("--bf-seconds", type=float, default=2.0, help="Seconds to stream before taking a snapshot.")
+    # Record/replay
+    p.add_argument("--record", default=None, help="Write each cycle to a JSONL file (reproducible runs).")
+    p.add_argument(
+        "--no-delay",
+        action="store_true",
+        help="Disable actuation sleep (best for CI, tests, replay).",
+    )
 
-    # LSL options (only used if --lsl)
-    p.add_argument("--lsl-name", default=None, help="Resolve LSL stream by name.")
-    p.add_argument("--lsl-type", default=None, help='Resolve LSL stream by type (common: "EEG").')
-    p.add_argument("--lsl-timeout", type=float, default=5.0, help="Seconds to wait while resolving stream.")
-    p.add_argument("--lsl-seconds", type=float, default=2.0, help="Seconds to snapshot the stream for a packet.")
+    # BrainFlow options
+    p.add_argument("--bf-board-id", type=int, default=0)
+    p.add_argument("--bf-serial-port", default=None)
+    p.add_argument("--bf-seconds", type=float, default=2.0)
+
+    # LSL options
+    p.add_argument("--lsl-name", default=None)
+    p.add_argument("--lsl-type", default=None)
+    p.add_argument("--lsl-timeout", type=float, default=5.0)
+    p.add_argument("--lsl-seconds", type=float, default=2.0)
 
     return p
 
 
 def main(argv=None) -> int:
     args = build_parser().parse_args(argv)
-    pipe = SynapDrivePipeline()
+
+    simulate_delay = not args.no_delay
+    pipe = SynapDrivePipeline(simulate_delay=simulate_delay)
+
+    recorder = JsonlRecorder(args.record) if args.record else None
+
+    if args.replay:
+        # Replay should be deterministic + fast
+        pipe = SynapDrivePipeline(simulate_delay=False)
+        for rec in iter_jsonl(args.replay):
+            intent_packet = rec["intent_packet"]
+            image_label = rec.get("image_label")
+            out = pipe.run_intent_packet(intent_packet, image_label=image_label)
+            _print_summary(out)
+        return 0
 
     for i in range(args.count):
+        mode = ""
+        raw_input = {}
+        intent_packet = None
+
         if args.text is not None:
+            mode = "text"
+            raw_input = {"text": args.text}
             out = pipe.run_text_command(args.text, image_label=args.image)
 
         elif args.brainflow:
+            mode = "brainflow"
             from synapdrive_ai.integrations.brainflow_adapter import BrainFlowIntentSource
 
             src = BrainFlowIntentSource(
@@ -75,9 +98,11 @@ def main(argv=None) -> int:
                 stream_seconds=args.bf_seconds,
             )
             intent_packet = src.next_intent_packet()
-            out = pipe._run_common(intent_packet, image_label=args.image)
+            raw_input = {"brainflow": {"board_id": args.bf_board_id, "seconds": args.bf_seconds}}
+            out = pipe.run_intent_packet(intent_packet, image_label=args.image)
 
         elif args.lsl:
+            mode = "lsl"
             from synapdrive_ai.integrations.lsl_adapter import LSLIntentSource
 
             src = LSLIntentSource(
@@ -87,13 +112,30 @@ def main(argv=None) -> int:
                 snapshot_seconds=args.lsl_seconds,
             )
             intent_packet = src.next_intent_packet()
-            out = pipe._run_common(intent_packet, image_label=args.image)
+            raw_input = {"lsl": {"name": args.lsl_name, "type": args.lsl_type, "seconds": args.lsl_seconds}}
+            out = pipe.run_intent_packet(intent_packet, image_label=args.image)
 
         else:
+            mode = "signal"
             label = None if args.signal == "RANDOM" else args.signal
+            raw_input = {"label": label or "RANDOM"}
             out = pipe.run_signal_event(label=label, image_label=args.image)
 
         _print_summary(out)
+
+        # Record (store the actual input intent packet when available; otherwise store the optimized output intent)
+        if recorder:
+            if intent_packet is None:
+                intent_packet = out.get("intent", {}) or {}
+            recorder.append(
+                make_record(
+                    mode=mode,
+                    raw_input=raw_input,
+                    image_label=args.image,
+                    intent_packet=intent_packet,
+                    pipeline_output=out,
+                )
+            )
 
         if i < args.count - 1 and args.interval > 0:
             time.sleep(args.interval)
