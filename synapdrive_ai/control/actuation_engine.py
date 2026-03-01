@@ -1,62 +1,106 @@
 # synapdrive_ai/control/actuation_engine.py
 
+from __future__ import annotations
+
 import time
+from typing import Any, Dict, List
+
 
 class ActuationEngine:
     """
-    Simulated actuation engine that converts AGI-generated intents into mock physical actions.
+    Simulated actuation engine that converts intent packets into mock physical actions.
 
-    The goal is to emulate interaction with robotics or vehicles such as:
-    - Robotic arm movement
-    - Directional changes
-    - System halts
-    - Cognitive triggers
+    IMPORTANT:
+    The action_log schema is treated like telemetry and is consumed by:
+      - synapdrive_ai/interface/dashboard.py
+      - synapdrive_ai/cloud/cloud_stub.py (via dashboard transmit)
+      - any future UI / tests
 
-    This engine logs actions and their confidence to simulate real-time physical response.
+    Each log entry is normalized to include:
+      timestamp, intent, confidence, status, duration, source, memory, memory_context
     """
 
-    def __init__(self):
-        self.action_log = []
+    def __init__(self) -> None:
+        self.action_log: List[Dict[str, Any]] = []
 
-    def execute_intent(self, intent_packet):
+    def execute_intent(self, intent_packet: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Executes a simulated action based on AGI-generated intent.
+        Executes a simulated action based on an intent packet.
 
-        Args:
-            intent_packet (dict): {
-                'intent': str,
-                'source': str,
-                'confidence': float,
-                'memory_context': list
+        Expected intent_packet shape (best-effort; we default safely if missing):
+            {
+                "intent": str,
+                "source": str,
+                "confidence": float,
+                "memory_context": list
             }
         """
-        intent = intent_packet.get("intent")
-        confidence = intent_packet.get("confidence", 0.0)
+        intent = (intent_packet or {}).get("intent")
+        source = (intent_packet or {}).get("source", "unknown")
+        confidence = float((intent_packet or {}).get("confidence", 0.0))
+        memory_context = (intent_packet or {}).get("memory_context", [])
+        # Dashboard prints "memory" specifically, so we keep both keys
+        memory = (intent_packet or {}).get("memory", memory_context)
+
+        # Normalize confidence to [0, 1]
+        if confidence < 0.0:
+            confidence = 0.0
+        if confidence > 1.0:
+            confidence = 1.0
 
         if not intent:
-            self._log_action("null", 0.0)
-            return {"status": "ignored", "reason": "no intent"}
+            result = {
+                "timestamp": time.time(),
+                "status": "ignored",
+                "reason": "no intent",
+                "intent": "null",
+                "confidence": 0.0,
+                "duration": 0.0,
+                "source": source,
+                "memory": memory,
+                "memory_context": memory_context,
+            }
+            self._log_action(result)
+            return result
 
-        # Simulate execution delay
-        execution_time = round(1.0 - confidence, 2)  # Faster with higher confidence
+        # Simulate execution delay (faster when confidence is higher)
+        execution_time = round(max(0.0, 1.0 - confidence), 2)
         time.sleep(execution_time)
 
-        # Log and return simulated result
-        self._log_action(intent, confidence)
-        return {
+        result = {
+            "timestamp": time.time(),
             "status": "executed",
             "intent": intent,
             "confidence": confidence,
-            "duration": execution_time
+            "duration": execution_time,
+            "source": source,
+            "memory": memory,
+            "memory_context": memory_context,
         }
+        self._log_action(result)
+        return result
 
-    def _log_action(self, intent, confidence):
-        entry = {
-            "timestamp": time.time(),
-            "intent": intent,
-            "confidence": confidence
+    def _log_action(self, entry: Dict[str, Any]) -> None:
+        """
+        Append a telemetry-safe entry. This is our single source of truth for the log schema.
+        """
+        # Ensure required keys exist even if caller forgot them
+        normalized = {
+            "timestamp": entry.get("timestamp", time.time()),
+            "intent": entry.get("intent", "unknown"),
+            "confidence": float(entry.get("confidence", 0.0)),
+            "status": entry.get("status", "unknown"),
+            "duration": float(entry.get("duration", 0.0)),
+            "source": entry.get("source", "unknown"),
+            "memory": entry.get("memory", entry.get("memory_context", [])),
+            "memory_context": entry.get("memory_context", []),
         }
-        self.action_log.append(entry)
+        # Keep any extra keys (like "reason") without breaking dashboards
+        for k, v in entry.items():
+            if k not in normalized:
+                normalized[k] = v
 
-    def get_action_log(self):
+        self.action_log.append(normalized)
+
+    def get_action_log(self) -> List[Dict[str, Any]]:
         return self.action_log
