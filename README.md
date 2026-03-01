@@ -1,3 +1,5 @@
+# SynapDrive-AI
+
 **SynapDrive-AI** is a **simulation-first** prototype of an **intent → safety → actuation** control pipeline inspired by BCI/autonomy workflows.
 
 This repo **does not** claim medical/clinical functionality. It is intentionally built to be runnable on any machine without hardware:
@@ -28,6 +30,8 @@ flowchart LR
   F --> G[EpisodicMemory]
   F --> H[MetaEvaluator]
   G --> C
+
+
 Single source of truth wiring: synapdrive_ai/pipeline.py
 
 Quickstart
