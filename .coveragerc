@@ -1,0 +1,15 @@
+[run]
+branch = True
+source = synapdrive_ai
+omit =
+    */__init__.py
+    */tests/*
+    synapdrive_ai/__main__.py
+
+[report]
+show_missing = True
+skip_covered = False
+precision = 1
+
+[xml]
+output = coverage.xml
