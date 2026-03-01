@@ -35,6 +35,12 @@ jobs:
         run: |
           pyright
 
-      - name: Run tests
+      - name: Run tests + coverage
         run: |
-          pytest -q
+          pytest -q --cov=synapdrive_ai --cov-report=term-missing --cov-report=xml --cov-fail-under=50
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
