@@ -1,10 +1,7 @@
-# synapdrive_ai/main/cli.py
-
 from __future__ import annotations
 
 import argparse
 import json
-import sys
 import time
 
 from synapdrive_ai.pipeline import SynapDrivePipeline
@@ -30,24 +27,46 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     mode = p.add_mutually_exclusive_group(required=True)
-    mode.add_argument("--text", help="Run one cycle using decoded intent text (e.g. 'move left', 'stop').")
+    mode.add_argument("--text", help='Run one cycle using decoded intent text (e.g. "move left", "stop").')
     mode.add_argument("--signal", nargs="?", const="RANDOM", help="Run one cycle using a signal label (or RANDOM).")
+    mode.add_argument(
+        "--brainflow",
+        action="store_true",
+        help="Run one cycle using BrainFlow input (optional dependency; defaults to Synthetic board).",
+    )
 
-    p.add_argument("--image", default=None, help="Optional simulated vision label (road, hazard, person, vehicle).")
+    p.add_argument("--image", default=None, help='Optional simulated vision label (road, hazard, person, vehicle).')
     p.add_argument("--count", type=int, default=1, help="How many cycles to run (default: 1).")
     p.add_argument("--interval", type=float, default=0.0, help="Seconds between cycles (default: 0).")
+
+    # BrainFlow options (only used if --brainflow)
+    p.add_argument("--bf-board-id", type=int, default=0, help="BrainFlow board_id (0 = Synthetic board).")
+    p.add_argument("--bf-serial-port", default=None, help="Optional serial port for supported boards.")
+    p.add_argument("--bf-seconds", type=float, default=2.0, help="Seconds to stream before taking a snapshot.")
 
     return p
 
 
 def main(argv=None) -> int:
     args = build_parser().parse_args(argv)
-
     pipe = SynapDrivePipeline()
 
     for i in range(args.count):
         if args.text is not None:
             out = pipe.run_text_command(args.text, image_label=args.image)
+
+        elif args.brainflow:
+            # Lazy import so base install does not require BrainFlow
+            from synapdrive_ai.integrations.brainflow_adapter import BrainFlowIntentSource
+
+            src = BrainFlowIntentSource(
+                board_id=args.bf_board_id,
+                serial_port=args.bf_serial_port,
+                stream_seconds=args.bf_seconds,
+            )
+            intent_packet = src.next_intent_packet()
+            out = pipe._run_common(intent_packet, image_label=args.image)  # canonical path
+
         else:
             label = None if args.signal == "RANDOM" else args.signal
             out = pipe.run_signal_event(label=label, image_label=args.image)
