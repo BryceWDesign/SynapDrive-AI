@@ -1,43 +1,55 @@
 # synapdrive_ai/tests/test_pipeline.py
 
-from synapdrive_ai.interface.bridge import SynapDriveBridge
-from synapdrive_ai.agi.feedback_learning import FeedbackLearner
-import time
-
-def test_synapdrive_pipeline(runtime=10):
+def test_text_command_happy_path(pipeline):
     """
-    Runs a test of the full SynapDrive pipeline with feedback learning.
-    Simulates brain activity, AGI cognition, actuation, and adaptation.
-
-    Args:
-        runtime (int): Duration in seconds to run the test.
+    A high-confidence known command should:
+      - pass SafetyGuard
+      - execute successfully
+      - return a stable response shape
     """
-    print("[TEST] Starting full system test...")
-    bridge = SynapDriveBridge()
-    feedback_module = FeedbackLearner(bridge.reasoner)
-    bridge.start(interval=1.0)
+    out = pipeline.run_text_command("move left", image_label="road")
 
-    start_time = time.time()
-    try:
-        while time.time() - start_time < runtime:
-            log = bridge.get_action_log()
-            if log:
-                last_packet = log[-1]
-                # Reconstruct original intent_packet for testing
-                intent_packet = {
-                    "intent": last_packet["intent"],
-                    "confidence": last_packet["confidence"],
-                    "source": "test_source",
-                    "memory_context": []
-                }
-                feedback_module.apply_feedback(intent_packet, last_packet)
-                print(f"[TEST] Intent: {last_packet['intent']} | "
-                      f"Conf: {round(last_packet['confidence'], 2)} | "
-                      f"Adjusted Priority: {bridge.reasoner.intent_weights.get('test_source', {}).get('priority')}")
-            time.sleep(1.0)
-    finally:
-        bridge.stop()
-        print("[TEST] System test complete.")
+    assert isinstance(out, dict)
+    assert out["status"] == "success"
+    assert "intent" in out and isinstance(out["intent"], dict)
+    assert "result" in out and isinstance(out["result"], dict)
+    assert "evaluation" in out and isinstance(out["evaluation"], dict)
 
-if __name__ == "__main__":
-    test_synapdrive_pipeline(runtime=15)
+    # Result contract (normalized by DecisionRouter)
+    assert out["result"]["status"] == "success"
+    assert "duration" in out["result"]
+
+
+def test_unknown_command_gets_safety_blocked(pipeline):
+    """
+    Unknown text defaults to low confidence -> optimizer reduces further -> SafetyGuard blocks.
+    This proves the repo has a real guardrail loop, not just a demo printout.
+    """
+    out = pipeline.run_text_command("asdkjhasd kjashd kjashd", image_label=None)
+
+    assert out["status"] == "blocked"
+    assert "confidence too low" in out["reason"].lower()
+
+
+def test_action_log_schema_is_stable(pipeline):
+    """
+    Telemetry schema must stay stable because dashboards/CI depend on it.
+    """
+    pipeline.run_text_command("stop", image_label="hazard")
+    log = pipeline.get_action_log()
+    assert isinstance(log, list)
+    assert len(log) >= 1
+
+    latest = log[-1]
+    required_keys = {
+        "timestamp",
+        "intent",
+        "confidence",
+        "status",
+        "duration",
+        "source",
+        "memory",
+        "memory_context",
+    }
+    missing = required_keys.difference(set(latest.keys()))
+    assert not missing, f"Missing telemetry keys: {missing}"
