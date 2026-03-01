@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>SynapDrive-AI Dashboard</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 20px; }
+      input, button, select { padding: 8px; margin: 4px 0; }
+      .row { display: flex; gap: 16px; flex-wrap: wrap; }
+      .card { border: 1px solid #ddd; border-radius: 10px; padding: 14px; width: 420px; }
+      pre { background: #f7f7f7; padding: 10px; border-radius: 8px; overflow: auto; max-height: 360px; }
+      .muted { color: #666; font-size: 13px; }
+    </style>
+  </head>
+
+  <body>
+    <h1>SynapDrive-AI Dashboard</h1>
+    <div class="muted">
+      Canonical pipeline: intent → optimizer → safety → actuation → evaluation (simulation-first).
+    </div>
+
+    <div class="row">
+      <div class="card">
+        <h3>Run (Text / Decoded Intent)</h3>
+        <label>Text command</label><br />
+        <input id="textCmd" style="width: 100%" placeholder='e.g. "move left" or "stop"' />
+        <label>Optional vision label</label><br />
+        <input id="textImg" style="width: 100%" placeholder='e.g. "road" or "hazard"' />
+        <button onclick="runText()">Run</button>
+        <pre id="textOut">{}</pre>
+      </div>
+
+      <div class="card">
+        <h3>Run (Signal / Simulated Label)</h3>
+        <label>Signal label</label><br />
+        <input id="sigLabel" style="width: 100%" placeholder='e.g. "walk" or "stop" or leave blank for random' />
+        <label>Optional vision label</label><br />
+        <input id="sigImg" style="width: 100%" placeholder='e.g. "road" or "hazard"' />
+        <button onclick="runSignal()">Run</button>
+        <pre id="sigOut">{}</pre>
+      </div>
+
+      <div class="card">
+        <h3>Telemetry (latest 50)</h3>
+        <button onclick="refreshLog()">Refresh</button>
+        <pre id="logOut">[]</pre>
+      </div>
+    </div>
+
+    <script>
+      async function runText() {
+        const text = document.getElementById("textCmd").value;
+        const image = document.getElementById("textImg").value || null;
+
+        const res = await fetch("/api/run/text", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, image })
+        });
+        const json = await res.json();
+        document.getElementById("textOut").textContent = JSON.stringify(json, null, 2);
+        await refreshLog();
+      }
+
+      async function runSignal() {
+        const label = document.getElementById("sigLabel").value || null;
+        const image = document.getElementById("sigImg").value || null;
+
+        const res = await fetch("/api/run/signal", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ label, image })
+        });
+        const json = await res.json();
+        document.getElementById("sigOut").textContent = JSON.stringify(json, null, 2);
+        await refreshLog();
+      }
+
+      async function refreshLog() {
+        const res = await fetch("/api/log");
+        const json = await res.json();
+        document.getElementById("logOut").textContent = JSON.stringify(json, null, 2);
+      }
+
+      refreshLog();
+    </script>
+  </body>
+</html>
