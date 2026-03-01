@@ -1,5 +1,3 @@
-# synapdrive_ai/interface/web_dashboard.py
-
 from __future__ import annotations
 
 from flask import Flask, jsonify, render_template, request
@@ -7,7 +5,11 @@ from flask import Flask, jsonify, render_template, request
 from synapdrive_ai.pipeline import SynapDrivePipeline
 
 app = Flask(__name__)
-pipeline = SynapDrivePipeline()
+
+# IMPORTANT: use no-delay mode so:
+# - local dev feels snappy
+# - tests don’t sleep for simulated actuation
+pipeline = SynapDrivePipeline(simulate_delay=False)
 
 
 @app.get("/")
@@ -40,7 +42,6 @@ def run_signal():
 
 
 def main():
-    # Local dev server. For production you'd use gunicorn, etc.
     app.run(host="127.0.0.1", port=5055, debug=True)
 
 
