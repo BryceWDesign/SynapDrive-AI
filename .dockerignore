@@ -1,0 +1,13 @@
+__pycache__/
+.pytest_cache/
+.venv/
+venv/
+dist/
+build/
+*.egg-info/
+.ruff_cache/
+.pre-commit-cache/
+runs.jsonl
+*.zip
+.git/
+.github/
