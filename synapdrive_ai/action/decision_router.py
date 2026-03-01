@@ -1,8 +1,6 @@
-# synapdrive_ai/action/decision_router.py
-
 from __future__ import annotations
 
-from typing import Dict, Any
+from typing import Any, Dict
 
 from synapdrive_ai.control.actuation_engine import ActuationEngine
 
@@ -11,26 +9,15 @@ class DecisionRouter:
     """
     Routes optimized, safety-approved intent packets to an execution backend.
 
-    Today this is a simulated actuation layer (ActuationEngine).
-    Tomorrow this can be swapped for robotics/vehicle/autonomy adapters.
+    simulate_delay=False is used for replay/tests (reproducible, no sleep).
     """
 
-    def __init__(self) -> None:
-        self.actuator = ActuationEngine()
+    def __init__(self, simulate_delay: bool = True) -> None:
+        self.actuator = ActuationEngine(simulate_delay=simulate_delay)
 
     def route(self, intent_packet: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Execute an intent packet via the actuator and normalize output for downstream modules.
-
-        Ensures returned structure includes:
-          - status ("success" | "failed")
-          - duration
-          - intent
-          - confidence
-        """
         result = self.actuator.execute_intent(intent_packet)
 
-        # Normalize status to what MetaEvaluator expects ("success")
         status_raw = (result or {}).get("status", "failed")
         status = "success" if status_raw in {"executed", "success"} else "failed"
 
@@ -43,5 +30,4 @@ class DecisionRouter:
         }
 
     def get_action_log(self):
-        """Expose underlying action log for dashboards/tests."""
         return self.actuator.get_action_log()
