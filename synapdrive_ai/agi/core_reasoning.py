@@ -3,14 +3,14 @@
 from collections import deque
 import numpy as np
 
+
 class AGICoreReasoner:
     """
     Core cognitive engine that interprets brain signals and emits structured action plans.
 
-    It maintains a short-term memory of recent thought patterns and uses basic
-    symbolic inference + transformer-inspired attention weighting for decisions.
-
-    Output: structured intent packets (dicts) that downstream control layers can act on.
+    IMPORTANT FIX:
+    - Using np.mean(signal_data) on a sinusoid trends toward ~0, which collapses confidence.
+    - We use RMS magnitude instead, which reflects signal energy and produces stable confidence.
     """
 
     def __init__(self, memory_length=5):
@@ -22,7 +22,7 @@ class AGICoreReasoner:
             "stop": {"motor": "halt_all_motion", "priority": 1.0},
             "calculate": {"cognitive": "initiate_computation", "priority": 0.7},
             "recall": {"cognitive": "retrieve_memory", "priority": 0.6},
-            "explore": {"cognitive": "expand_context", "priority": 0.85}
+            "explore": {"cognitive": "expand_context", "priority": 0.85},
         }
 
     def receive_signal(self, label, signal_data):
@@ -33,18 +33,26 @@ class AGICoreReasoner:
     def reason(self, label, signal_data):
         """Reason over the current label and signal using internal logic."""
         if label not in self.intent_weights:
-            return {"intent": "unknown", "confidence": 0.0}
-        
-        context_signal = np.mean(signal_data)
-        intent_data = self.intent_weights[label]
-        priority = intent_data["priority"]
+            return {"intent": "unknown", "confidence": 0.0, "source": label, "memory_context": list(self.memory)}
 
-        # Confidence modulated by signal intensity and priority
-        confidence = min(1.0, max(0.1, np.abs(context_signal) * priority))
+        intent_data = self.intent_weights[label]
+        priority = float(intent_data["priority"])
+
+        # RMS magnitude = sqrt(mean(x^2)) — robust signal energy proxy
+        try:
+            rms = float(np.sqrt(np.mean(np.square(signal_data))))
+        except Exception:
+            rms = 0.0
+
+        # Confidence modulated by signal energy and priority
+        confidence = rms * priority
+
+        # Clamp to sane range
+        confidence = max(0.10, min(1.0, confidence))
 
         return {
             "intent": intent_data.get("motor") or intent_data.get("cognitive"),
             "source": label,
             "confidence": confidence,
-            "memory_context": list(self.memory)
+            "memory_context": list(self.memory),
         }
