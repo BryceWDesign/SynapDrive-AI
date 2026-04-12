@@ -1,9 +1,7 @@
-# synapdrive_ai/pipeline.py
-
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
 import random
+from typing import Any, Dict, Optional
 
 from synapdrive_ai.bci.signal_simulator import BrainSignalSimulator
 from synapdrive_ai.agi.core_reasoning import AGICoreReasoner
@@ -20,17 +18,14 @@ class SynapDrivePipeline:
     """
     Canonical end-to-end simulation pipeline.
 
-    This is the repo’s single “source of truth” wiring:
-      input → intent/decoding → optimizer (memory + vision) → safety → actuation → evaluation
+    Wiring: input → intent → optimizer (memory + vision) → safety → actuation → evaluation
 
-    NOTE:
-      - Simulation-first. No clinical claims.
-      - Text input path is for “decoded intent” (what a BCI decoder *could* output).
-      - Signal input path uses the built-in BrainSignalSimulator + AGICoreReasoner.
+    Args:
+        simulate_delay: If True, actuation sleeps to emulate real timing.
+                        Set False for tests, replay, and the Flask dashboard.
     """
 
-    def __init__(self) -> None:
-        # Shared components
+    def __init__(self, simulate_delay: bool = True) -> None:
         self.simulator = BrainSignalSimulator()
         self.reasoner = AGICoreReasoner()
 
@@ -38,35 +33,45 @@ class SynapDrivePipeline:
         self.visual = VisualInferenceEngine()
 
         self.optimizer = CognitiveOptimizer()
-        # Ensure the optimizer uses the SAME memory/vision objects (more credible than duplicates)
+        # Share the same memory/vision instances so the optimizer sees live state
         self.optimizer.memory = self.memory
         self.optimizer.visual = self.visual
 
         self.guard = SafetyGuard()
-        self.router = DecisionRouter()
+        self.router = DecisionRouter(simulate_delay=simulate_delay)
         self.evaluator = MetaEvaluator()
 
+    # ------------------------------------------------------------------
+    # Public entrypoints
+    # ------------------------------------------------------------------
+
     def run_text_command(self, command_text: str, image_label: Optional[str] = None) -> Dict[str, Any]:
-        """
-        Text pathway = “decoded” intent (BCI output or operator input).
-        """
+        """Text path: decoded intent or operator input (e.g. 'move left', 'stop')."""
         intent_packet = generate_intent(command_text)
-        return self._run_common(intent_packet, image_label=image_label)
+        return self.run_intent_packet(intent_packet, image_label=image_label)
 
     def run_signal_event(self, label: Optional[str] = None, image_label: Optional[str] = None) -> Dict[str, Any]:
-        """
-        Signal pathway = simulated EEG-like waveform event.
-        """
+        """Signal path: simulated EEG-like waveform event."""
         label = label or random.choice(["left_arm", "right_arm", "walk", "stop", "calculate", "recall", "explore"])
         signal = self._generate_signal_for_label(label)
         intent_packet = self.reasoner.receive_signal(label, signal)
+        return self.run_intent_packet(intent_packet, image_label=image_label)
+
+    def run_intent_packet(self, intent_packet: Dict[str, Any], image_label: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Primary entrypoint for integrations and replay.
+        Accepts a pre-built intent packet and runs it through the full pipeline.
+        """
         return self._run_common(intent_packet, image_label=image_label)
 
+    def get_action_log(self):
+        return self.router.get_action_log()
+
+    # ------------------------------------------------------------------
+    # Internals
+    # ------------------------------------------------------------------
+
     def _generate_signal_for_label(self, label: str):
-        """
-        Uses the same label→frequency mapping as BrainSignalSimulator.emit_event().
-        We generate directly to keep this method single-step (no subscriber side-effects).
-        """
         patterns = {
             "left_arm": 10,
             "right_arm": 12,
@@ -77,14 +82,10 @@ class SynapDrivePipeline:
             "explore": 30,
         }
         if label not in patterns:
-            raise ValueError(f"Unknown signal label: {label}")
+            raise ValueError(f"Unknown signal label: {label!r}. Valid labels: {sorted(patterns)}")
         return self.simulator.generate_waveform(patterns[label])
 
     def _run_common(self, intent_packet: Dict[str, Any], image_label: Optional[str]) -> Dict[str, Any]:
-        """
-        Shared pipeline:
-          optimizer → safety → route/actuate → memory → evaluate
-        """
         optimized = self.optimizer.optimize(intent_packet, image_label=image_label)
 
         is_safe, reason = self.guard.evaluate_safety(optimized)
@@ -108,7 +109,6 @@ class SynapDrivePipeline:
 
         result = self.router.route(optimized)
 
-        # Record episode (keep errors non-fatal — never crash the pipeline because of logging)
         try:
             self.memory.record_episode(optimized, result)
         except Exception:
@@ -122,6 +122,3 @@ class SynapDrivePipeline:
             "result": result,
             "evaluation": evaluation,
         }
-
-    def get_action_log(self):
-        return self.router.get_action_log()
