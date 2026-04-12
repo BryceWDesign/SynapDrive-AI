@@ -5,9 +5,10 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "synapdrive-ai"
 version = "0.1.0"
-description = "Simulation-first intent→safety→actuation pipeline (BCI-inspired)"
+description = "Simulation-first intent-to-safety-to-actuation pipeline for BCI-inspired control"
+readme = "README.md"
 requires-python = ">=3.9"
-license = {text = "Apache-2.0"}
+license = "Apache-2.0"
 dependencies = [
   "numpy>=1.23",
   "flask>=2.3",
@@ -15,3 +16,17 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=7.0"]
+
+[project.scripts]
+synapdrive-ai = "synapdrive_ai.main.cli:main"
+synapdrive-dashboard = "synapdrive_ai.interface.web_dashboard:main"
+
+[tool.setuptools.packages.find]
+include = ["synapdrive_ai*"]
+exclude = ["synapdrive_ai.tests*"]
+
+[tool.setuptools.package-data]
+synapdrive_ai = ["interface/templates/*.html"]
+
+[tool.pytest.ini_options]
+testpaths = ["synapdrive_ai/tests"]
