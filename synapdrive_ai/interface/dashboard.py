@@ -1,12 +1,10 @@
-# synapdrive_ai/interface/dashboard.py
-
-import time
 import threading
+import time
 
-from synapdrive_ai.interface.bridge import SynapDriveBridge
 from synapdrive_ai.agi.feedback_learning import FeedbackLearner
 from synapdrive_ai.cloud.cloud_stub import CloudControlStub
 from synapdrive_ai.core.logger import SynapLogger
+from synapdrive_ai.interface.bridge import SynapDriveBridge
 
 
 class SynapDriveDashboard:
