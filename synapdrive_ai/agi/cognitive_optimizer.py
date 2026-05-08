@@ -1,8 +1,6 @@
-# synapdrive_ai/agi/cognitive_optimizer.py
-
-import random
 from synapdrive_ai.memory.episodic_memory import EpisodicMemory
 from synapdrive_ai.vision.visual_inference import VisualInferenceEngine
+
 
 class CognitiveOptimizer:
     """
