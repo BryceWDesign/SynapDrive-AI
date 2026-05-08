@@ -23,6 +23,16 @@ def get_log():
     return jsonify({"count": len(log), "log": log[-50:]})
 
 
+@app.get("/api/assurance")
+def get_assurance():
+    return jsonify(
+        {
+            "report": pipeline.get_assurance_report(),
+            "receipts": pipeline.get_assurance_log()[-50:],
+        }
+    )
+
+
 @app.post("/api/run/text")
 def run_text():
     data = request.get_json(force=True) or {}
