@@ -1,5 +1,3 @@
-# synapdrive_ai/agi/feedback_learning.py
-
 class FeedbackLearner:
     """
     Adaptive learner that adjusts AGI intent priorities based on outcomes.
@@ -51,7 +49,7 @@ class FeedbackLearner:
             "old_priority": old_priority,
             "new_priority": new_priority,
             "confidence": confidence,
-            "timestamp": result.get("duration")
+            "timestamp": result.get("duration"),
         }
         self.feedback_log.append(feedback_record)
 
