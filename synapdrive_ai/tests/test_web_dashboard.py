@@ -29,3 +29,16 @@ def test_dashboard_log_api():
     assert "count" in payload
     assert "log" in payload
     assert isinstance(payload["log"], list)
+
+
+def test_dashboard_assurance_api():
+    client = web_dashboard.app.test_client()
+    client.post("/api/run/text", json={"text": "move left", "image": "road"})
+
+    r = client.get("/api/assurance")
+    assert r.status_code == 200
+    payload = r.get_json()
+    assert "report" in payload
+    assert "receipts" in payload
+    assert payload["report"]["total_cycles"] >= 1
+    assert isinstance(payload["receipts"], list)
