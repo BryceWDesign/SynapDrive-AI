@@ -22,6 +22,7 @@ class ReplayRecord:
       - optional image_label
       - a light output summary (status + key fields)
     """
+
     schema: str
     created_utc_epoch_s: float
     mode: str
@@ -62,12 +63,15 @@ def make_record(
     result = pipeline_output.get("result", {}) or {}
     intent = pipeline_output.get("intent", {}) or {}
 
+    assurance = pipeline_output.get("assurance", {}) or {}
     summary = {
         "status": pipeline_output.get("status"),
         "intent": intent.get("intent"),
         "confidence": intent.get("confidence"),
         "result_status": result.get("status"),
         "result_intent": result.get("intent"),
+        "assurance_passed": assurance.get("passed"),
+        "assurance_receipt_id": assurance.get("receipt_id"),
     }
 
     return ReplayRecord(
