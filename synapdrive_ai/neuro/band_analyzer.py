@@ -5,7 +5,6 @@ from typing import Dict, Optional, Tuple
 
 import numpy as np
 
-
 BANDS: Dict[str, Tuple[float, float]] = {
     "delta": (0.5, 4.0),
     "theta": (4.0, 8.0),
@@ -18,6 +17,7 @@ BANDS: Dict[str, Tuple[float, float]] = {
 @dataclass
 class BandPowerResult:
     """Per-band absolute and relative power, plus derived confidence."""
+
     absolute: Dict[str, float]
     relative: Dict[str, float]
     total_power: float
@@ -56,7 +56,9 @@ class BandPowerAnalyzer:
         total = sum(absolute.values()) or 1e-9
         relative = {b: v / total for b, v in absolute.items()}
 
-        engagement = (absolute["beta"] + absolute["gamma"]) / max(absolute["alpha"] + absolute["theta"], 1e-9)
+        engagement = (absolute["beta"] + absolute["gamma"]) / max(
+            absolute["alpha"] + absolute["theta"], 1e-9
+        )
         cognitive = (absolute["theta"] + absolute["gamma"]) / max(absolute["alpha"], 1e-9)
 
         intent_class, confidence = self._classify(engagement, cognitive, relative)
@@ -78,12 +80,12 @@ class BandPowerAnalyzer:
         step = nperseg // 2 or 1
 
         window = np.hanning(nperseg)
-        win_power = np.sum(window ** 2)
+        win_power = np.sum(window**2)
 
         segments = []
         start = 0
         while start + nperseg <= n:
-            seg = signal[start:start + nperseg] * window
+            seg = signal[start : start + nperseg] * window
             segments.append(np.abs(np.fft.rfft(seg)) ** 2 / (self.sampling_rate * win_power))
             start += step
 
