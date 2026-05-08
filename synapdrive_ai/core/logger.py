@@ -1,6 +1,5 @@
-# synapdrive_ai/core/logger.py
-
 import time
+
 
 class SynapLogger:
     """
@@ -13,9 +12,9 @@ class SynapLogger:
 
     def log(self, message, level="INFO"):
         entry = {
-            "timestamp": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()),
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
             "level": level.upper(),
-            "message": message
+            "message": message,
         }
         self.log_entries.append(entry)
         print(f"[{entry['timestamp']}] [{entry['level']}] {entry['message']}")
