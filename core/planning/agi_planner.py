@@ -1,5 +1,3 @@
-# /core/planning/agi_planner.py
-
 """
 AGI Planner Module
 
@@ -7,7 +5,8 @@ Translates high-level intents into executable multi-step plans using a mix
 of symbolic logic, predictive modeling, and reasoning memory.
 """
 
-from typing import Dict, List
+from typing import Dict
+
 
 class AGIPlanner:
     """
@@ -57,7 +56,4 @@ class AGIPlanner:
         """
         Stores historical planning data for reasoning context
         """
-        self.reasoning_memory.append({
-            "intent": intent,
-            "params": params
-        })
+        self.reasoning_memory.append({"intent": intent, "params": params})
