@@ -7,7 +7,6 @@ from typing import List, Literal, Optional
 from synapdrive_ai.bci.intent_generator import generate_intent
 from synapdrive_ai.pipeline import SynapDrivePipeline
 
-
 FallbackPolicy = Literal["freeze", "abort", "complete"]
 
 
@@ -62,7 +61,10 @@ class PlanTrace:
     def summary(self) -> str:
         lines = [
             f"Plan: {self.plan_name}  →  {self.outcome.upper()}",
-            f"  Steps: {self.n_steps}  completed: {self.n_completed}  deferred: {self.n_deferred}  aborted: {self.n_aborted}",
+            (
+                f"  Steps: {self.n_steps}  completed: {self.n_completed}  "
+                f"deferred: {self.n_deferred}  aborted: {self.n_aborted}"
+            ),
             f"  Total time: {self.total_elapsed_s:.3f}s",
         ]
         for s in self.steps:
@@ -73,7 +75,11 @@ class PlanTrace:
                 "aborted": "⊘",
             }.get(s.pipeline_status, "?")
             lines.append(
-                f"    [{tag}] step {s.step_index}: {s.label!r}  conf={s.pipeline_confidence:.2f}  score={s.evaluation_score:.2f}"
+                (
+                    f"    [{tag}] step {s.step_index}: {s.label!r}  "
+                    f"conf={s.pipeline_confidence:.2f}  "
+                    f"score={s.evaluation_score:.2f}"
+                )
                 + (f"  → {s.block_reason}" if s.block_reason else "")
             )
         return "\n".join(lines)
@@ -149,7 +155,8 @@ class ExecutorBridge:
             if step.fallback == "freeze":
                 pipeline_status = "deferred"
                 block_reason = (
-                    f"Step confidence {confidence:.2f} < required {step.min_confidence:.2f} → freeze"
+                    f"Step confidence {confidence:.2f} < required "
+                    f"{step.min_confidence:.2f} → freeze"
                 )
             elif step.fallback == "abort":
                 pipeline_status = "aborted"
