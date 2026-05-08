@@ -1,6 +1,5 @@
-# synapdrive_ai/vision/visual_inference.py
-
 import random
+
 
 class VisualInferenceEngine:
     """
@@ -14,7 +13,7 @@ class VisualInferenceEngine:
             "person": "human_detected",
             "vehicle": "object_vehicle",
             "hazard": "obstacle_detected",
-            "none": "no_visual_target"
+            "none": "no_visual_target",
         }
 
     def infer(self, image_label):
@@ -33,7 +32,4 @@ class VisualInferenceEngine:
         tag = self.categories.get(image_label, "unknown_visual")
         certainty = round(random.uniform(0.7, 0.99), 2) if tag != "unknown_visual" else 0.4
 
-        return {
-            "visual_tag": tag,
-            "certainty": certainty
-        }
+        return {"visual_tag": tag, "certainty": certainty}
