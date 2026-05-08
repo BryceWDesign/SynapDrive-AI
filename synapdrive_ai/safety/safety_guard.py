@@ -1,5 +1,3 @@
-# synapdrive_ai/safety/safety_guard.py
-
 class SafetyGuard:
     """
     Ensures cognitive decisions remain within safe, logical, and ethical bounds.
@@ -9,8 +7,13 @@ class SafetyGuard:
     def __init__(self):
         self.blocked_intents = []
         self.risk_keywords = [
-            "shutdown all systems", "override security", "disable brakes",
-            "release payload", "trigger launch", "eject", "kill process"
+            "shutdown all systems",
+            "override security",
+            "disable brakes",
+            "release payload",
+            "trigger launch",
+            "eject",
+            "kill process",
         ]
         self.min_confidence_threshold = 0.45
 
