@@ -7,21 +7,20 @@ name = "synapdrive-ai"
 version = "0.1.0"
 description = "Simulation-first intent-to-safety-to-actuation pipeline for BCI-inspired control"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 license = "Apache-2.0"
 dependencies = [
-  "numpy>=1.23",
-  "flask>=2.3",
+  "numpy>=1.23,<3.0",
+  "flask>=2.3,<4.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-  "coverage>=7.6.0",
-  "pre-commit>=3.7.0",
-  "pyright>=1.1.380",
-  "pytest>=7.0",
-  "pytest-cov>=5.0.0",
-  "ruff>=0.6.0",
+  "coverage>=7.6.0,<8.0",
+  "pyright>=1.1.380,<2.0",
+  "pytest>=7.0,<10.0",
+  "pytest-cov>=5.0.0,<8.0",
+  "ruff>=0.6.0,<1.0",
 ]
 
 [project.scripts]
