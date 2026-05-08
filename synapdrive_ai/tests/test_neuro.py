@@ -8,7 +8,6 @@ from synapdrive_ai.neuro.eeg_loader import EEGLoader, EEGRecording
 from synapdrive_ai.neuro.session_analyzer import SessionAnalyzer
 from synapdrive_ai.neuro.task_planner import ExecutorBridge, TaskPlan, TaskStep
 
-
 SR = 256.0
 DURATION = 2.0
 N = int(SR * DURATION)
