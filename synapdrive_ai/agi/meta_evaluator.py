@@ -1,6 +1,5 @@
-# synapdrive_ai/agi/meta_evaluator.py
-
 import statistics
+
 
 class MetaEvaluator:
     """
@@ -33,7 +32,7 @@ class MetaEvaluator:
         return {
             "score": round(score, 2),
             "total_actions": len(self.scores),
-            "avg_score": round(statistics.mean(self.scores), 2)
+            "avg_score": round(statistics.mean(self.scores), 2),
         }
 
     def reset(self):
