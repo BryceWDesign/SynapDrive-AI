@@ -29,11 +29,11 @@ help:
 
 install:
 	$(PY) -m pip install --upgrade pip
-	$(PY) -m pip install -r requirements.txt
-	$(PY) -m pip install -e . || true
+	$(PY) -m pip install -e .
 
-install-dev: install
-	$(PY) -m pip install -r requirements-dev.txt
+install-dev:
+	$(PY) -m pip install --upgrade pip
+	$(PY) -m pip install -e ".[dev]"
 
 run:
 	$(PY) -m synapdrive_ai --text "move left" --image road
