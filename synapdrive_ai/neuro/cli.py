@@ -36,7 +36,9 @@ def cmd_demo(args) -> int:
     signal += np.random.normal(0, 0.05, n_samples)
 
     loader = EEGLoader(sampling_rate=sr)
-    recording = loader.load_array(signal, sampling_rate=sr, channel_names=["C3"], source_label="demo_synthetic")
+    recording = loader.load_array(
+        signal, sampling_rate=sr, channel_names=["C3"], source_label="demo_synthetic"
+    )
 
     print(f"Synthetic recording: {recording.summary()}")
     print("Motor intent burst injected at t=4s–7s\n")
