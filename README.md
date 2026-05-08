@@ -8,7 +8,7 @@ It is built around one practical question:
 
 This repo answers that with a runnable pipeline:
 
-**intent → context adjustment → safety gate → simulated actuation → evaluation**
+**intent → context adjustment → safety gate → simulated actuation → evaluation → assurance receipt**
 
 It runs **without hardware**, supports **record/replay**, includes a **local dashboard**, and now also includes **offline EEG-style analysis tools** for session review and threshold tuning.
 
@@ -18,6 +18,7 @@ It runs **without hardware**, supports **record/replay**, includes a **local das
 - A **simulation environment** for testing control logic without devices
 - A **safety middleware layer** between decoded intent and downstream action
 - A **small neuroscience tooling layer** for offline EEG-style analysis and task sequencing
+- A **runtime assurance receipt layer** that records pass/fail invariants per cycle
 
 ## What this repo is not
 
@@ -52,11 +53,16 @@ Analyze EDF, BDF, CSV, or NPY data using simple band-power logic, then run those
 ### 6) Sequential task planning
 Execute multi-step plans with per-step minimum confidence and fallback behavior.
 
+### 7) Runtime assurance receipts
+Every pipeline cycle now emits a compact assurance receipt showing whether the
+simulated safety decision, actuation result, and evaluation stayed internally
+consistent. This is review evidence, not a real-world safety certification.
+
 ---
 
 ## Core pipeline
 
-```text
+```
 text / simulated signal / EEG-derived epoch
                 ↓
           intent packet
@@ -70,12 +76,15 @@ text / simulated signal / EEG-derived epoch
        simulated actuation
                 ↓
           meta evaluation
+                ↓
+        assurance receipt
 ```
 
 Default safety behavior is conservative:
 
 - **Minimum confidence threshold:** `0.45`
 - **Hard block list:** unsafe phrases such as disabling brakes, overriding security, triggering launch, and similar prohibited actions
+- **Assurance receipts:** each cycle records whether blocked intents stayed blocked and allowed intents reached the simulated router
 
 ---
 
@@ -83,7 +92,7 @@ Default safety behavior is conservative:
 
 ### Install
 
-```bash
+```
 python -m venv .venv
 source .venv/bin/activate
 pip install .
@@ -91,8 +100,8 @@ pip install .
 
 For development and tests:
 
-```bash
-pip install -r requirements-dev.txt
+```
+pip install -e ".[dev]"
 ```
 
 ---
@@ -101,21 +110,21 @@ pip install -r requirements-dev.txt
 
 ### Text path
 
-```bash
+```
 python -m synapdrive_ai --text "move left" --image road --no-delay
 python -m synapdrive_ai --text "stop" --image hazard --no-delay
 ```
 
 ### Simulated signal path
 
-```bash
+```
 python -m synapdrive_ai --signal walk --count 3 --interval 1 --no-delay
 python -m synapdrive_ai --signal stop --no-delay
 ```
 
 ### Record and replay
 
-```bash
+```
 python -m synapdrive_ai --text "move left" --image road --record runs.jsonl --no-delay
 python -m synapdrive_ai --replay runs.jsonl
 ```
@@ -126,13 +135,13 @@ python -m synapdrive_ai --replay runs.jsonl
 
 Run the local dashboard:
 
-```bash
+```
 python -m synapdrive_ai.interface.web_dashboard
 ```
 
 Then open:
 
-```text
+```
 http://127.0.0.1:5055
 ```
 
@@ -141,10 +150,11 @@ What the dashboard gives you:
 - Text command execution
 - Simulated signal execution
 - Latest telemetry log from the action router
+- Runtime assurance report and latest assurance receipts
 
 You can also use the console script installed by `pip install .`:
 
-```bash
+```
 synapdrive-dashboard
 ```
 
@@ -156,7 +166,7 @@ The repo now includes an offline neuro-analysis layer under `synapdrive_ai/neuro
 
 ### Demo with synthetic EEG-like data
 
-```bash
+```
 python -m synapdrive_ai.neuro.cli demo
 ```
 
@@ -170,25 +180,25 @@ This runs a synthetic session with a motor-style burst and prints:
 
 ### Analyze a file
 
-```bash
+```
 python -m synapdrive_ai.neuro.cli analyze session.edf --channel C3 --out results/
 ```
 
 ### List channels in a file
 
-```bash
+```
 python -m synapdrive_ai.neuro.cli analyze session.edf --channels
 ```
 
 ### Sweep confidence thresholds
 
-```bash
+```
 python -m synapdrive_ai.neuro.cli threshold session.edf --min-conf 0.4 0.5 0.6 0.7
 ```
 
 ### Run a sequential task plan
 
-```bash
+```
 python -m synapdrive_ai.neuro.cli plan --list
 python -m synapdrive_ai.neuro.cli plan --task reach_grasp
 ```
@@ -265,14 +275,14 @@ The repo still keeps optional hardware-facing adapters separate from the default
 
 ### BrainFlow
 
-```bash
+```
 pip install -r requirements-brainflow.txt
 python -m synapdrive_ai --brainflow --bf-board-id 0 --bf-seconds 2 --no-delay
 ```
 
 ### LSL / pylsl
 
-```bash
+```
 pip install -r requirements-lsl.txt
 python -m synapdrive_ai --lsl --lsl-type EEG --lsl-seconds 2 --no-delay
 ```
@@ -285,7 +295,7 @@ These are optional and do not change the default simulation-first workflow.
 
 Run the test suite:
 
-```bash
+```
 pytest -q
 ```
 
@@ -295,20 +305,24 @@ The repaired repo includes tests for:
 - blocked/allowed intent behavior
 - action log contract
 - public `run_intent_packet()` path
+- runtime assurance receipts and health reports
+- dashboard assurance API
 - band-power analysis
 - EEG array loading
 - session analysis outputs
 - task-plan execution behavior
+- legacy top-level `core` router importability
 
 ---
 
 ## Repository layout
 
-```text
+```
 synapdrive_ai/
 ├── pipeline.py                  # canonical pipeline wiring
 ├── bci/                         # signal simulation + intent generation
 ├── agi/                         # reasoning, optimization, evaluation
+├── assurance/                   # runtime assurance receipts
 ├── safety/                      # confidence gate + prohibited intent blocking
 ├── action/                      # routing / execution surface
 ├── control/                     # simulated actuation engine
@@ -330,6 +344,7 @@ Now it is back in a credible lane:
 - tests target the public runtime surface
 - install/package behavior is cleaned up
 - the dashboard path is aligned with the working pipeline
+- the repo now emits assurance receipts for reviewable runtime evidence
 - the repo has a real upgrade path beyond a toy command demo
 
 That is the correct direction for this project.
@@ -361,6 +376,23 @@ If this continues, the highest-value next steps are:
    - rollback behavior
    - explicit operator confirmation steps
    - risk-tiered step policies
+
+---
+
+## Assurance receipts
+
+Each output packet includes an `assurance` object with:
+
+- `receipt_id`
+- `cycle_index`
+- normalized `intent` and `confidence`
+- `safety_allowed` and `safety_reason`
+- `result_status`
+- `evaluation_score`
+- `passed` and any invariant `issues`
+
+The dashboard exposes the latest receipts at `/api/assurance`, and the CLI prints
+the assurance object with every run.
 
 ---
 
