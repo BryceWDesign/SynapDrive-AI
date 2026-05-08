@@ -1,8 +1,6 @@
-# synapdrive_ai/bci/intent_generator.py
-
 from __future__ import annotations
 
-from typing import Dict, Any
+from typing import Any, Dict
 
 from synapdrive_ai.intent.intent_parser import IntentParser
 
