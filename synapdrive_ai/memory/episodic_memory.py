@@ -1,6 +1,5 @@
-# synapdrive_ai/memory/episodic_memory.py
-
 import time
+
 
 class EpisodicMemory:
     """
@@ -21,7 +20,7 @@ class EpisodicMemory:
             "confidence": intent_packet["confidence"],
             "source": intent_packet["source"],
             "result": result_packet["status"],
-            "duration": result_packet["duration"]
+            "duration": result_packet["duration"],
         }
         self.episodes.append(episode)
 
