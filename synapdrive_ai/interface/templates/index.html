@@ -45,6 +45,12 @@
         <button onclick="refreshLog()">Refresh</button>
         <pre id="logOut">[]</pre>
       </div>
+
+      <div class="card">
+        <h3>Assurance Receipts</h3>
+        <button onclick="refreshAssurance()">Refresh</button>
+        <pre id="assuranceOut">{}</pre>
+      </div>
     </div>
 
     <script>
@@ -60,6 +66,7 @@
         const json = await res.json();
         document.getElementById("textOut").textContent = JSON.stringify(json, null, 2);
         await refreshLog();
+        await refreshAssurance();
       }
 
       async function runSignal() {
@@ -74,6 +81,7 @@
         const json = await res.json();
         document.getElementById("sigOut").textContent = JSON.stringify(json, null, 2);
         await refreshLog();
+        await refreshAssurance();
       }
 
       async function refreshLog() {
@@ -82,7 +90,14 @@
         document.getElementById("logOut").textContent = JSON.stringify(json, null, 2);
       }
 
+      async function refreshAssurance() {
+        const res = await fetch("/api/assurance");
+        const json = await res.json();
+        document.getElementById("assuranceOut").textContent = JSON.stringify(json, null, 2);
+      }
+
       refreshLog();
+      refreshAssurance();
     </script>
   </body>
 </html>
