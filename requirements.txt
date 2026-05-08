@@ -1,3 +1,2 @@
 numpy>=1.23
 flask>=2.3
-pytest>=7.0
