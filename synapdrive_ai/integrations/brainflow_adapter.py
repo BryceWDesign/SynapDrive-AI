@@ -9,6 +9,7 @@ import numpy as np
 @dataclass
 class BrainFlowSample:
     """A minimal sample snapshot derived from BrainFlow board data."""
+
     rms: float
     n_channels: int
     n_samples: int
