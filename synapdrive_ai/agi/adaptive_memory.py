@@ -1,7 +1,6 @@
-# synapdrive_ai/agi/adaptive_memory.py
-
 import time
-from collections import deque, Counter
+from collections import Counter, deque
+
 
 class EpisodicMemory:
     """
@@ -23,10 +22,10 @@ class EpisodicMemory:
     def store_event(self, intent_packet):
         """Store a cognitive/motor event into memory."""
         episode = {
-            'timestamp': time.time(),
-            'intent': intent_packet.get('intent'),
-            'source': intent_packet.get('source'),
-            'confidence': intent_packet.get('confidence', 0.0)
+            "timestamp": time.time(),
+            "intent": intent_packet.get("intent"),
+            "source": intent_packet.get("source"),
+            "confidence": intent_packet.get("confidence", 0.0),
         }
         self.memory_bank.append(episode)
 
@@ -36,12 +35,12 @@ class EpisodicMemory:
 
     def get_intent_frequencies(self):
         """Return a frequency count of all observed intents."""
-        intents = [ep['intent'] for ep in self.memory_bank if ep['intent']]
+        intents = [ep["intent"] for ep in self.memory_bank if ep["intent"]]
         return Counter(intents)
 
     def get_high_confidence_events(self, threshold=0.8):
         """Return events with confidence above a threshold."""
-        return [ep for ep in self.memory_bank if ep['confidence'] >= threshold]
+        return [ep for ep in self.memory_bank if ep["confidence"] >= threshold]
 
     def forget_oldest(self):
         """Manually forget the oldest memory."""
