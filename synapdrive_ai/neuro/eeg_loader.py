@@ -22,6 +22,7 @@ class EEGRecording:
         source_file: Original file path.
         metadata: Header fields from EDF or user-supplied dict.
     """
+
     channels: List[str]
     data: np.ndarray
     sampling_rate: float
@@ -89,7 +90,7 @@ class EEGLoader:
 
         sr = float(sampling_rate or self.default_sampling_rate)
         n_ch = data.shape[0]
-        names = channel_names or [f"CH{i+1}" for i in range(n_ch)]
+        names = channel_names or [f"CH{i + 1}" for i in range(n_ch)]
         duration = data.shape[1] / sr
 
         return EEGRecording(
@@ -114,7 +115,7 @@ class EEGLoader:
 
         def _field(offset: int, width: int, sig_idx: int) -> str:
             base = sh_start + offset * n_signals + sig_idx * width
-            return raw[base:base + width].decode("ascii", errors="replace").strip()
+            return raw[base : base + width].decode("ascii", errors="replace").strip()
 
         channel_names = [_field(0, 16, i) for i in range(n_signals)]
         physical_min = [float(_field(104, 8, i) or 0) for i in range(n_signals)]
@@ -152,7 +153,7 @@ class EEGLoader:
         for _ in range(n_records):
             for sig_idx in range(n_signals):
                 ns = n_samples_per_record[sig_idx]
-                chunk = data_raw[offset_bytes:offset_bytes + ns * 2]
+                chunk = data_raw[offset_bytes : offset_bytes + ns * 2]
                 samples = struct.unpack(f"<{ns}h", chunk)
                 channels_raw[sig_idx].extend(samples)
                 offset_bytes += ns * 2
@@ -210,12 +211,20 @@ class EEGLoader:
         if is_time_col:
             time_col = arr[:, 0]
             signal_arr = arr[:, 1:].T
-            sr = 1.0 / np.mean(np.diff(time_col)) if len(time_col) > 1 else self.default_sampling_rate
-            ch_names = (headers[1:] if headers else None) or [f"CH{i+1}" for i in range(signal_arr.shape[0])]
+            sr = (
+                1.0 / np.mean(np.diff(time_col))
+                if len(time_col) > 1
+                else self.default_sampling_rate
+            )
+            ch_names = (headers[1:] if headers else None) or [
+                f"CH{i + 1}" for i in range(signal_arr.shape[0])
+            ]
         else:
             signal_arr = arr.T
             sr = self.default_sampling_rate
-            ch_names = (headers if headers else None) or [f"CH{i+1}" for i in range(signal_arr.shape[0])]
+            ch_names = (headers if headers else None) or [
+                f"CH{i + 1}" for i in range(signal_arr.shape[0])
+            ]
 
         return EEGRecording(
             channels=ch_names,
