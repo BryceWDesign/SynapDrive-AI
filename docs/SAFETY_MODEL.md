@@ -19,8 +19,21 @@ This repo defaults to a conservative policy:
 - Contract tests enforce output shapes and telemetry keys
 - CI runs lint + type check + tests + coverage
 - Replay artifacts allow reviewers to reproduce behavior without hardware
+- Assurance receipts check that each simulated cycle obeyed the blocked/allowed invariant
 
 ## Non-goals (explicit)
 - Clinical diagnosis
 - Medical device claims
 - Safety certification for real-world actuation
+
+## Assurance invariants
+For each completed cycle, the monitor records a receipt and checks:
+
+- blocked cycles return a `blocked` result
+- blocked cycles do not reach simulated actuation
+- allowed cycles do not return a `blocked` result
+- allowed cycles reach the simulated router
+- intent and confidence fields are normalized enough for review
+
+A failed receipt is a sign of internal contract drift and should be treated as a
+red test target before adding features.
