@@ -1,81 +1,28 @@
-# synapdrive_ai/main/integration_runner.py
-
 from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
-from synapdrive_ai.bci.intent_generator import generate_intent
-from synapdrive_ai.agi.cognitive_optimizer import CognitiveOptimizer
-from synapdrive_ai.agi.meta_evaluator import MetaEvaluator
-from synapdrive_ai.action.decision_router import DecisionRouter
-from synapdrive_ai.memory.episodic_memory import EpisodicMemory
-from synapdrive_ai.safety.safety_guard import SafetyGuard
+from synapdrive_ai.pipeline import SynapDrivePipeline
 
 
 class SynapDriveExecutor:
     """
-    Orchestrates a full simulated cognitive loop:
+    Compatibility wrapper around the canonical SynapDrivePipeline.
 
-      input → intent_generator → cognitive_optimizer → safety_guard → decision_router
-                    ↘ episodic_memory ← meta_evaluator ↗
-
-    This is simulation-first. No medical/clinical claims. No real BCI hardware.
+    Older examples import SynapDriveExecutor directly. Keeping this class as a thin
+    wrapper prevents a second, drifting implementation of the same safety loop.
     """
 
-    def __init__(self) -> None:
-        self.optimizer = CognitiveOptimizer()
-        self.evaluator = MetaEvaluator()
-        self.router = DecisionRouter()
-        self.memory = EpisodicMemory()
-        self.guard = SafetyGuard()
+    def __init__(self, simulate_delay: bool = True) -> None:
+        self.pipeline = SynapDrivePipeline(simulate_delay=simulate_delay)
 
-    def run_once(self, simulated_input: str, simulated_image: Optional[str] = None) -> Dict[str, Any]:
-        # Step 1: Generate intent from simulated input
-        intent_packet = generate_intent(simulated_input)
+    def run_once(
+        self, simulated_input: str, simulated_image: Optional[str] = None
+    ) -> Dict[str, Any]:
+        return self.pipeline.run_text_command(simulated_input, image_label=simulated_image)
 
-        # Step 2: Optimize intent using (simulated) memory + visual context
-        optimized_intent = self.optimizer.optimize(intent_packet, image_label=simulated_image)
+    def get_action_log(self):
+        return self.pipeline.get_action_log()
 
-        # Step 3: Safety check
-        is_safe, reason = self.guard.evaluate_safety(optimized_intent)
-        if not is_safe:
-            # Return a consistent shape so CLI/UI never crashes
-            blocked_result = {
-                "status": "blocked",
-                "reason": reason,
-                "intent": optimized_intent.get("intent", "unknown"),
-                "confidence": optimized_intent.get("confidence", 0.0),
-                "duration": 0.0,
-            }
-            evaluation = {
-                "score": 0.0,
-                "total_actions": 0,
-                "avg_score": 0.0,
-            }
-            return {
-                "status": "blocked",
-                "reason": reason,
-                "intent": optimized_intent,
-                "result": blocked_result,
-                "evaluation": evaluation,
-            }
-
-        # Step 4: Route decision (execute)
-        result_packet = self.router.route(optimized_intent)
-
-        # Step 5: Record memory (only if execution produced expected fields)
-        try:
-            self.memory.record_episode(optimized_intent, result_packet)
-        except Exception:
-            # Do not crash the loop if memory schema changes later
-            pass
-
-        # Step 6: Meta-evaluate performance
-        evaluation = self.evaluator.evaluate(optimized_intent, result_packet)
-
-        return {
-            "status": result_packet["status"],
-            "intent": optimized_intent,
-            "result": result_packet,
-            "evaluation": evaluation,
-        }
+    def get_assurance_report(self) -> Dict[str, Any]:
+        return self.pipeline.get_assurance_report()
