@@ -142,7 +142,7 @@ class SessionAnalyzer:
         epoch_idx = 0
 
         while start + window_samples <= len(signal):
-            epoch_signal = signal[start:start + window_samples]
+            epoch_signal = signal[start : start + window_samples]
             t_start = start / sr
             t_end = (start + window_samples) / sr
 
