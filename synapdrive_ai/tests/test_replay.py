@@ -28,6 +28,8 @@ def test_record_and_replay_roundtrip(tmp_path):
     assert r["mode"] == "text"
     assert "intent_packet" in r
     assert "output_summary" in r
+    assert r["output_summary"]["assurance_passed"] is True
+    assert isinstance(r["output_summary"]["assurance_receipt_id"], str)
 
     # Replay using the stored input intent_packet
     pipe2 = SynapDrivePipeline(simulate_delay=False)
