@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Any, Dict, Optional, List
 import time
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 
@@ -62,7 +62,7 @@ class LSLIntentSource:
         elif self.stream_type:
             streams = self._resolve_stream("type", self.stream_type, timeout=self.resolve_timeout_s)
         else:
-            # Fallback: resolve any stream by type wildcard is not a thing; so we try a common type first,
+            # Fallback: pylsl does not support a type wildcard, so try a common type first.
             # then fall back to a short "anything" attempt by name is not possible.
             # Best-effort: try EEG first (common) then raise if none found.
             streams = self._resolve_stream("type", "EEG", timeout=self.resolve_timeout_s)
