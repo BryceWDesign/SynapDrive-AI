@@ -1,6 +1,5 @@
-# synapdrive_ai/agi/intent_classifier.py
-
 import random
+
 
 class IntentClassifier:
     """
@@ -13,7 +12,7 @@ class IntentClassifier:
             "think_move": "move_forward",
             "think_stop": "halt",
             "think_turn": "rotate_right",
-            "think_grab": "activate_claw"
+            "think_grab": "activate_claw",
         }
 
     def classify(self, signal_data):
@@ -39,9 +38,4 @@ class IntentClassifier:
         intent = self.rules.get(label, "unknown")
         confidence = round(random.uniform(0.6, 0.99), 2) if intent != "unknown" else 0.3
 
-        return {
-            "intent": intent,
-            "confidence": confidence,
-            "source": label,
-            "memory_context": []
-        }
+        return {"intent": intent, "confidence": confidence, "source": label, "memory_context": []}
