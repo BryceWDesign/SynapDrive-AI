@@ -19,6 +19,8 @@ def _print_summary(out: dict) -> None:
     print(json.dumps(out.get("result", {}), indent=2, default=str))
     print("\nevaluation:")
     print(json.dumps(out.get("evaluation", {}), indent=2, default=str))
+    print("\nassurance:")
+    print(json.dumps(out.get("assurance", {}), indent=2, default=str))
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -28,18 +30,37 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     mode = p.add_mutually_exclusive_group(required=True)
-    mode.add_argument("--text", help='Run one cycle using decoded intent text (e.g. "move left", "stop").')
-    mode.add_argument("--signal", nargs="?", const="RANDOM", help="Run one cycle using a signal label (or RANDOM).")
-    mode.add_argument("--brainflow", action="store_true", help="Run one cycle using BrainFlow input (optional).")
-    mode.add_argument("--lsl", action="store_true", help="Run one cycle using LSL input (optional).")
+    mode.add_argument(
+        "--text", help='Run one cycle using decoded intent text (e.g. "move left", "stop").'
+    )
+    mode.add_argument(
+        "--signal",
+        nargs="?",
+        const="RANDOM",
+        help="Run one cycle using a signal label (or RANDOM).",
+    )
+    mode.add_argument(
+        "--brainflow", action="store_true", help="Run one cycle using BrainFlow input (optional)."
+    )
+    mode.add_argument(
+        "--lsl", action="store_true", help="Run one cycle using LSL input (optional)."
+    )
     mode.add_argument("--replay", help="Replay JSONL records from a prior --record run.")
 
-    p.add_argument("--image", default=None, help='Optional simulated vision label (road, hazard, person, vehicle).')
+    p.add_argument(
+        "--image",
+        default=None,
+        help="Optional simulated vision label (road, hazard, person, vehicle).",
+    )
     p.add_argument("--count", type=int, default=1, help="How many cycles to run (default: 1).")
-    p.add_argument("--interval", type=float, default=0.0, help="Seconds between cycles (default: 0).")
+    p.add_argument(
+        "--interval", type=float, default=0.0, help="Seconds between cycles (default: 0)."
+    )
 
     # Record/replay
-    p.add_argument("--record", default=None, help="Write each cycle to a JSONL file (reproducible runs).")
+    p.add_argument(
+        "--record", default=None, help="Write each cycle to a JSONL file (reproducible runs)."
+    )
     p.add_argument(
         "--no-delay",
         action="store_true",
@@ -112,7 +133,9 @@ def main(argv=None) -> int:
                 snapshot_seconds=args.lsl_seconds,
             )
             intent_packet = src.next_intent_packet()
-            raw_input = {"lsl": {"name": args.lsl_name, "type": args.lsl_type, "seconds": args.lsl_seconds}}
+            raw_input = {
+                "lsl": {"name": args.lsl_name, "type": args.lsl_type, "seconds": args.lsl_seconds}
+            }
             out = pipe.run_intent_packet(intent_packet, image_label=args.image)
 
         else:
@@ -123,7 +146,7 @@ def main(argv=None) -> int:
 
         _print_summary(out)
 
-        # Record (store the actual input intent packet when available; otherwise store the optimized output intent)
+        # Record the original packet when possible; otherwise store the optimized packet.
         if recorder:
             if intent_packet is None:
                 intent_packet = out.get("intent", {}) or {}
