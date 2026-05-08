@@ -3,15 +3,16 @@ from __future__ import annotations
 import random
 from typing import Any, Dict, Optional
 
-from synapdrive_ai.bci.signal_simulator import BrainSignalSimulator
-from synapdrive_ai.agi.core_reasoning import AGICoreReasoner
-from synapdrive_ai.agi.cognitive_optimizer import CognitiveOptimizer
-from synapdrive_ai.agi.meta_evaluator import MetaEvaluator
 from synapdrive_ai.action.decision_router import DecisionRouter
+from synapdrive_ai.agi.cognitive_optimizer import CognitiveOptimizer
+from synapdrive_ai.agi.core_reasoning import AGICoreReasoner
+from synapdrive_ai.agi.meta_evaluator import MetaEvaluator
+from synapdrive_ai.assurance import AssuranceMonitor
+from synapdrive_ai.bci.intent_generator import generate_intent
+from synapdrive_ai.bci.signal_simulator import BrainSignalSimulator
 from synapdrive_ai.memory.episodic_memory import EpisodicMemory
 from synapdrive_ai.safety.safety_guard import SafetyGuard
 from synapdrive_ai.vision.visual_inference import VisualInferenceEngine
-from synapdrive_ai.bci.intent_generator import generate_intent
 
 
 class SynapDrivePipeline:
@@ -40,24 +41,33 @@ class SynapDrivePipeline:
         self.guard = SafetyGuard()
         self.router = DecisionRouter(simulate_delay=simulate_delay)
         self.evaluator = MetaEvaluator()
+        self.assurance = AssuranceMonitor()
 
     # ------------------------------------------------------------------
     # Public entrypoints
     # ------------------------------------------------------------------
 
-    def run_text_command(self, command_text: str, image_label: Optional[str] = None) -> Dict[str, Any]:
+    def run_text_command(
+        self, command_text: str, image_label: Optional[str] = None
+    ) -> Dict[str, Any]:
         """Text path: decoded intent or operator input (e.g. 'move left', 'stop')."""
         intent_packet = generate_intent(command_text)
         return self.run_intent_packet(intent_packet, image_label=image_label)
 
-    def run_signal_event(self, label: Optional[str] = None, image_label: Optional[str] = None) -> Dict[str, Any]:
+    def run_signal_event(
+        self, label: Optional[str] = None, image_label: Optional[str] = None
+    ) -> Dict[str, Any]:
         """Signal path: simulated EEG-like waveform event."""
-        label = label or random.choice(["left_arm", "right_arm", "walk", "stop", "calculate", "recall", "explore"])
+        label = label or random.choice(
+            ["left_arm", "right_arm", "walk", "stop", "calculate", "recall", "explore"]
+        )
         signal = self._generate_signal_for_label(label)
         intent_packet = self.reasoner.receive_signal(label, signal)
         return self.run_intent_packet(intent_packet, image_label=image_label)
 
-    def run_intent_packet(self, intent_packet: Dict[str, Any], image_label: Optional[str] = None) -> Dict[str, Any]:
+    def run_intent_packet(
+        self, intent_packet: Dict[str, Any], image_label: Optional[str] = None
+    ) -> Dict[str, Any]:
         """
         Primary entrypoint for integrations and replay.
         Accepts a pre-built intent packet and runs it through the full pipeline.
@@ -66,6 +76,12 @@ class SynapDrivePipeline:
 
     def get_action_log(self):
         return self.router.get_action_log()
+
+    def get_assurance_log(self):
+        return [receipt.to_dict() for receipt in self.assurance.history()]
+
+    def get_assurance_report(self) -> Dict[str, Any]:
+        return self.assurance.health_report()
 
     # ------------------------------------------------------------------
     # Internals
@@ -85,26 +101,40 @@ class SynapDrivePipeline:
             raise ValueError(f"Unknown signal label: {label!r}. Valid labels: {sorted(patterns)}")
         return self.simulator.generate_waveform(patterns[label])
 
-    def _run_common(self, intent_packet: Dict[str, Any], image_label: Optional[str]) -> Dict[str, Any]:
+    def _run_common(
+        self, intent_packet: Dict[str, Any], image_label: Optional[str]
+    ) -> Dict[str, Any]:
         optimized = self.optimizer.optimize(intent_packet, image_label=image_label)
 
         is_safe, reason = self.guard.evaluate_safety(optimized)
         if not is_safe:
+            result = {
+                "status": "blocked",
+                "intent": optimized.get("intent", "unknown"),
+                "confidence": optimized.get("confidence", 0.0),
+                "duration": 0.0,
+            }
+            evaluation = {
+                "score": 0.0,
+                "total_actions": 0,
+                "avg_score": 0.0,
+            }
+            receipt = self.assurance.record_cycle(
+                intent_packet=optimized,
+                image_label=image_label,
+                safety_allowed=False,
+                safety_reason=reason,
+                result_packet=result,
+                evaluation=evaluation,
+                executed=False,
+            )
             return {
                 "status": "blocked",
                 "reason": reason,
                 "intent": optimized,
-                "result": {
-                    "status": "blocked",
-                    "intent": optimized.get("intent", "unknown"),
-                    "confidence": optimized.get("confidence", 0.0),
-                    "duration": 0.0,
-                },
-                "evaluation": {
-                    "score": 0.0,
-                    "total_actions": 0,
-                    "avg_score": 0.0,
-                },
+                "result": result,
+                "evaluation": evaluation,
+                "assurance": receipt.to_dict(),
             }
 
         result = self.router.route(optimized)
@@ -115,10 +145,20 @@ class SynapDrivePipeline:
             pass
 
         evaluation = self.evaluator.evaluate(optimized, result)
+        receipt = self.assurance.record_cycle(
+            intent_packet=optimized,
+            image_label=image_label,
+            safety_allowed=True,
+            safety_reason=reason,
+            result_packet=result,
+            evaluation=evaluation,
+            executed=True,
+        )
 
         return {
             "status": result["status"],
             "intent": optimized,
             "result": result,
             "evaluation": evaluation,
+            "assurance": receipt.to_dict(),
         }
