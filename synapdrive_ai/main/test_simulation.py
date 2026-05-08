@@ -1,13 +1,16 @@
-# synapdrive_ai/main/test_simulation.py
-
 from synapdrive_ai.main.integration_runner import SynapDriveExecutor
+
 
 def run_simulation():
     engine = SynapDriveExecutor()
 
     print("\n🔬 SynapDrive-AI AGI Simulation\n")
-    simulated_bci_input = input("🧠 Enter simulated intent (e.g. 'navigate forward', 'initiate docking'): ")
-    simulated_image_input = input("👁️  Enter simulated visual label (e.g. 'road', 'hazard', or leave blank): ")
+    simulated_bci_input = input(
+        "🧠 Enter simulated intent (e.g. 'navigate forward', 'initiate docking'): "
+    )
+    simulated_image_input = input(
+        "👁️  Enter simulated visual label (e.g. 'road', 'hazard', or leave blank): "
+    )
 
     result = engine.run_once(simulated_bci_input, simulated_image_input or None)
 
