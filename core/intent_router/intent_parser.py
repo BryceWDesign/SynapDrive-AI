@@ -1,5 +1,3 @@
-# /core/intent_router/intent_parser.py
-
 """
 Intent Parser Module
 
@@ -9,6 +7,7 @@ into structured intent dictionaries for downstream AGI routing and planning.
 
 import re
 from typing import Dict, Optional
+
 
 class IntentParser:
     """
@@ -60,16 +59,11 @@ class IntentParser:
         mode = match.group(1)
         return {"intent": "switch_mode", "params": {"mode": mode}}
 
+
 # Example usage
 if __name__ == "__main__":
     parser = IntentParser()
-    test_inputs = [
-        "Move left",
-        "Pick up",
-        "Drop it",
-        "Stop",
-        "Switch mode to manual"
-    ]
+    test_inputs = ["Move left", "Pick up", "Drop it", "Stop", "Switch mode to manual"]
     for command in test_inputs:
         parsed = parser.parse(command)
         print(f"Input: {command} → Intent: {parsed}")
