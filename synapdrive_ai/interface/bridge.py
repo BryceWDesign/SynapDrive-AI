@@ -1,9 +1,7 @@
-# synapdrive_ai/interface/bridge.py
-
-from synapdrive_ai.bci.signal_simulator import BrainSignalSimulator
 from synapdrive_ai.agi.core_reasoning import AGICoreReasoner
+from synapdrive_ai.bci.signal_simulator import BrainSignalSimulator
 from synapdrive_ai.control.actuation_engine import ActuationEngine
-import threading
+
 
 class SynapDriveBridge:
     """
