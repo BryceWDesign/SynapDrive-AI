@@ -1,8 +1,8 @@
-# synapdrive_ai/bci/signal_simulator.py
+import threading
+import time
 
 import numpy as np
-import time
-import threading
+
 
 class BrainSignalSimulator:
     """
@@ -37,7 +37,7 @@ class BrainSignalSimulator:
             "stop": 3,
             "calculate": 25,
             "recall": 18,
-            "explore": 30
+            "explore": 30,
         }
         if label not in patterns:
             raise ValueError(f"Unknown signal label: {label}")
@@ -52,12 +52,22 @@ class BrainSignalSimulator:
     def start_real_time_stream(self, interval=1.0):
         """Starts a background thread that emits random events in real time."""
         self.running = True
+
         def stream_loop():
-            event_labels = ["left_arm", "right_arm", "walk", "stop", "calculate", "recall", "explore"]
+            event_labels = [
+                "left_arm",
+                "right_arm",
+                "walk",
+                "stop",
+                "calculate",
+                "recall",
+                "explore",
+            ]
             while self.running:
                 label = np.random.choice(event_labels)
                 self.emit_event(label)
                 time.sleep(interval)
+
         threading.Thread(target=stream_loop, daemon=True).start()
 
     def stop(self):
