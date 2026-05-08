@@ -1,5 +1,3 @@
-# /core/intent_router/intent_router.py
-
 """
 Intent Router Module
 
@@ -8,8 +6,10 @@ the appropriate downstream modules (AGI planner, real-time executor, etc).
 """
 
 from typing import Dict, Optional
-from core.planning.agi_planner import AGIPlanner
+
 from core.execution.executor_bridge import ExecutorBridge
+from core.planning.agi_planner import AGIPlanner
+
 
 class IntentRouter:
     """
@@ -43,6 +43,7 @@ class IntentRouter:
             return self.executor.execute(intent_type, params)
         else:
             return self.planner.plan(intent_type, params)
+
 
 # Example usage
 if __name__ == "__main__":
