@@ -1,8 +1,8 @@
-# synapdrive_ai/cloud/cloud_stub.py
-
 import json
 import random
+
 from synapdrive_ai.core.logger import SynapLogger
+
 
 class CloudControlStub:
     """
@@ -32,8 +32,8 @@ class CloudControlStub:
             "confidence": intent_packet["confidence"],
             "metadata": {
                 "source": intent_packet["source"],
-                "timestamp": random.randint(1000000, 9999999)
-            }
+                "timestamp": random.randint(1000000, 9999999),
+            },
         }
 
         self.transmitted_packets.append(payload)
