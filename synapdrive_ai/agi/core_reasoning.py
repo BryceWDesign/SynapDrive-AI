@@ -1,6 +1,5 @@
-# synapdrive_ai/agi/core_reasoning.py
-
 from collections import deque
+
 import numpy as np
 
 
@@ -33,7 +32,12 @@ class AGICoreReasoner:
     def reason(self, label, signal_data):
         """Reason over the current label and signal using internal logic."""
         if label not in self.intent_weights:
-            return {"intent": "unknown", "confidence": 0.0, "source": label, "memory_context": list(self.memory)}
+            return {
+                "intent": "unknown",
+                "confidence": 0.0,
+                "source": label,
+                "memory_context": list(self.memory),
+            }
 
         intent_data = self.intent_weights[label]
         priority = float(intent_data["priority"])
