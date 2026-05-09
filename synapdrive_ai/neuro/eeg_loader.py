@@ -211,7 +211,7 @@ class EEGLoader:
         if is_time_col:
             time_col = arr[:, 0]
             signal_arr = arr[:, 1:].T
-            sr = (
+            sr = float(
                 1.0 / np.mean(np.diff(time_col))
                 if len(time_col) > 1
                 else self.default_sampling_rate
