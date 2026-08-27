@@ -1,2 +1,2 @@
-numpy>=1.23
-flask>=2.3
+numpy>=1.23,<3.0
+cryptography>=42,<48

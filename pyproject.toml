@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "synapdrive-ai"
-version = "0.1.0"
-description = "Simulation-first intent-to-safety-to-actuation pipeline for BCI-inspired control"
+version = "1.0.0"
+description = "Governed neuroadaptive shared-autonomy runtime for simulation and labeled EEG research data"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
 dependencies = [
   "numpy>=1.23,<3.0",
-  "flask>=2.3,<4.0",
+  "cryptography>=42,<48",
 ]
 
 [project.optional-dependencies]
@@ -26,10 +26,15 @@ dev = [
 [project.scripts]
 synapdrive-ai = "synapdrive_ai.main.cli:main"
 synapdrive-dashboard = "synapdrive_ai.interface.web_dashboard:main"
+synapdrive-benchmark = "synapdrive_ai.benchmarking.cli:main"
+synapdrive-stress = "synapdrive_ai.stress.cli:main"
+synapdrive-evidence = "synapdrive_ai.assurance.cli:main"
+synapdrive-prepare-dataset = "synapdrive_ai.benchmarking.prepare_cli:main"
 
 [tool.setuptools.packages.find]
 include = ["synapdrive_ai*", "core*"]
 exclude = ["synapdrive_ai.tests*"]
+namespaces = false
 
 [tool.setuptools.package-data]
 synapdrive_ai = ["interface/templates/*.html"]

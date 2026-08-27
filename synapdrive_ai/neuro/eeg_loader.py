@@ -51,7 +51,7 @@ class EEGRecording:
     def summary(self) -> str:
         return (
             f"EEGRecording: {self.n_channels} channels × {self.n_samples} samples "
-            f"@ {self.sampling_rate} Hz ({self.duration_s:.1f}s) — {self.source_file}"
+            f"@ {self.sampling_rate} Hz ({self.duration_s:.1f}s): {self.source_file}"
         )
 
 
@@ -143,7 +143,8 @@ class EEGLoader:
         data_raw = raw[data_start:]
 
         total_per_record = sum(n_samples_per_record)
-        records_available = len(data_raw) // (total_per_record * 2)
+        sample_width = 3 if path.suffix.lower() == ".bdf" else 2
+        records_available = len(data_raw) // (total_per_record * sample_width)
         if n_records < 0:
             n_records = records_available
         n_records = min(n_records, records_available)
@@ -153,10 +154,21 @@ class EEGLoader:
         for _ in range(n_records):
             for sig_idx in range(n_signals):
                 ns = n_samples_per_record[sig_idx]
-                chunk = data_raw[offset_bytes : offset_bytes + ns * 2]
-                samples = struct.unpack(f"<{ns}h", chunk)
+                width = ns * sample_width
+                chunk = data_raw[offset_bytes : offset_bytes + width]
+                if sample_width == 2:
+                    samples = struct.unpack(f"<{ns}h", chunk)
+                else:
+                    raw24 = np.frombuffer(chunk, dtype=np.uint8).reshape(-1, 3)
+                    values = (
+                        raw24[:, 0].astype(np.int32)
+                        | (raw24[:, 1].astype(np.int32) << 8)
+                        | (raw24[:, 2].astype(np.int32) << 16)
+                    )
+                    values[values >= 0x800000] -= 0x1000000
+                    samples = values.tolist()
                 channels_raw[sig_idx].extend(samples)
-                offset_bytes += ns * 2
+                offset_bytes += width
 
         data = np.array(
             [

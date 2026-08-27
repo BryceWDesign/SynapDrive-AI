@@ -1,0 +1,1 @@
+"""Console dashboard compatibility helpers."""

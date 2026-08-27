@@ -16,7 +16,11 @@ BANDS: Dict[str, Tuple[float, float]] = {
 
 @dataclass
 class BandPowerResult:
-    """Per-band absolute and relative power, plus derived confidence."""
+    """Per-band spectral features plus an uncalibrated heuristic separation score.
+
+    The historical ``confidence`` field name is retained for API compatibility. It is not
+    a calibrated probability and must not be used as neural-command authority.
+    """
 
     absolute: Dict[str, float]
     relative: Dict[str, float]

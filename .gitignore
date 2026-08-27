@@ -8,3 +8,14 @@ build/
 *.egg-info/
 .ruff_cache/
 .pre-commit-cache/
+.coverage
+coverage.xml
+validation*.json
+*.pem
+*.key
+*.p12
+*.pfx
+.env
+*.evidence.jsonl
+*.signature.json
+runs.jsonl

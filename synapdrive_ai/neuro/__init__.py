@@ -1,13 +1,9 @@
 from synapdrive_ai.neuro.band_analyzer import BANDS, BandPowerAnalyzer, BandPowerResult
 from synapdrive_ai.neuro.eeg_loader import EEGLoader, EEGRecording
-from synapdrive_ai.neuro.session_analyzer import EpochResult, SessionAnalyzer, SessionReport
-from synapdrive_ai.neuro.task_planner import (
-    ExecutorBridge,
-    PlanTrace,
-    StepTrace,
-    TaskPlan,
-    TaskStep,
-)
+from synapdrive_ai.neuro.errp import ErrPFeatureExtractor, ErrPFeatures, ErrPLDAClassifier
+from synapdrive_ai.neuro.fusion import FusionResult, ModalityEvidence, WeightedEvidenceFusion
+from synapdrive_ai.neuro.signal_quality import SignalQualityAnalyzer, SignalQualityReport
+from synapdrive_ai.neuro.uncertainty import ReliabilityCalibrator, UncertaintyEstimate
 
 __all__ = [
     "BANDS",
@@ -15,12 +11,14 @@ __all__ = [
     "BandPowerResult",
     "EEGLoader",
     "EEGRecording",
-    "EpochResult",
-    "SessionAnalyzer",
-    "SessionReport",
-    "ExecutorBridge",
-    "PlanTrace",
-    "StepTrace",
-    "TaskPlan",
-    "TaskStep",
+    "ErrPFeatureExtractor",
+    "ErrPFeatures",
+    "ErrPLDAClassifier",
+    "FusionResult",
+    "ModalityEvidence",
+    "ReliabilityCalibrator",
+    "SignalQualityAnalyzer",
+    "SignalQualityReport",
+    "UncertaintyEstimate",
+    "WeightedEvidenceFusion",
 ]

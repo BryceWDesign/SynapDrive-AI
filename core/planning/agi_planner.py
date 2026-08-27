@@ -1,59 +1,74 @@
+"""Legacy deterministic planning compatibility surface.
+
+The historical module name is retained for import compatibility. No AGI, learned model,
+or predictive planner is implemented here. Plans are deterministic templates over parsed,
+caller-declared intents.
 """
-AGI Planner Module
 
-Translates high-level intents into executable multi-step plans using a mix
-of symbolic logic, predictive modeling, and reasoning memory.
-"""
+from __future__ import annotations
 
-from typing import Dict
+from dataclasses import dataclass
+from typing import Dict, List
 
 
-class AGIPlanner:
-    """
-    Generates action plans from abstract intents.
-    Uses symbolic reasoning + placeholder learned reasoning modules.
-    """
+@dataclass(frozen=True)
+class PlanStep:
+    action: str
+    parameters: Dict[str, str]
 
-    def __init__(self):
-        # Symbolic rules or learned models could be plugged here
-        self.reasoning_memory = []
+
+class DeterministicPlanner:
+    """Create explicit, inspectable plan templates for legacy high-level intents."""
+
+    def __init__(self) -> None:
+        self.reasoning_memory: List[Dict[str, object]] = []
 
     def plan(self, intent: str, params: Dict) -> str:
-        """
-        Generate a plan based on the intent and its parameters.
+        normalized = (intent or "unknown").strip().lower()
+        normalized_params = {str(k): str(v) for k, v in dict(params or {}).items()}
+        self.reasoning_memory.append({"intent": normalized, "params": normalized_params})
 
-        Parameters:
-            intent (str): Intent type, e.g., "navigate", "analyze", "assist"
-            params (Dict): Additional parameters, such as target or method
+        if normalized == "navigate":
+            destination = normalized_params.get("location")
+            if not destination:
+                return "Plan rejected: navigate requires a declared location"
+            steps = [
+                PlanStep("verify_destination", {"location": destination}),
+                PlanStep("request_path_provider", {"location": destination}),
+                PlanStep("hold_until_path_validated", {}),
+            ]
+            return self._serialize(steps)
+        if normalized == "analyze":
+            target = normalized_params.get("target")
+            if not target:
+                return "Plan rejected: analyze requires a declared target"
+            return self._serialize(
+                [
+                    PlanStep("select_available_observation", {"target": target}),
+                    PlanStep("compute_declared_metrics", {"target": target}),
+                    PlanStep("record_evidence", {"target": target}),
+                ]
+            )
+        if normalized == "assist":
+            subject = normalized_params.get("subject")
+            if not subject:
+                return "Plan rejected: assist requires a declared subject"
+            return self._serialize(
+                [
+                    PlanStep("request_operator_instruction", {"subject": subject}),
+                    PlanStep("await_authorized_action", {"subject": subject}),
+                ]
+            )
+        return f"Unknown intent: {normalized}"
 
-        Returns:
-            str: A textual or serialized representation of the plan
-        """
-        self._store_memory(intent, params)
+    @staticmethod
+    def _serialize(steps: List[PlanStep]) -> str:
+        body = "; ".join(
+            f"{step.action}({','.join(f'{k}={v}' for k, v in sorted(step.parameters.items()))})"
+            for step in steps
+        )
+        return f"Plan: {body}"
 
-        if intent == "navigate":
-            destination = params.get("location", "unknown")
-            return self._plan_navigation(destination)
-        elif intent == "analyze":
-            target = params.get("target", "environment")
-            return self._plan_analysis(target)
-        elif intent == "assist":
-            subject = params.get("subject", "human operator")
-            return self._plan_assistance(subject)
-        else:
-            return f"Unknown intent: {intent}"
 
-    def _plan_navigation(self, location: str) -> str:
-        return f"Plan: move to '{location}' using obstacle avoidance and path optimization"
-
-    def _plan_analysis(self, target: str) -> str:
-        return f"Plan: scan and model '{target}' using onboard sensors and AGI context reasoning"
-
-    def _plan_assistance(self, subject: str) -> str:
-        return f"Plan: initiate dialogue with '{subject}' and query needs via AGIIntentModel"
-
-    def _store_memory(self, intent: str, params: Dict):
-        """
-        Stores historical planning data for reasoning context
-        """
-        self.reasoning_memory.append({"intent": intent, "params": params})
+class AGIPlanner(DeterministicPlanner):
+    """Deprecated compatibility name for :class:`DeterministicPlanner`."""

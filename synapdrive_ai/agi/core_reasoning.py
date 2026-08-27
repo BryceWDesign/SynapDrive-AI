@@ -1,62 +1,74 @@
+from __future__ import annotations
+
 from collections import deque
+from typing import Any
 
 import numpy as np
 
 
-class AGICoreReasoner:
-    """
-    Core cognitive engine that interprets brain signals and emits structured action plans.
+class LabeledSignalMapper:
+    """Map an explicitly supplied synthetic label into the simulation action namespace.
 
-    IMPORTANT FIX:
-    - Using np.mean(signal_data) on a sinusoid trends toward ~0, which collapses confidence.
-    - We use RMS magnitude instead, which reflects signal energy and produces stable confidence.
+    This is not a neural decoder. The caller already supplies the class label. The
+    ``confidence`` field is therefore a ground-truth fixture value used only to exercise
+    downstream governance. Raw waveform magnitude never changes it.
     """
 
-    def __init__(self, memory_length=5):
+    def __init__(self, memory_length: int = 5) -> None:
         self.memory = deque(maxlen=memory_length)
         self.intent_weights = {
-            "left_arm": {"motor": "move_left_arm", "priority": 0.8},
-            "right_arm": {"motor": "move_right_arm", "priority": 0.8},
-            "walk": {"motor": "initiate_walk", "priority": 0.9},
+            "left_arm": {"motor": "move_left_arm", "priority": 1.0},
+            "right_arm": {"motor": "move_right_arm", "priority": 1.0},
+            "walk": {"motor": "initiate_walk", "priority": 1.0},
             "stop": {"motor": "halt_all_motion", "priority": 1.0},
-            "calculate": {"cognitive": "initiate_computation", "priority": 0.7},
-            "recall": {"cognitive": "retrieve_memory", "priority": 0.6},
-            "explore": {"cognitive": "expand_context", "priority": 0.85},
+            "calculate": {"cognitive": "initiate_computation", "priority": 1.0},
+            "recall": {"cognitive": "retrieve_memory", "priority": 1.0},
+            "explore": {"cognitive": "expand_context", "priority": 1.0},
         }
 
-    def receive_signal(self, label, signal_data):
-        """Store signal and trigger reasoning logic."""
-        self.memory.append((label, signal_data))
+    def receive_signal(self, label: str, signal_data: Any):
+        summary = self._signal_summary(label, signal_data)
+        self.memory.append(summary)
         return self.reason(label, signal_data)
 
-    def reason(self, label, signal_data):
-        """Reason over the current label and signal using internal logic."""
+    def reason(self, label: str, signal_data: Any):
+        del signal_data  # The waveform is intentionally not treated as decoder evidence.
         if label not in self.intent_weights:
             return {
                 "intent": "unknown",
                 "confidence": 0.0,
-                "source": label,
+                "source": f"synthetic_label/{label}",
                 "memory_context": list(self.memory),
+                "neural_decode_performed": False,
+                "confidence_semantics": "no-decoder",
+                "inference_authority": "synthetic-ground-truth",
             }
 
         intent_data = self.intent_weights[label]
-        priority = float(intent_data["priority"])
-
-        # RMS magnitude = sqrt(mean(x^2)) — robust signal energy proxy
-        try:
-            rms = float(np.sqrt(np.mean(np.square(signal_data))))
-        except Exception:
-            rms = 0.0
-
-        # Confidence modulated by signal energy and priority
-        confidence = rms * priority
-
-        # Clamp to sane range
-        confidence = max(0.10, min(1.0, confidence))
-
         return {
             "intent": intent_data.get("motor") or intent_data.get("cognitive"),
-            "source": label,
-            "confidence": confidence,
+            "source": f"synthetic_label/{label}",
+            "confidence": 1.0,
             "memory_context": list(self.memory),
+            "neural_decode_performed": False,
+            "confidence_semantics": "synthetic-ground-truth-label",
+            "inference_authority": "synthetic-ground-truth",
         }
+
+    @staticmethod
+    def _signal_summary(label: str, signal_data: Any) -> dict[str, Any]:
+        try:
+            arr = np.asarray(signal_data, dtype=float).ravel()
+            rms = float(np.sqrt(np.mean(np.square(arr)))) if arr.size else 0.0
+            n_samples = int(arr.size)
+        except Exception:
+            rms = 0.0
+            n_samples = 0
+        return {"label": label, "n_samples": n_samples, "rms": round(rms, 6)}
+
+
+class AGICoreReasoner(LabeledSignalMapper):
+    """Deprecated compatibility name for :class:`LabeledSignalMapper`.
+
+    No AGI capability is claimed or implemented by this class.
+    """

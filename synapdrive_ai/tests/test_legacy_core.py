@@ -13,3 +13,11 @@ def test_legacy_core_router_example_remains_importable() -> None:
     result = router.route(parsed)
 
     assert result == "Executed simulated move: forward"
+
+
+def test_legacy_core_package_exports_router() -> None:
+    from core.intent_router import IntentParser as ExportedParser
+    from core.intent_router import IntentRouter as ExportedRouter
+
+    assert ExportedParser is IntentParser
+    assert ExportedRouter is IntentRouter

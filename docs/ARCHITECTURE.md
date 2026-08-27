@@ -1,74 +1,74 @@
-# Architecture (SynapDrive-AI)
+# Architecture
 
 ## Purpose
-SynapDrive-AI is a **simulation-first** reference implementation of an intent-to-action pipeline:
-input → decode/intent → context optimization → safety gate → actuation → evaluation → assurance receipt → memory.
 
-## Canonical wiring
-The single source of truth is:
-- `synapdrive_ai/pipeline.py`
+SynapDrive-AI is a simulation-first, evidence-producing runtime for studying how a declared or decoded action candidate moves through uncertainty, permission, prediction, execution, feedback, memory, and replay.
 
-## Data contracts
-### Intent packet (minimum)
-- `intent: str`
-- `confidence: float (0..1)`
-- `source: str`
-- `memory_context: list`
+The canonical implementation is `synapdrive_ai/pipeline.py`. Compatibility wrappers route into that pipeline rather than maintaining parallel control loops.
 
-### Result packet (normalized)
-Produced by `DecisionRouter.route()`:
-- `status: "success" | "failed"`
-- `intent: str`
-- `confidence: float`
-- `duration: float`
-- `raw_status: str`
+## Canonical cycle
 
-### Assurance receipt (contract)
-Produced by `AssuranceMonitor` for every pipeline cycle:
-- `schema: "synapdrive.assurance.v1"`
-- `receipt_id`
-- `cycle_index`
-- `intent`
-- `confidence`
-- `safety_allowed`
-- `safety_reason`
-- `result_status`
-- `evaluation_score`
-- `passed`
-- `issues`
+```text
+input packet
+  -> context enrichment without confidence inflation
+  -> probability distribution and uncertainty
+  -> permission + signal quality + drift + world-model risk
+  -> governed pre-action decision
+  -> lexical compatibility guard
+  -> simulated router, only when admitted
+  -> explicit world-state commit for modeled successful actions
+  -> reality reconciliation
+  -> validated or quarantined evidence memory
+  -> assurance receipt
+  -> SHA-256 linked evidence entry
+```
 
-### Assurance health report (contract)
-Produced by `SynapDrivePipeline.get_assurance_report()`:
-- `schema: "synapdrive.assurance.health.v1"`
-- `total_cycles`
-- `passed_receipts`
-- `failed_receipts`
-- `blocked_cycles`
-- `executed_cycles`
-- `average_confidence`
-- `average_evaluation_score`
-- `latest_receipt_id`
+Blocked, analysis-only, unknown, unmodeled, low-quality, high-uncertainty, excessive-drift, permission-denied, or excessive-risk inputs do not reach the simulated action router.
 
-### Telemetry log entry (contract)
-Produced by `ActuationEngine`:
-- `timestamp`
-- `intent`
-- `confidence`
-- `status`
-- `duration`
-- `source`
-- `memory`
-- `memory_context`
+## Intent packet
 
-## Extensibility
-Integrations are intentionally optional:
-- `synapdrive_ai/integrations/brainflow_adapter.py` (BrainFlow)
-- `synapdrive_ai/integrations/lsl_adapter.py` (pylsl / LSL)
+The minimum runtime contract is:
 
-They both output an intent packet and then call the canonical pipeline.
+- `intent`: proposed simulation action name;
+- `confidence`: numeric value in `[0, 1]` with explicit semantics supplied by the producer;
+- `source`: provenance string.
 
-## Runtime assurance
-The assurance layer is intentionally observational. It does not execute actions,
-approve unsafe inputs, or certify hardware behavior. Its job is to catch internal
-contract drift, especially cases where a blocked intent somehow reaches actuation
-or an allowed cycle returns a blocked result.
+Important optional fields include:
+
+- `probabilities`: class/action probability distribution;
+- `signal_quality`: engineering quality score;
+- `drift_score`: fitted feature-drift score;
+- `required_confidence`: caller-requested stricter pre-action threshold;
+- `analysis_only`: prevents actuation even when other gates pass;
+- `inference_authority`: provenance category such as `declared-command`, `synthetic-ground-truth`, or `locally-qualified-decoder`;
+- `confidence_semantics`: explanation of what the numeric confidence means;
+- `neural_decode_performed`: explicit boolean provenance flag.
+
+## Acquisition is not decoding
+
+`BrainFlowIntentSource` and `LSLIntentSource` acquire samples and compute signal-quality metadata. They do not infer intent from RMS amplitude or another hidden heuristic.
+
+Without an explicitly supplied decoder callback, both adapters emit an analysis-only abstention. A decoder callback must return a packet that still passes the canonical governed runtime.
+
+## Qualified decoder bridge
+
+`QualifiedDecoderAdapter` is the concrete bridge from the built-in decoder benchmark surface to runtime use. It requires:
+
+1. deterministic held-out evaluation;
+2. local metric gates;
+3. a complete explicit decoder-label to simulation-action map;
+4. exact runtime channel-count agreement;
+5. exact runtime sampling-rate agreement;
+6. confidence above the configured abstention threshold.
+
+Failure at any point yields an abstention. Passing these local software gates is not clinical, participant, or physical-system validation.
+
+## Evidence
+
+Every canonical cycle produces an assurance receipt and an entry in a SHA-256 linked evidence chain. Exported ledgers can also be signed with Ed25519.
+
+The chain and signature establish integrity properties of recorded bytes. They do not prove that sensor measurements, decoder interpretations, or scientific claims are true.
+
+## Compatibility namespaces
+
+The historical `synapdrive_ai.agi` package name remains for import compatibility. Canonical v1 code does not claim AGI. Its retained classes are deterministic mappers, context handling, compatibility diagnostics, and disabled legacy adaptation surfaces.

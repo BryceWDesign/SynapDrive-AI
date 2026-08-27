@@ -1,59 +1,28 @@
-"""
-Intent Router Module
+"""Legacy intent router retained for backward compatibility."""
 
-This module receives structured intents from the IntentParser and routes them to
-the appropriate downstream modules (AGI planner, real-time executor, etc).
-"""
+from __future__ import annotations
 
 from typing import Dict, Optional
 
 from core.execution.executor_bridge import ExecutorBridge
-from core.planning.agi_planner import AGIPlanner
+from core.planning.agi_planner import DeterministicPlanner
 
 
 class IntentRouter:
-    """
-    Routes structured intents to the correct subsystem:
-    - AGIPlanner: for high-level planning and reasoning
-    - ExecutorBridge: for direct low-latency execution
-    """
+    """Route parsed legacy intents to deterministic simulation or plan templates."""
 
     def __init__(self, use_realtime: bool = False):
-        self.use_realtime = use_realtime
-        self.planner = AGIPlanner()
+        # ``use_realtime`` is historical naming. The executor is still simulation-only.
+        self.use_realtime = bool(use_realtime)
+        self.planner = DeterministicPlanner()
         self.executor = ExecutorBridge()
 
     def route(self, intent: Dict) -> Optional[str]:
-        """
-        Routes an intent to the proper module.
-
-        Parameters:
-            intent (Dict): Parsed intent with 'intent' and 'params' fields
-
-        Returns:
-            str: Response or status
-        """
         if not intent or "intent" not in intent:
             return "Invalid intent format"
 
-        intent_type = intent["intent"]
-        params = intent.get("params", {})
-
-        if self.use_realtime or intent_type in ["move", "stop", "pick_up", "drop"]:
+        intent_type = str(intent["intent"])
+        params = dict(intent.get("params", {}))
+        if self.use_realtime or intent_type in {"move", "stop", "pick_up", "drop"}:
             return self.executor.execute(intent_type, params)
-        else:
-            return self.planner.plan(intent_type, params)
-
-
-# Example usage
-if __name__ == "__main__":
-    from core.intent_router.intent_parser import IntentParser
-
-    parser = IntentParser()
-    router = IntentRouter()
-
-    inputs = ["move forward", "switch mode to autonomous", "pick up"]
-    for text in inputs:
-        parsed = parser.parse(text)
-        result = router.route(parsed)
-        print(f"Input: {text} → Output: {result}")
+        return self.planner.plan(intent_type, params)

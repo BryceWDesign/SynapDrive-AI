@@ -226,6 +226,7 @@ class TestTaskPlanner:
         bridge = ExecutorBridge(simulate_delay=False)
         trace = bridge.execute(plan)
         assert any(s.pipeline_status == "deferred" for s in trace.steps)
+        assert bridge._pipe.get_action_log() == []
 
     def test_abort_fallback_stops_plan(self):
         plan = TaskPlan(
@@ -239,6 +240,7 @@ class TestTaskPlanner:
         trace = bridge.execute(plan)
         assert trace.outcome == "aborted"
         assert len(trace.steps) == 1
+        assert bridge._pipe.get_action_log() == []
 
     def test_complete_fallback_proceeds(self):
         plan = TaskPlan(
@@ -261,3 +263,46 @@ class TestTaskPlanner:
         trace = bridge.execute(plan)
         assert trace.n_steps == 0
         assert trace.outcome == "completed"
+
+
+def test_bdf_24bit_single_channel_loading(tmp_path):
+    def field(value, width):
+        return str(value).ljust(width)[:width].encode("ascii")
+
+    n_signals = 1
+    ns = 4
+    header_bytes = 256 + 256 * n_signals
+    fixed = bytearray(b" " * 256)
+    fixed[0:8] = field("255", 8)
+    fixed[184:192] = field(header_bytes, 8)
+    fixed[236:244] = field(1, 8)
+    fixed[244:252] = field(1, 8)
+    fixed[252:256] = field(n_signals, 4)
+
+    signal_header = bytearray()
+    signal_header += field("C3", 16)
+    signal_header += field("", 80)
+    signal_header += field("uV", 8)
+    signal_header += field(-8388608, 8)
+    signal_header += field(8388607, 8)
+    signal_header += field(-8388608, 8)
+    signal_header += field(8388607, 8)
+    signal_header += field("", 80)
+    signal_header += field(ns, 8)
+    signal_header += field("", 32)
+
+    samples = [-8388608, -1, 0, 8388607]
+    encoded = bytearray()
+    for sample in samples:
+        unsigned = sample if sample >= 0 else sample + (1 << 24)
+        encoded.extend(
+            [unsigned & 0xFF, (unsigned >> 8) & 0xFF, (unsigned >> 16) & 0xFF]
+        )
+
+    path = tmp_path / "tiny.bdf"
+    path.write_bytes(bytes(fixed) + bytes(signal_header) + bytes(encoded))
+    recording = EEGLoader().load(path)
+    assert recording.n_samples == ns
+    assert recording.sampling_rate == 4.0
+    assert recording.channel("C3")[0] < 0
+    assert recording.channel("C3")[-1] > 0
