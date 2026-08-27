@@ -1,71 +1,44 @@
 # Contributing to SynapDrive-AI
 
-Thanks for your interest.
-
-## Project stance
-SynapDrive-AI is **simulation-first**. We accept contributions that improve:
-- reproducibility (install/run/test)
-- safety gating behavior
-- telemetry/logging consistency
-- modular adapters (optional integrations that do not break the core demo)
-- documentation accuracy
-
-We do **not** accept medical/clinical claims.
+SynapDrive-AI is simulation-first research software. Contributions are expected to preserve the repository's claim boundaries and fail-closed behavior.
 
 ## Development setup
+
 ```bash
 python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-pip install -r requirements-dev.txt
-pre-commit install
-pytest -q
+source .venv/bin/activate  # Windows PowerShell: .venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
+```
 
-Pull Request checklist
+Run the local quality surface:
 
- Tests pass locally (pytest -q)
+```bash
+python -m compileall -q synapdrive_ai core scripts
+python -m pytest -q
+python -m scripts.run_v1_validation
+ruff check .
+pyright
+```
 
- Lint passes (ruff check .)
+## Pull request requirements
 
- Type check passes (pyright)
+- Tests cover every behavioral change, including a negative control when a failure mode matters.
+- Unknown, malformed, unqualified, or analysis-only inputs fail closed.
+- New decoders do not receive authority merely because they produce a class label.
+- Synthetic fixtures are labeled as synthetic and are never described as participant performance.
+- Hardware acquisition paths do not invent intent when no decoder is configured.
+- Documentation states what is executed and what remains unvalidated.
+- No private keys, participant data, device credentials, or generated build artifacts are committed.
 
- README/docs updated if behavior changes
+## Scientific and safety claims
 
- No new hard dependencies without discussion
+Do not submit claims of clinical validity, medical-device safety, participant generalization, safe physical actuation, or real-world BCI performance unless the corresponding external evidence actually exists and is cited separately from repository tests.
 
-Reporting issues
+Software tests establish software behavior only.
 
-Please include:
+## Reporting a defect
 
-OS + Python version
+Include the operating system, Python version, exact command, traceback or logs, expected behavior, actual behavior, and the smallest reproducible input that can be shared safely.
 
-exact command you ran
-
-traceback/logs
-
-expected vs actual behavior
-
-
----
-
-## 2) `CODE_OF_CONDUCT.md` (NEW)
-```markdown
-# Code of Conduct
-
-We are committed to providing a welcoming, professional environment.
-
-## Expected behavior
-- Be respectful and constructive
-- Assume good intent
-- Focus on technical issues, not people
-- Keep discussions on-topic
-
-## Unacceptable behavior
-- Harassment, insults, or personal attacks
-- Discrimination or hate speech
-- Doxxing or sharing private information
-- Sustained disruption of discussions
-
-## Enforcement
-Project maintainers may remove content, lock threads, or restrict participation
-when behavior violates this policy.
+For security-sensitive reports, follow `SECURITY.md` rather than opening a public issue with exploit details.

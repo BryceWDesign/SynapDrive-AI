@@ -6,7 +6,7 @@ from typing import Any, Dict, List
 
 class ActuationEngine:
     """
-    Simulated actuation engine that converts intent packets into mock physical actions.
+    Simulated actuation engine that records admitted intent packets as simulated actions.
 
     Determinism support:
       - simulate_delay=True  -> sleeps to emulate actuation time

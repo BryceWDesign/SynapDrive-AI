@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12"]
+        python-version: ["3.11", "3.12", "3.13"]
 
     steps:
       - name: Checkout
@@ -39,8 +39,18 @@ jobs:
         run: |
           pytest -q --cov=synapdrive_ai --cov-report=term-missing --cov-report=xml --cov-fail-under=50
 
+      - name: Run release validation
+        run: |
+          python -m scripts.run_v1_validation --out validation.json
+
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
         with:
           name: coverage-xml-py${{ matrix.python-version }}
           path: coverage.xml
+
+      - name: Upload validation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-py${{ matrix.python-version }}
+          path: validation.json

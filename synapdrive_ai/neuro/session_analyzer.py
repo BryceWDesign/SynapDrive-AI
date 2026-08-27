@@ -4,14 +4,16 @@ import json
 import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Mapping, Optional
 
 import numpy as np
 
-from synapdrive_ai.bci.intent_generator import generate_intent
 from synapdrive_ai.neuro.band_analyzer import BandPowerAnalyzer, BandPowerResult
 from synapdrive_ai.neuro.eeg_loader import EEGRecording
+from synapdrive_ai.neuro.signal_quality import SignalQualityAnalyzer
 from synapdrive_ai.pipeline import SynapDrivePipeline
+
+EpochDecoder = Callable[[np.ndarray, Mapping[str, Any]], Mapping[str, Any]]
 
 
 @dataclass
@@ -50,7 +52,7 @@ class SessionReport:
 
     def summary(self) -> str:
         lines = [
-            f"Session Analysis — {self.source_file}",
+            f"Session Analysis: {self.source_file}",
             f"  Channel:        {self.channel}",
             f"  Window:         {self.window_s}s  step: {self.step_s}s",
             f"  Epochs:         {self.n_epochs}",
@@ -103,7 +105,11 @@ class SessionReport:
 
 class SessionAnalyzer:
     """
-    Runs a sliding-window analysis of an EEGRecording through the pipeline.
+    Sliding-window EEG feature analysis with an explicit decoder boundary.
+
+    Without ``decoder``, spectral features are analysis-only and are deliberately blocked
+    from actuation. A supplied decoder must return an intent packet containing at least
+    ``intent`` and ``confidence``; its outputs still pass through runtime governance.
     """
 
     def __init__(
@@ -114,12 +120,14 @@ class SessionAnalyzer:
         image_label: Optional[str] = None,
         simulate_delay: bool = False,
         pipeline: Optional[SynapDrivePipeline] = None,
+        decoder: Optional[EpochDecoder] = None,
     ) -> None:
         self.channel = channel
         self.window_s = float(window_s)
         self.step_s = float(step_s)
         self.image_label = image_label
         self._pipe = pipeline or SynapDrivePipeline(simulate_delay=simulate_delay)
+        self.decoder = decoder
         self._band_analyzer: Optional[BandPowerAnalyzer] = None
 
     def run(self, recording: EEGRecording) -> SessionReport:
@@ -146,8 +154,11 @@ class SessionAnalyzer:
             t_start = start / sr
             t_end = (start + window_samples) / sr
 
+            quality_result = SignalQualityAnalyzer(sr).analyze(epoch_signal)
             band_result = self._band_analyzer.analyze(epoch_signal)
-            pipeline_out = self._run_epoch_through_pipeline(band_result)
+            pipeline_out = self._run_epoch_through_pipeline(
+                epoch_signal, sr, band_result, quality_result.score, quality_result.state
+            )
 
             intent_out = pipeline_out.get("intent", {}) or {}
             eval_out = pipeline_out.get("evaluation", {}) or {}
@@ -175,26 +186,54 @@ class SessionAnalyzer:
 
         return self._build_report(recording, ch_name, epochs)
 
-    def _run_epoch_through_pipeline(self, band_result: BandPowerResult) -> Dict[str, Any]:
-        if band_result.intent_class == "motor":
-            if band_result.engagement_ratio > 2.0:
-                text = "move forward"
-            elif band_result.engagement_ratio > 1.2:
-                text = "move left"
-            else:
-                text = "move right"
-        elif band_result.intent_class == "cognitive":
-            text = "calculate" if band_result.cognitive_ratio > 2.0 else "recall"
+    def _run_epoch_through_pipeline(
+        self,
+        epoch_signal: np.ndarray,
+        sampling_rate: float,
+        band_result: BandPowerResult,
+        signal_quality: float = 1.0,
+        quality_state: str = "good",
+    ) -> Dict[str, Any]:
+        if self.decoder is None:
+            packet: Dict[str, Any] = {
+                "intent": "unknown",
+                "confidence": 0.0,
+                "source": f"eeg_band_features/{band_result.intent_class}",
+                "memory_context": [],
+                "band_power": band_result.relative,
+                "engagement_ratio": band_result.engagement_ratio,
+                "cognitive_ratio": band_result.cognitive_ratio,
+                "heuristic_score": band_result.confidence,
+                "confidence_semantics": "no-decoder",
+                "inference_authority": "analysis-only-band-features",
+                "analysis_only": True,
+                "neural_decode_performed": False,
+                "signal_quality": float(signal_quality),
+                "signal_quality_state": quality_state,
+            }
         else:
-            text = "unknown"
+            epoch_data = np.asarray(epoch_signal, dtype=float).reshape(1, -1)
+            decoder_metadata = {
+                "sampling_rate": float(sampling_rate),
+                "n_channels": 1,
+                "n_samples": int(epoch_data.shape[1]),
+                "signal_quality": float(signal_quality),
+                "signal_quality_state": quality_state,
+            }
+            packet = dict(self.decoder(epoch_data.copy(), decoder_metadata))
+            packet.setdefault("intent", "unknown")
+            packet.setdefault("confidence", 0.0)
+            packet.setdefault("source", "external-epoch-decoder")
+            packet.setdefault("memory_context", [])
+            packet.setdefault("inference_authority", "external-decoder")
+            packet.setdefault("neural_decode_performed", True)
+            packet["signal_quality"] = float(signal_quality)
+            packet["signal_quality_state"] = quality_state
+            packet["band_power"] = band_result.relative
+            packet["spectral_feature_class"] = band_result.intent_class
+            packet["spectral_heuristic_score"] = band_result.confidence
 
-        base_packet = dict(generate_intent(text))
-        base_packet["confidence"] = band_result.confidence
-        base_packet["source"] = f"eeg_band/{band_result.intent_class}"
-        base_packet["band_power"] = band_result.relative
-        base_packet["engagement_ratio"] = band_result.engagement_ratio
-
-        return self._pipe.run_intent_packet(base_packet, image_label=self.image_label)
+        return self._pipe.run_intent_packet(packet, image_label=self.image_label)
 
     def _build_report(
         self,

@@ -1,0 +1,216 @@
+{
+  "schema": "synapdrive.validation.v1",
+  "version": "1.0.0",
+  "passed": true,
+  "python": "3.13.2",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "claims": {
+    "human_eeg_used": false,
+    "physical_actuation_used": false,
+    "clinical_validation": false,
+    "hardware_safety_validation": false,
+    "synthetic_verification_data_used": true,
+    "benchmark_metrics_are_bci_performance_claims": false
+  },
+  "checks": [
+    {
+      "check": "governed_declared_command_path",
+      "passed": true,
+      "authority": "declared-command"
+    },
+    {
+      "check": "unmodeled_action_fails_closed",
+      "passed": true,
+      "reason": "predicted-risk-above-policy; world-model-precondition-failed"
+    },
+    {
+      "check": "analysis_only_inference_cannot_actuate",
+      "passed": true
+    },
+    {
+      "check": "low_quality_fail_closed",
+      "passed": true,
+      "reason": "signal-quality-below-policy"
+    },
+    {
+      "check": "high_uncertainty_abstains",
+      "passed": true,
+      "uncertainty": 0.85
+    },
+    {
+      "check": "decoder_drift_fail_closed",
+      "passed": true,
+      "drift_score": 204.205278,
+      "learned_threshold": 1.41413
+    },
+    {
+      "check": "permission_revoke_preserves_safe_stop",
+      "passed": true
+    },
+    {
+      "check": "errp_contradiction_quarantines_memory",
+      "passed": true
+    },
+    {
+      "check": "evidence_chain_valid",
+      "passed": true,
+      "entries": 7
+    },
+    {
+      "check": "evidence_tamper_detected",
+      "passed": true
+    },
+    {
+      "check": "ed25519_evidence_signature",
+      "passed": true
+    },
+    {
+      "check": "flatline_quality_detection",
+      "passed": true,
+      "score": 0.5,
+      "state": "unreliable"
+    },
+    {
+      "check": "multimodal_reliability_weighted_fusion",
+      "passed": true,
+      "confidence": 0.8125,
+      "uncertainty": 0.525417
+    },
+    {
+      "check": "counterfactual_shared_autonomy_prefers_lower_risk_candidate",
+      "passed": true,
+      "selected_action": "detour"
+    },
+    {
+      "check": "shadow_policy_has_no_actuation_authority",
+      "passed": true
+    },
+    {
+      "check": "guarded_adaptation_requires_held_out_improvement",
+      "passed": true,
+      "old_unsafe_accepts": 2,
+      "candidate_unsafe_accepts": 0
+    },
+    {
+      "check": "deterministic_cycle_evidence_replay",
+      "passed": true,
+      "event_hash": "6435aeb43b55e2b8c3c0d20d89c917c43b2f17bc6cd59f935724b04488061be2"
+    },
+    {
+      "check": "decoder_benchmark_executes",
+      "passed": true,
+      "dataset": "deterministic-synthetic-verification-only",
+      "metrics": {
+        "decoder": "EnsembleDecoder",
+        "n_samples": 48,
+        "n_train": 36,
+        "n_test": 12,
+        "accuracy": 1.0,
+        "balanced_accuracy": 1.0,
+        "brier_score": 0.090788,
+        "ece": 0.194664,
+        "coverage": 1.0,
+        "selective_accuracy": 1.0,
+        "abstain_threshold": 0.55,
+        "classes": [
+          "class_10hz",
+          "class_20hz"
+        ]
+      }
+    },
+    {
+      "check": "locally_qualified_decoder_reaches_governed_runtime",
+      "passed": true,
+      "qualification": {
+        "qualified": true,
+        "reason": "local qualification policy passed",
+        "report": {
+          "decoder": "SpectralCentroidDecoder",
+          "n_samples": 48,
+          "n_train": 36,
+          "n_test": 12,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "brier_score": 0.0,
+          "ece": 1e-06,
+          "coverage": 1.0,
+          "selective_accuracy": 1.0,
+          "abstain_threshold": 0.55,
+          "classes": [
+            "class_10hz",
+            "class_20hz"
+          ]
+        },
+        "policy": {
+          "min_balanced_accuracy": 0.6,
+          "max_ece": 0.3,
+          "max_brier_score": 0.8,
+          "min_coverage": 0.2,
+          "abstain_threshold": 0.55
+        }
+      },
+      "decoded_intent": "move_left"
+    },
+    {
+      "check": "qualified_decoder_sampling_mismatch_abstains",
+      "passed": true,
+      "reason": "sampling-rate mismatch: got 129.0, expected 128.0"
+    },
+    {
+      "check": "qualified_decoder_session_analyzer_bridge",
+      "passed": true,
+      "pipeline_status": "success",
+      "confidence": 0.9997651278837503
+    },
+    {
+      "check": "task_threshold_blocks_before_simulated_actuation",
+      "passed": true
+    },
+    {
+      "check": "successful_action_commits_explicit_world_state",
+      "passed": true,
+      "world_state": {
+        "mode": "assistive",
+        "last_action": "switch_mode_assistive"
+      }
+    },
+    {
+      "check": "fault_campaign_fail_closed",
+      "passed": true,
+      "report": {
+        "total_trials": 3,
+        "invariant_passes": 3,
+        "invariant_failures": 0,
+        "trials": [
+          {
+            "trial": 1,
+            "fault": "dropout",
+            "quality_score": 0.596711,
+            "quality_state": "degraded",
+            "expected_block": true,
+            "blocked": true,
+            "invariant_passed": true
+          },
+          {
+            "trial": 2,
+            "fault": "flatline",
+            "quality_score": 0.5,
+            "quality_state": "unreliable",
+            "expected_block": true,
+            "blocked": true,
+            "invariant_passed": true
+          },
+          {
+            "trial": 3,
+            "fault": "noise",
+            "quality_score": 0.994053,
+            "quality_state": "good",
+            "expected_block": false,
+            "blocked": false,
+            "invariant_passed": true
+          }
+        ]
+      }
+    }
+  ]
+}

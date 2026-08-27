@@ -2,12 +2,11 @@
 
 This repo is intentionally **simulation-first**.
 
-We support two "input" shapes:
-1) decoded BCI intent text (e.g. "move left", "stop", "switch mode to manual")
-2) raw brain-signal labels produced by our simulator (handled elsewhere)
+We support caller-declared command text such as "move left", "stop", or
+"switch mode to manual". Synthetic signal labels are handled elsewhere.
 
 This parser is a *small, deterministic* rule-based layer that translates text into
-structured intents suitable for downstream safety checks and actuation.
+structured simulation actions suitable for downstream governance checks.
 """
 
 from __future__ import annotations

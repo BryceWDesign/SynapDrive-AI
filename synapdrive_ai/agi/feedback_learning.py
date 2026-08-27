@@ -1,58 +1,28 @@
+from __future__ import annotations
+
+
 class FeedbackLearner:
-    """
-    Adaptive learner that adjusts AGI intent priorities based on outcomes.
+    """Deprecated compatibility logger for historical feedback calls.
 
-    It simulates reward-based reinforcement by analyzing intent results and
-    feeding back into the reasoning system to increase or decrease priority weights.
+    Earlier versions modified intent priorities from execution confidence alone. That is
+    not evidence that an adaptation is beneficial, so automatic mutation is disabled.
+    Use ``synapdrive_ai.adaptation.GuardedThresholdAdapter`` with held-out labeled records
+    for the supported adaptation path.
     """
 
-    def __init__(self, reasoner):
+    def __init__(self, reasoner) -> None:
         self.reasoner = reasoner
-        self.feedback_log = []
+        self.feedback_log: list[dict[str, object]] = []
 
-    def apply_feedback(self, intent_packet, result):
-        """
-        Adjusts internal weights in AGICoreReasoner based on execution results.
-
-        Args:
-            intent_packet (dict): The original intent.
-            result (dict): {
-                'status': 'executed',
-                'intent': str,
-                'confidence': float,
-                'duration': float
-            }
-        """
-        intent = result.get("intent")
-        confidence = result.get("confidence", 0.0)
-        label = intent_packet.get("source")
-
-        if label not in self.reasoner.intent_weights:
-            return
-
-        old_priority = self.reasoner.intent_weights[label]["priority"]
-
-        # Reward if confidence > 0.8, punish if < 0.5
-        if confidence > 0.8:
-            adjustment = 0.05
-        elif confidence < 0.5:
-            adjustment = -0.05
-        else:
-            adjustment = 0.0
-
-        new_priority = min(max(old_priority + adjustment, 0.0), 1.0)
-        self.reasoner.intent_weights[label]["priority"] = new_priority
-
-        feedback_record = {
-            "intent": intent,
-            "source": label,
-            "old_priority": old_priority,
-            "new_priority": new_priority,
-            "confidence": confidence,
-            "timestamp": result.get("duration"),
+    def apply_feedback(self, intent_packet, result) -> None:
+        record = {
+            "intent": result.get("intent"),
+            "source": intent_packet.get("source"),
+            "confidence": float(result.get("confidence", 0.0)),
+            "promoted": False,
+            "reason": "legacy confidence-only adaptation disabled; use held-out guarded adaptation",
         }
-        self.feedback_log.append(feedback_record)
+        self.feedback_log.append(record)
 
     def get_feedback_history(self):
-        """Returns a history of all feedback adjustments."""
-        return self.feedback_log
+        return list(self.feedback_log)

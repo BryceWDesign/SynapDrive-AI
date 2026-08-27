@@ -1,5 +1,5 @@
 # Dockerfile
-# SynapDrive-AI — simulation-first, reproducible runtime container.
+# SynapDrive-AI: simulation-first, reproducible runtime container.
 
 FROM python:3.12-slim
 
@@ -23,11 +23,12 @@ ARG INSTALL_DEV=false
 RUN pip install -r requirements.txt && \
     if [ "$INSTALL_DEV" = "true" ]; then pip install -r requirements-dev.txt; fi
 
-# Copy the rest of the repo
+# Copy the rest of the repo and install the package so console entry points are available.
 COPY . /app
+RUN pip install --no-deps .
 
 # Default port used by the web dashboard
 EXPOSE 5055
 
 # Default command = show CLI help (safe default)
-CMD ["python", "-m", "synapdrive_ai", "-h"]
+CMD ["synapdrive-ai", "-h"]

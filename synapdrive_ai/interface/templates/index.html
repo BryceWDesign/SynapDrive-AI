@@ -16,12 +16,13 @@
   <body>
     <h1>SynapDrive-AI Dashboard</h1>
     <div class="muted">
-      Canonical pipeline: intent → optimizer → safety → actuation → evaluation (simulation-first).
+      Simulation only: declared input → uncertainty/runtime gates → simulated action →
+      reality/evidence reconciliation.
     </div>
 
     <div class="row">
       <div class="card">
-        <h3>Run (Text / Decoded Intent)</h3>
+        <h3>Run (Declared Text Command)</h3>
         <label>Text command</label><br />
         <input id="textCmd" style="width: 100%" placeholder='e.g. "move left" or "stop"' />
         <label>Optional vision label</label><br />
@@ -33,7 +34,7 @@
       <div class="card">
         <h3>Run (Signal / Simulated Label)</h3>
         <label>Signal label</label><br />
-        <input id="sigLabel" style="width: 100%" placeholder='e.g. "walk" or "stop" or leave blank for random' />
+        <input id="sigLabel" style="width: 100%" placeholder='e.g. "walk" or "stop"; blank selects a seeded synthetic label' />
         <label>Optional vision label</label><br />
         <input id="sigImg" style="width: 100%" placeholder='e.g. "road" or "hazard"' />
         <button onclick="runSignal()">Run</button>

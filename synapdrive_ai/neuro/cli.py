@@ -33,7 +33,7 @@ def cmd_demo(args) -> int:
         + 1.2 * np.sin(2 * np.pi * 20 * t[burst])
         + 0.8 * np.sin(2 * np.pi * 40 * t[burst])
     )
-    signal += np.random.normal(0, 0.05, n_samples)
+    signal += np.random.default_rng(0).normal(0, 0.05, n_samples)
 
     loader = EEGLoader(sampling_rate=sr)
     recording = loader.load_array(
@@ -41,7 +41,7 @@ def cmd_demo(args) -> int:
     )
 
     print(f"Synthetic recording: {recording.summary()}")
-    print("Motor intent burst injected at t=4s–7s\n")
+    print("Synthetic beta/gamma spectral burst injected at t=4s-7s; no neural intent is claimed.\n")
 
     analyzer = BandPowerAnalyzer(sampling_rate=sr)
     result = analyzer.analyze(signal)
@@ -50,15 +50,15 @@ def cmd_demo(args) -> int:
         bar = "█" * int(power * 40)
         print(f"  {band:6s} {power:.3f}  {bar}")
     print(f"  engagement ratio: {result.engagement_ratio:.3f}")
-    print(f"  intent class:     {result.intent_class}")
-    print(f"  confidence:       {result.confidence:.3f}\n")
+    print(f"  heuristic class:  {result.intent_class}")
+    print(f"  heuristic score:  {result.confidence:.3f} (uncalibrated)\n")
 
     session_analyzer = SessionAnalyzer(channel="C3", window_s=1.0, step_s=0.5)
     report = session_analyzer.run(recording)
 
     print(report.summary())
     print("\nEpoch detail:")
-    print(f"  {'t_start':>7}  {'class':>10}  {'conf':>6}  {'status':>8}")
+    print(f"  {'t_start':>7}  {'class':>10}  {'score':>6}  {'status':>12}")
     for ep in report.epochs:
         print(
             f"  {ep.time_start_s:>7.1f}s  {ep.intent_class:>10}  "
@@ -126,17 +126,21 @@ def cmd_threshold(args) -> int:
     channel = args.channel or recording.channels[0]
 
     thresholds = [float(t) for t in args.min_conf]
-    print(f"Threshold sweep — {path.name}  channel={channel}\n")
-    print(f"  {'threshold':>10}  {'blocked%':>10}  {'mean_conf':>10}  {'n_success':>10}")
+    analyzer = SessionAnalyzer(channel=channel, window_s=args.window, step_s=args.step)
+    report = analyzer.run(recording)
+    scores = np.asarray([epoch.signal_confidence for epoch in report.epochs], dtype=float)
 
+    print(f"Heuristic spectral-score sweep: {path.name}  channel={channel}\n")
+    print(
+        "This is descriptive analysis only. The score is uncalibrated and is not decoder "
+        "confidence, accuracy, or actuation authority.\n"
+    )
+    print(f"  {'threshold':>10}  {'epochs>=thr':>12}  {'fraction':>10}  {'mean_score':>10}")
     for thresh in thresholds:
-        analyzer = SessionAnalyzer(channel=channel, window_s=args.window, step_s=args.step)
-        analyzer._pipe.guard.min_confidence_threshold = thresh
-        report = analyzer.run(recording)
-        print(
-            f"  {thresh:>10.3f}  {report.block_rate * 100:>9.1f}%  "
-            f"{report.mean_confidence:>10.3f}  {report.n_success:>10}"
-        )
+        count = int(np.sum(scores >= thresh))
+        fraction = count / len(scores) if len(scores) else 0.0
+        mean_score = float(np.mean(scores)) if len(scores) else 0.0
+        print(f"  {thresh:>10.3f}  {count:>12}  {fraction:>10.3f}  {mean_score:>10.3f}")
 
     return 0
 
@@ -175,7 +179,7 @@ def cmd_plan(args) -> int:
     if args.list:
         print("Available plans:")
         for name, plan in plans.items():
-            print(f"  {name}: {len(plan)} steps — {plan.name}")
+            print(f"  {name}: {len(plan)} steps: {plan.name}")
         return 0
 
     task_name = args.task or "reach_grasp"
@@ -208,7 +212,7 @@ def build_parser() -> argparse.ArgumentParser:
     a.add_argument("--sr", type=float, default=256.0, help="Sampling rate Hz for CSV/NPY")
     a.add_argument("--out", default=None, help="Output directory for JSONL + CSV results")
 
-    t = sub.add_parser("threshold", help="Test multiple confidence thresholds")
+    t = sub.add_parser("threshold", help="Sweep uncalibrated spectral-score thresholds")
     t.add_argument("file")
     t.add_argument("--min-conf", nargs="+", default=["0.4", "0.5", "0.6", "0.7"])
     t.add_argument("--channel", default=None)

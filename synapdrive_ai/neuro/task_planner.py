@@ -140,6 +140,9 @@ class ExecutorBridge:
 
     def _execute_step(self, idx: int, step: TaskStep) -> StepTrace:
         base_packet = generate_intent(step.intent_text)
+        # A task-specific threshold is a stricter pre-action requirement. The canonical
+        # runtime consumes this field before the router is reachable.
+        base_packet["required_confidence"] = step.min_confidence
         out = self._pipe.run_intent_packet(base_packet, image_label=step.image_label)
 
         intent_out = out.get("intent", {}) or {}
@@ -150,7 +153,7 @@ class ExecutorBridge:
         eval_score = float(eval_out.get("score", 0.0))
         fallback_applied: Optional[FallbackPolicy] = None
 
-        if pipeline_status == "success" and confidence < step.min_confidence:
+        if pipeline_status == "blocked" and "confidence-below-policy" in str(block_reason):
             fallback_applied = step.fallback
             if step.fallback == "freeze":
                 pipeline_status = "deferred"

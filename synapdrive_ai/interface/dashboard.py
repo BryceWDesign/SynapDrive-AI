@@ -1,82 +1,60 @@
+from __future__ import annotations
+
 import threading
 import time
 
-from synapdrive_ai.agi.feedback_learning import FeedbackLearner
-from synapdrive_ai.cloud.cloud_stub import CloudControlStub
 from synapdrive_ai.core.logger import SynapLogger
 from synapdrive_ai.interface.bridge import SynapDriveBridge
 
 
 class SynapDriveDashboard:
-    """
-    Real-time console dashboard showing BCI input, AGI decision,
-    actuator feedback, memory, and cloud control results.
+    """Console monitor for the canonical governed simulation bridge.
 
-    This must never crash on schema drift — we use .get() defaults everywhere.
+    Historical versions contained a fabricated "cloud" router and a feedback learner that
+    updated weights outside the governed adaptation path. Both have been removed. This
+    dashboard only displays results already produced by the canonical runtime.
     """
 
-    def __init__(self):
-        self.bridge = SynapDriveBridge()
-        self.learner = FeedbackLearner(self.bridge.reasoner)
-        self.cloud = CloudControlStub()
+    def __init__(self) -> None:
+        self.bridge = SynapDriveBridge(simulate_delay=False)
         self.logger = SynapLogger()
         self.running = False
+        self._seen_cycles = 0
 
-    def _monitor(self):
+    def _monitor(self) -> None:
         while self.running:
-            log = self.bridge.get_action_log()
-            if log:
-                latest = log[-1]
+            cycles = self.bridge.get_cycle_log()
+            while self._seen_cycles < len(cycles):
+                latest = cycles[self._seen_cycles]
+                self._seen_cycles += 1
+                intent = latest.get("intent", {}) or {}
+                result = latest.get("result", {}) or {}
+                reality = latest.get("reality", {}) or {}
+                runtime = latest.get("runtime", {}) or {}
 
-                intent = latest.get("intent", "unknown")
-                conf = latest.get("confidence", 0.0)
-                status = latest.get("status", "unknown")
-                duration = latest.get("duration", 0.0)
-                source = latest.get("source", "unknown")
-                memory = latest.get("memory", latest.get("memory_context", []))
-
-                print("\n--- SynapDrive-AI Live Snapshot ---")
-                print(f"🧠 Intent: {intent} | Conf: {conf}")
-                print(f"🤖 Result: {status} | Duration: {duration}s")
-                print(f"📡 Source: {source}")
-                print(f"🧬 Memory: {memory}")
-
-                # Cloud wants intent/confidence/source
-                if intent != "unknown":
-                    self.cloud.transmit_intent(
-                        {
-                            "intent": intent,
-                            "confidence": conf,
-                            "source": source,
-                            "memory_context": latest.get("memory_context", []),
-                        }
-                    )
-
-                # Feedback learner expects (intent_packet, result)
-                self.learner.apply_feedback(
-                    {
-                        "intent": intent,
-                        "confidence": conf,
-                        "source": source,
-                        "memory_context": [],
-                    },
-                    latest,
+                print("\n--- SynapDrive-AI Governed Snapshot ---")
+                print(
+                    f"Intent: {intent.get('intent', 'unknown')} | "
+                    f"confidence={float(intent.get('confidence', 0.0)):.3f}"
                 )
+                print(
+                    f"Runtime: {'allowed' if runtime.get('allowed') else 'blocked'} | "
+                    f"reason={runtime.get('reason', 'unknown')}"
+                )
+                print(
+                    f"Result: {result.get('status', 'unknown')} | "
+                    f"reality_aligned={reality.get('aligned', False)}"
+                )
+            time.sleep(0.2)
 
-                if self.cloud.transmitted_packets:
-                    print(f"✅ Cloud Routed → {self.cloud.transmitted_packets[-1]['system']}")
-
-            time.sleep(2)
-
-    def launch(self):
-        self.logger.info("Starting SynapDrive-AI dashboard...")
+    def launch(self) -> None:
+        self.logger.info("Starting SynapDrive-AI governed console dashboard")
         self.bridge.start()
         self.running = True
-        t = threading.Thread(target=self._monitor)
-        t.daemon = True
-        t.start()
+        thread = threading.Thread(target=self._monitor, daemon=True)
+        thread.start()
 
-    def shutdown(self):
+    def shutdown(self) -> None:
         self.running = False
         self.bridge.stop()
-        self.logger.info("Dashboard stopped.")
+        self.logger.info("Dashboard stopped")

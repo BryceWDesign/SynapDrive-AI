@@ -1,48 +1,48 @@
-from synapdrive_ai.agi.core_reasoning import AGICoreReasoner
+from __future__ import annotations
+
+from typing import Any, Dict
+
 from synapdrive_ai.bci.signal_simulator import BrainSignalSimulator
-from synapdrive_ai.control.actuation_engine import ActuationEngine
+from synapdrive_ai.pipeline import SynapDrivePipeline
 
 
 class SynapDriveBridge:
-    """
-    Integration layer that bridges brain signal simulator, AGI reasoning core,
-    and control actuation engine.
+    """Backward-compatible streaming bridge into the canonical governed pipeline.
 
-    Simulates a closed-loop system where brain signals drive cognition,
-    which in turn drives real-world control responses.
+    The bridge is intentionally simulation-only. It subscribes to the bundled synthetic
+    signal generator and forwards the *declared synthetic label* through the canonical
+    pipeline. There is no parallel actuator or bypass around runtime governance.
     """
 
-    def __init__(self):
+    def __init__(self, simulate_delay: bool = False) -> None:
         self.simulator = BrainSignalSimulator()
-        self.reasoner = AGICoreReasoner()
-        self.actuator = ActuationEngine()
+        self.pipeline = SynapDrivePipeline(simulate_delay=simulate_delay)
         self.running = False
+        self._cycle_log: list[Dict[str, Any]] = []
 
-    def _signal_handler(self, label, signal_data):
-        """Receive brain signal, reason about it, and pass intent to control."""
-        intent_packet = self.reasoner.receive_signal(label, signal_data)
-        result = self.actuator.execute_intent(intent_packet)
-        print(f"[Bridge] Intent executed: {result}")
+    @property
+    def reasoner(self):
+        """Compatibility access to the pipeline's labeled-signal mapper."""
+        return self.pipeline.reasoner
 
-    def start(self, interval=1.0):
-        """
-        Start the full simulated pipeline with real-time signal streaming.
-        """
+    def _signal_handler(self, label, _signal_data) -> None:
+        result = self.pipeline.run_signal_event(label=label)
+        self._cycle_log.append(result)
+
+    def start(self, interval: float = 1.0) -> None:
         self.simulator.subscribe(self._signal_handler)
         self.simulator.start_real_time_stream(interval=interval)
         self.running = True
-        print("[Bridge] SynapDrive-AI system started.")
 
-    def stop(self):
-        """
-        Stop the simulated pipeline.
-        """
+    def stop(self) -> None:
         self.simulator.stop()
         self.running = False
-        print("[Bridge] SynapDrive-AI system stopped.")
 
     def get_action_log(self):
-        """
-        Access logs from the actuation engine.
-        """
-        return self.actuator.get_action_log()
+        return self.pipeline.get_action_log()
+
+    def get_cycle_log(self) -> list[Dict[str, Any]]:
+        return list(self._cycle_log)
+
+    def get_assurance_report(self) -> Dict[str, Any]:
+        return self.pipeline.get_assurance_report()

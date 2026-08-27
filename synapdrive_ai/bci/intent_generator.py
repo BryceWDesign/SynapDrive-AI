@@ -5,44 +5,29 @@ from typing import Any, Dict
 from synapdrive_ai.intent.intent_parser import IntentParser
 
 
-def generate_intent(simulated_input: str) -> Dict[str, Any]:
-    """
-    Simulation-first intent extraction.
+def generate_intent(command_text: str) -> Dict[str, Any]:
+    """Parse a caller-declared text command into the simulation action namespace.
 
-    Accepts:
-      - freeform text ("move left", "stop", "switch mode to manual")
-      - simple labels (anything else)
-
-    Returns a structured intent packet compatible with the existing stack:
-      {
-        "intent": str,
-        "confidence": float,
-        "source": str,
-        "raw_text": str,
-        "params": dict,
-        "memory_context": list
-      }
+    This path does not infer a user's intent from physiology. A recognized grammar match
+    receives confidence 1.0 because the mapping itself is deterministic; the packet marks
+    that semantic explicitly. Unknown text fails closed with zero confidence.
     """
-    raw = (simulated_input or "").strip()
+
+    raw = (command_text or "").strip()
     parser = IntentParser()
-
     parsed = parser.parse(raw)
 
-    # Conservative default for unknown inputs
     intent = "unknown"
-    confidence = 0.40
+    confidence = 0.0
     params: Dict[str, str] = {}
 
     if parsed is not None:
         params = dict(parsed.params)
-
-        # Map parsed intents into a simple actuator-command namespace
         if parsed.intent == "move":
             intent = f"move_{params.get('direction', 'unknown')}"
         elif parsed.intent == "turn":
             intent = f"turn_{params.get('direction', 'unknown')}"
         elif parsed.intent == "stop":
-            # Align with existing AGI mapping name when possible
             intent = "halt_all_motion"
         elif parsed.intent == "pick_up":
             intent = "pick_up"
@@ -52,14 +37,18 @@ def generate_intent(simulated_input: str) -> Dict[str, Any]:
             intent = f"switch_mode_{params.get('mode', 'unknown')}"
         else:
             intent = parsed.intent
-
-        confidence = 0.80
+        confidence = 1.0
 
     return {
         "intent": intent,
-        "confidence": float(confidence),
+        "confidence": confidence,
         "source": "text_input",
         "raw_text": raw,
         "params": params,
         "memory_context": [],
+        "inference_authority": "declared-command",
+        "confidence_semantics": (
+            "deterministic-parser-match" if parsed is not None else "no-parser-match"
+        ),
+        "neural_decode_performed": False,
     }
