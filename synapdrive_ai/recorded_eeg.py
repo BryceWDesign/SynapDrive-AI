@@ -71,8 +71,13 @@ def prepare(cache, output):
                 cache / f"S{subject:03d}R{run:02d}.edf", preload=True, verbose=False
             )
             names = {name.strip(".").upper(): name for name in raw.ch_names}
-            picks = [names[c.upper()] for c in CHANNELS]
-            data = raw.get_data(picks=picks)
+            # Channel indices retain CHANNELS order and match MNE's typed picks API.
+            picks = np.asarray(
+                [raw.ch_names.index(names[c.upper()]) for c in CHANNELS], dtype=np.intp
+            )
+            # MNE's get_data annotations permit multiple return shapes;
+            # normalize to an ndarray for channel/time slicing below.
+            data = np.asarray(raw.get_data(picks=picks))
             sr = float(raw.info["sfreq"])
             if sr != 160:
                 raise ValueError("unexpected sample rate")
