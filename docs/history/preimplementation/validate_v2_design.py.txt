@@ -1,0 +1,314 @@
+"""Check specification consistency without claiming runtime implementation.
+
+Default success means the design is internally linked and baseline files match
+the original hashes or recorded publication edits. --strict-release additionally
+refuses incomplete runtime evidence and unresolved parameters. JSON status fields
+are not scientific validation.
+"""
+
+from __future__ import annotations
+
+import argparse
+import copy
+import hashlib
+import json
+from datetime import date
+from pathlib import Path
+from urllib.parse import urlparse
+
+ROOT = Path(__file__).resolve().parents[1]
+DOC = ROOT / "docs/v2"
+CATALOGS = (
+    "sources",
+    "modules",
+    "pain_points",
+    "requirements",
+    "acceptance_tests",
+    "experiments",
+    "profiles",
+    "baseline",
+)
+LEVELS = {"software", "offline_data", "simulation", "hardware", "human_study", "deployment"}
+PHASES = {"R1", "R2", "R3", "R4", "R5", "R6"}
+
+
+def digest(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def load_catalogs() -> dict:
+    return {name: json.loads((DOC / f"{name}.json").read_text()) for name in CATALOGS}
+
+
+def inspect(data: dict, *, check_files: bool = True) -> tuple[list[str], dict]:
+    errors: list[str] = []
+    tables = {
+        "source": data["sources"]["sources"],
+        "module": data["modules"]["modules"],
+        "pain": data["pain_points"]["pain_points"],
+        "requirement": data["requirements"]["requirements"],
+        "test": data["acceptance_tests"]["tests"],
+        "experiment": data["experiments"]["experiments"],
+    }
+    ids = {}
+    for kind, rows in tables.items():
+        values = [row["id"] for row in rows]
+        ids[kind] = set(values)
+        if not values or len(values) != len(set(values)):
+            errors.append(f"{kind}: empty catalog or duplicate IDs")
+
+    def references(row, field, kind, *, required=True):
+        values = row.get(field, [])
+        if required and not values:
+            errors.append(f"{row['id']}: missing {field}")
+        for value in values:
+            if value not in ids[kind]:
+                errors.append(f"{row['id']}: unknown {kind} {value}")
+
+    cutoff = date.fromisoformat(data["sources"]["research_cutoff"])
+    for row in tables["source"]:
+        parsed = urlparse(row["url"])
+        if parsed.scheme != "https" or not parsed.netloc:
+            errors.append(f"{row['id']}: invalid source URL")
+        publication = row.get("publication_date")
+        if publication:
+            try:
+                published = (
+                    date(int(publication), 1, 1)
+                    if len(publication) == 4
+                    else date.fromisoformat(publication)
+                )
+                if published > cutoff:
+                    errors.append(f"{row['id']}: publication after research cutoff")
+            except (ValueError, TypeError):
+                errors.append(f"{row['id']}: invalid publication date")
+        for field in ("kind", "finding", "limitations", "design_inference"):
+            if not row.get(field):
+                errors.append(f"{row['id']}: missing evidence boundary {field}")
+    for row in tables["pain"]:
+        references(row, "source_ids", "source")
+        references(row, "module_ids", "module")
+        if not row.get("ranking_basis"):
+            errors.append(f"{row['id']}: priority lacks ranking basis")
+
+    tests = {row["id"]: row for row in tables["test"]}
+    reqs = {row["id"]: row for row in tables["requirement"]}
+    findings = set()
+    covered_pains = set()
+    covered_modules = set()
+    for row in tables["requirement"]:
+        for field, kind in (
+            ("pain_ids", "pain"),
+            ("module_ids", "module"),
+            ("source_ids", "source"),
+            ("acceptance_test_ids", "test"),
+        ):
+            references(row, field, kind)
+        references(row, "depends_on", "requirement", required=False)
+        covered_pains.update(row["pain_ids"])
+        covered_modules.update(row["module_ids"])
+        findings.update(row["baseline_finding_ids"])
+        if row["phase"] not in PHASES or row["evidence_level"] not in LEVELS:
+            errors.append(f"{row['id']}: unsupported phase/evidence level")
+        if not row.get("statement"):
+            errors.append(f"{row['id']}: empty normative requirement")
+        for tid in row["acceptance_test_ids"]:
+            if tid in tests and row["id"] not in tests[tid]["requirement_ids"]:
+                errors.append(f"{row['id']}: test back-reference mismatch")
+        if row["implementation_status"] == "implemented" and any(
+            tests[tid]["status"] != "passed" for tid in row["acceptance_test_ids"] if tid in tests
+        ):
+            errors.append(f"{row['id']}: implemented claim lacks passing acceptance evidence")
+    if ids["pain"] - covered_pains:
+        errors.append("pain points without requirements")
+    if ids["module"] - covered_modules:
+        errors.append("modules without requirements")
+    required_findings = {f"F{i:02}" for i in range(1, 15)}
+    if findings != required_findings:
+        errors.append("baseline F01-F14 finding coverage is incomplete or invalid")
+
+    active = set()
+    complete = set()
+
+    def visit(rid):
+        if rid in active:
+            errors.append(f"requirement dependency cycle at {rid}")
+            return
+        if rid in complete or rid not in reqs:
+            return
+        active.add(rid)
+        for dependency in reqs[rid]["depends_on"]:
+            visit(dependency)
+        active.remove(rid)
+        complete.add(rid)
+
+    for rid in reqs:
+        visit(rid)
+
+    for row in tables["test"]:
+        references(row, "requirement_ids", "requirement")
+        if not row.get("procedure") or not row.get("independent_oracle"):
+            errors.append(f"{row['id']}: missing procedure or independent oracle")
+        if row["required_evidence_level"] not in LEVELS:
+            errors.append(f"{row['id']}: unsupported test evidence level")
+        for rid in row["requirement_ids"]:
+            if rid in reqs and row["id"] not in reqs[rid]["acceptance_test_ids"]:
+                errors.append(f"{row['id']}: requirement back-reference mismatch")
+        if row["status"] == "passed":
+            evidence = row.get("result_artifact")
+            expected_hash = row.get("result_sha256")
+            if not evidence or not expected_hash:
+                errors.append(f"{row['id']}: passed claim lacks result artifact/digest")
+            elif check_files:
+                path = (ROOT / evidence).resolve()
+                if not path.is_relative_to(ROOT) or not path.is_file():
+                    errors.append(f"{row['id']}: evidence file missing/outside package")
+                elif not path.stat().st_size or digest(path) != expected_hash:
+                    errors.append(f"{row['id']}: evidence content/digest mismatch")
+        elif row["status"] not in {"not_run", "failed", "blocked"}:
+            errors.append(f"{row['id']}: invalid evidence status")
+    for row in tables["experiment"]:
+        for field, kind in (
+            ("pain_ids", "pain"),
+            ("source_ids", "source"),
+            ("requirement_ids", "requirement"),
+        ):
+            references(row, field, kind)
+        if not row.get("primary_metrics") or not row.get("falsification"):
+            errors.append(f"{row['id']}: missing metric/falsification plan")
+
+    profiles = data["profiles"]["profiles"]
+    for row in profiles:
+        if row["external_dispatch"]:
+            errors.append(f"{row['id']}: this design package cannot enable external dispatch")
+    parameters = data["profiles"]["unresolved_release_parameters"]
+    unresolved = [row["id"] for row in parameters if row["value"] is None]
+    baseline = data["baseline"]
+    originals = baseline["original_files"]
+    edits = baseline.get("publication_edits", {})
+    regenerated = baseline.get("regenerated_files", [])
+    if set(edits) - set(originals):
+        errors.append("publication edits reference unknown baseline files")
+    if regenerated != ["RELEASE_MANIFEST.sha256"]:
+        errors.append("only the package manifest may be regenerated without a baseline digest")
+    if set(regenerated) & set(edits):
+        errors.append("regenerated files cannot also be publication edits")
+    for rel, edit in edits.items():
+        expected = edit.get("sha256", "")
+        if (
+            len(expected) != 64
+            or any(char not in "0123456789abcdef" for char in expected)
+            or not edit.get("reason")
+        ):
+            errors.append(f"invalid publication edit record: {rel}")
+    if check_files:
+        for rel, original_hash in originals.items():
+            path = (ROOT / rel).resolve()
+            if not path.is_relative_to(ROOT) or not path.is_file():
+                errors.append(f"baseline file changed or missing: {rel}")
+                continue
+            if rel in regenerated:
+                continue
+            expected = edits.get(rel, {}).get("sha256", original_hash)
+            if digest(path) != expected:
+                errors.append(f"baseline file changed or missing: {rel}")
+
+    readiness = (
+        not errors
+        and not unresolved
+        and all(row["implementation_status"] == "implemented" for row in reqs.values())
+        and all(row["status"] == "passed" for row in tests.values())
+        and all(row["status"] == "completed" for row in tables["experiment"])
+    )
+    summary = {
+        "counts": {kind: len(rows) for kind, rows in tables.items()},
+        "baseline_files": len(originals),
+        "baseline_files_unchanged": len(originals) - len(edits) - len(regenerated),
+        "baseline_publication_edits": len(edits),
+        "baseline_regenerated_files": regenerated,
+        "unresolved_parameter_ids": unresolved,
+        "runtime_release_ready": readiness,
+        "runtime_requirements_implemented": sum(
+            row["implementation_status"] == "implemented" for row in reqs.values()
+        ),
+        "runtime_acceptance_cases_passed": sum(row["status"] == "passed" for row in tests.values()),
+    }
+    return errors, summary
+
+
+def negative_controls(data: dict) -> dict[str, bool]:
+    controls = {}
+    broken = copy.deepcopy(data)
+    broken["requirements"]["requirements"][0]["acceptance_test_ids"] = []
+    controls["missing_acceptance_link_detected"] = bool(inspect(broken, check_files=False)[0])
+    broken = copy.deepcopy(data)
+    broken["acceptance_tests"]["tests"][0]["status"] = "passed"
+    controls["unsupported_pass_claim_detected"] = bool(inspect(broken, check_files=False)[0])
+    broken = copy.deepcopy(data)
+    broken["sources"]["sources"][0]["publication_date"] = "2027-01-01"
+    controls["post_cutoff_source_detected"] = bool(inspect(broken, check_files=False)[0])
+    broken = copy.deepcopy(data)
+    broken["profiles"]["profiles"][0]["external_dispatch"] = True
+    controls["external_dispatch_enablement_detected"] = bool(inspect(broken, check_files=False)[0])
+    broken = copy.deepcopy(data)
+    broken["requirements"]["requirements"][0]["implementation_status"] = "implemented"
+    controls["implementation_without_evidence_detected"] = bool(
+        inspect(broken, check_files=False)[0]
+    )
+    broken = copy.deepcopy(data)
+    for row in broken["requirements"]["requirements"]:
+        row["baseline_finding_ids"] = [x for x in row["baseline_finding_ids"] if x != "F13"]
+    controls["lost_audit_finding_detected"] = bool(inspect(broken, check_files=False)[0])
+    broken = copy.deepcopy(data)
+    broken["requirements"]["requirements"][0]["depends_on"] = ["R-001"]
+    controls["dependency_cycle_detected"] = bool(inspect(broken, check_files=False)[0])
+    broken = copy.deepcopy(data)
+    broken["baseline"]["publication_edits"]["README.md"]["sha256"] = "0" * 64
+    controls["publication_digest_mismatch_detected"] = any(
+        error == "baseline file changed or missing: README.md" for error in inspect(broken)[0]
+    )
+    broken = copy.deepcopy(data)
+    broken["baseline"]["original_files"]["pyproject.toml"] = "0" * 64
+    controls["unlisted_baseline_change_detected"] = any(
+        error == "baseline file changed or missing: pyproject.toml" for error in inspect(broken)[0]
+    )
+    return controls
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--strict-release", action="store_true")
+    parser.add_argument("--self-test", action="store_true")
+    parser.add_argument("--out", type=Path)
+    args = parser.parse_args()
+    data = load_catalogs()
+    errors, summary = inspect(data)
+    controls = negative_controls(data) if args.self_test else {}
+    if controls and not all(controls.values()):
+        errors.append("a deliberately broken specification was not detected")
+    if args.strict_release and not summary["runtime_release_ready"]:
+        errors.append("strict release refused: implementation/evidence/parameters incomplete")
+    report = {
+        "schema": "synapdrive.design.validation.v1",
+        "scope": "specification_consistency_only",
+        "runtime_version": data["baseline"]["runtime_version"],
+        "runtime_implementation_verified": False,
+        "passed": not errors,
+        **summary,
+        "negative_controls": controls,
+        "known_baseline_limitation": (
+            "Original v1 RELEASE_VALIDATION.json hash differs from its historical manifest; "
+            "current package checksums are regenerated in RELEASE_MANIFEST.sha256."
+        ),
+        "errors": errors,
+    }
+    encoded = json.dumps(report, indent=2) + "\n"
+    if args.out:
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(encoded, encoding="utf-8")
+    print(encoded, end="")
+    return 0 if report["passed"] else (2 if args.strict_release else 1)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

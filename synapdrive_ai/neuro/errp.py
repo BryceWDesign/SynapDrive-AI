@@ -55,7 +55,7 @@ class ErrPFeatureExtractor:
     def _window(self, x: np.ndarray, start_s: float, end_s: float) -> np.ndarray:
         start = self.event_index + int(start_s * self.sampling_rate)
         end = self.event_index + int(end_s * self.sampling_rate)
-        return x[start:max(start + 1, end)]
+        return x[start : max(start + 1, end)]
 
 
 class ErrPLDAClassifier:
@@ -85,10 +85,7 @@ class ErrPLDAClassifier:
         m0, m1 = np.mean(x0, axis=0), np.mean(x1, axis=0)
         c0 = np.cov(x0, rowvar=False) if len(x0) > 1 else np.eye(x.shape[1])
         c1 = np.cov(x1, rowvar=False) if len(x1) > 1 else np.eye(x.shape[1])
-        numerator = (
-            (len(x0) - 1) * np.atleast_2d(c0)
-            + (len(x1) - 1) * np.atleast_2d(c1)
-        )
+        numerator = (len(x0) - 1) * np.atleast_2d(c0) + (len(x1) - 1) * np.atleast_2d(c1)
         cov = numerator / max(len(x) - 2, 1)
         cov = cov + np.eye(x.shape[1]) * self.regularization
         inv = np.linalg.pinv(cov)

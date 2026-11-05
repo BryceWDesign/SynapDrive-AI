@@ -16,8 +16,9 @@ class SignalQualityReport:
     dropout_fraction: float
     line_noise_ratio: float
     issues: Tuple[str, ...] = field(default_factory=tuple)
+    excluded_channels: Tuple[int, ...] = field(default_factory=tuple)
 
-    def to_dict(self) -> Dict[str, float | str | list[str]]:
+    def to_dict(self) -> Dict[str, float | str | list[str] | list[int]]:
         return {
             "score": self.score,
             "state": self.state,
@@ -27,6 +28,7 @@ class SignalQualityReport:
             "dropout_fraction": self.dropout_fraction,
             "line_noise_ratio": self.line_noise_ratio,
             "issues": list(self.issues),
+            "excluded_channels": list(self.excluded_channels),
         }
 
 
@@ -38,7 +40,7 @@ class SignalQualityAnalyzer:
     """
 
     def __init__(self, sampling_rate: float, line_frequency: float = 60.0) -> None:
-        if sampling_rate <= 0:
+        if not np.isfinite(sampling_rate) or sampling_rate <= 0:
             raise ValueError("sampling_rate must be positive")
         self.sampling_rate = float(sampling_rate)
         self.line_frequency = float(line_frequency)
@@ -47,6 +49,8 @@ class SignalQualityAnalyzer:
         x = np.asarray(signal, dtype=float)
         if x.ndim == 1:
             x = x[None, :]
+        if x.ndim != 2:
+            raise ValueError("signal must be channels x samples")
         if x.size == 0 or x.shape[1] < 4:
             return SignalQualityReport(
                 0.0,
@@ -77,10 +81,17 @@ class SignalQualityAnalyzer:
         clipping_parts = []
         for ch in safe:
             lo, hi = float(np.min(ch)), float(np.max(ch))
-            if np.isclose(lo, hi):
+            if np.isclose(lo, hi, rtol=0, atol=1e-15):
                 clipping_parts.append(1.0)
             else:
-                clipping_parts.append(float(np.mean(np.isclose(ch, lo) | np.isclose(ch, hi))))
+                clipping_parts.append(
+                    float(
+                        np.mean(
+                            np.isclose(ch, lo, rtol=0, atol=1e-15)
+                            | np.isclose(ch, hi, rtol=0, atol=1e-15)
+                        )
+                    )
+                )
         clipping_fraction = float(np.mean(clipping_parts))
 
         line_noise_ratio = self._line_noise_ratio(centered)
@@ -104,7 +115,21 @@ class SignalQualityAnalyzer:
             + 0.10 * min(1.0, clipping_fraction / 0.12)
             + 0.05 * min(1.0, line_noise_ratio / 0.50)
         )
+        excluded = []
+        for index, ch in enumerate(safe):
+            span = float(np.ptp(ch))
+            bad = (
+                not finite[index].all()
+                or span < 1e-15
+                or float(np.mean(np.abs(np.diff(ch)) <= max(np.std(ch) * 1e-5, 1e-15))) > 0.20
+                or float(np.mean(np.abs(ch) < 1e-15)) > 0.20
+                or self._line_noise_ratio(centered[index : index + 1]) > 0.35
+            )
+            if bad:
+                excluded.append(index)
         score = float(np.clip(1.0 - penalty, 0.0, 1.0))
+        if excluded or clipping_fraction > 0.08:
+            score = min(score, 0.30)
         if score >= 0.80:
             state = "good"
         elif score >= 0.55:
@@ -122,6 +147,7 @@ class SignalQualityAnalyzer:
             round(dropout_fraction, 6),
             round(line_noise_ratio, 6),
             tuple(issues),
+            tuple(excluded),
         )
 
     def _line_noise_ratio(self, centered: np.ndarray) -> float:

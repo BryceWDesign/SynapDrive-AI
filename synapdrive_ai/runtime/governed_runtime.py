@@ -7,6 +7,7 @@ from synapdrive_ai.governance.permission import PermissionGate
 from synapdrive_ai.governance.policy import RuntimePolicy
 from synapdrive_ai.neuro.uncertainty import estimate_uncertainty, packet_distribution
 from synapdrive_ai.runtime.contracts import PreActionDecision, RuntimeAssessment
+from synapdrive_ai.runtime.validation import validate_packet
 
 
 class GovernedRuntime:
@@ -23,15 +24,25 @@ class GovernedRuntime:
         self.world_model = world_model or default_simulation_world_model()
 
     def assess(self, packet: Mapping[str, Any]) -> PreActionDecision:
+        try:
+            packet = validate_packet(dict(packet))
+        except (ValueError, TypeError) as error:
+            assessment = RuntimeAssessment(
+                0, self.policy.min_confidence, 1, 0, 1, False, issues=("invalid-input",)
+            )
+            return PreActionDecision(
+                "unknown", False, str(error), self.policy.safe_fallback_action, assessment
+            )
         action = str(packet.get("intent") or "unknown")
         confidence = max(0.0, min(1.0, float(packet.get("confidence", 0.0))))
         requested_min_confidence = max(
             self.policy.min_confidence,
             max(0.0, float(packet.get("required_confidence", 0.0))),
         )
-        uncertainty = packet.get("uncertainty")
-        if uncertainty is None:
-            uncertainty = estimate_uncertainty(packet_distribution(packet)).combined
+        uncertainty = max(
+            float(packet.get("uncertainty", 0)),
+            estimate_uncertainty(packet_distribution(packet)).combined,
+        )
         uncertainty = max(0.0, min(1.0, float(uncertainty)))
         quality = max(0.0, min(1.0, float(packet.get("signal_quality", 1.0))))
         drift_score = max(0.0, float(packet.get("drift_score", 0.0)))
@@ -42,7 +53,7 @@ class GovernedRuntime:
         issues: list[str] = []
         if bool(packet.get("analysis_only", False)):
             issues.append("analysis-only-inference")
-        if action == "unknown":
+        if action in {"unknown", "no_command", "idle"}:
             issues.append("unknown-intent")
         if confidence < requested_min_confidence:
             issues.append("confidence-below-policy")

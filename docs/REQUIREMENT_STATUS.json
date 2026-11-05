@@ -1,0 +1,327 @@
+{
+  "schema": "synapdrive.current-requirement-status.v2",
+  "runtime_version": "2.0.0",
+  "entire_original_design_complete": false,
+  "rows": [
+    {
+      "id": "R-001",
+      "title": "Strict mode-specific input contracts",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "runtime/validation.py; finite bounded canonical packets and positive advancing windows",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-002",
+      "title": "Acquisition and processing identity",
+      "status": "partial",
+      "implemented_scope_or_gap": "EEGDecoder binds full recorded-data acquisition identity; general authenticated hardware envelope absent",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-003",
+      "title": "Timing and observation freshness",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "StreamDecoder checks finite ordered timestamps, gaps, age and replay under a trusted clock contract",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-004",
+      "title": "Per-channel exclusions and usable subsets",
+      "status": "partial",
+      "implemented_scope_or_gap": "per-channel mandatory exclusions and whole-window rejection; automatic qualified-subset use absent",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-005",
+      "title": "Independent fault outcomes",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "120 independently labeled fault cases with clean acceptance controls; detector scores do not define the expected outcome",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-006",
+      "title": "Consistent decoder evidence",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "strict probability/action consistency and independently derived uncertainty in canonical admission",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-007",
+      "title": "No-command and engagement states",
+      "status": "partial",
+      "implemented_scope_or_gap": "trained rest class and distinct-window sequential confirmation; no long-duration asynchronous idle validation",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-008",
+      "title": "Grouped immutable qualification",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "fixed participant/run/trial identity, disjoint R04/R08/R12 protocol and duplicate checks",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-009",
+      "title": "Qualification binds deployed artifact",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "exact numeric artifact digest, unchanged fit, expiry and exact metadata checks in EEGDecoder",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-010",
+      "title": "Calibration and selective risk",
+      "status": "partial",
+      "implemented_scope_or_gap": "temperature calibration, coverage/Brier/ECE, eight-subject interval; broader selective-risk guarantees absent",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-011",
+      "title": "Decoder family and resource comparison",
+      "status": "partial",
+      "implemented_scope_or_gap": "recorded scalp EEG CSP-LDA and original centroid baselines; broad modern encoder comparison absent",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-012",
+      "title": "Exact capabilities and independent veto",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "exact safe capabilities, operator veto and strict grammar; trusted local API only",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-013",
+      "title": "Immutable action permits",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "action/state/policy/capability-bound expiring consumed permits at the simulation executor",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-014",
+      "title": "Pre-dispatch durability and bounded audit failure",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "SQLite prepared/outcome journal with restart reconciliation and no automatic retry",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-015",
+      "title": "Task prerequisite enforcement",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "earlier-step prerequisites plus pause/defer/abort behavior",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-016",
+      "title": "Recoverability before fallback switching",
+      "status": "partial",
+      "implemented_scope_or_gap": "independent bounded 1D integrator and recoverable stopping envelope; no general physical plant guarantee",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-017",
+      "title": "State-dependent fallback and handover",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "executed baseline braking and explicit observed outcome in the declared 1D simulation",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-018",
+      "title": "Bounded assistance with original goal retained",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "proposal-only bounded planning retains requested goal; positive goal support required",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-019",
+      "title": "Clarification and compatible progress hypothesis",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "common reversible progress across retained goals or explicit clarification",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-020",
+      "title": "User-selected automation scope",
+      "status": "partial",
+      "implemented_scope_or_gap": "user-owned local assistance preferences implemented; intended-user validation absent",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-021",
+      "title": "Adaptive input continuity",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "qualified-input advertisement, deliberate confirmed switching and retained local draft",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-022",
+      "title": "Accessible setup and self-recovery",
+      "status": "external-validation-required",
+      "implemented_scope_or_gap": "local setup/stop/recovery APIs exist; accessible UI and caregiver/user study not delivered",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-023",
+      "title": "Transparent communication stages",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "separate suggestions/drafts and exact-content single-use local output approval",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-024",
+      "title": "Explicit privacy modes",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "application-level locked/private/local-audited/research modes and explicit export consent",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-025",
+      "title": "Safe content retention and honest replay limits",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "no private export; omitted content or caller-key encrypted content; replay omissions declared",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-026",
+      "title": "Isolated proposal workers",
+      "status": "not-implemented",
+      "implemented_scope_or_gap": "no OS-enforced proposal-worker isolation; arbitrary same-account Python remains trusted",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-027",
+      "title": "Artifact and input threat boundaries",
+      "status": "partial",
+      "implemented_scope_or_gap": "numeric-only artifact format and trusted-checksum loader; no hardware provenance/authentication infrastructure",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-028",
+      "title": "Controlled decoder-update lifecycle",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "exact trained candidate evaluation, shadow staging, controlled promotion and dependent rollback",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-029",
+      "title": "Label and feedback provenance",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "unconfirmed/accepted/contradicted memory and delayed feedback lineage retraction",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-030",
+      "title": "Co-adaptation stability experiments",
+      "status": "not-implemented",
+      "implemented_scope_or_gap": "physiological co-adaptation and learning-rate/feedback-delay stability campaign absent",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-031",
+      "title": "Locked audit data and adaptive-selection control",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "candidate evaluator consumes audit trial identities and blocks overlap/reuse within lifecycle",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-032",
+      "title": "Complete versioned run capsules",
+      "status": "partial",
+      "implemented_scope_or_gap": "versioned supported decision and built-in plant replay; no raw-signal reacquisition or arbitrary callback replay",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-033",
+      "title": "Independent evidence completeness verification",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "signed checkpoint verifies retained run identity/count/head with trusted key",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-034",
+      "title": "Bounded resources and local continuity",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "packet, run, permit, window and candidate budgets; expired work rejected; local operation",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-035",
+      "title": "Defensive numerical robustness without inflated security claims",
+      "status": "partial",
+      "implemented_scope_or_gap": "recorded-label permutation and independent corruption fixtures; adaptive/white-box adversarial study absent",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-036",
+      "title": "Useful access and denominator integrity",
+      "status": "external-validation-required",
+      "implemented_scope_or_gap": "useful sustained access not established; recorded-data runtime has low coverage and admitted errors",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-037",
+      "title": "Versioned user preferences and constrained caregiver roles",
+      "status": "partial",
+      "implemented_scope_or_gap": "versioned bounded user preferences and caregiver edit refusal; no co-designed portable support workflow",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-038",
+      "title": "Evidence classification and honest release status",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "software/offline-data/simulation outcomes separated; remote/hardware/human claims withheld",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-039",
+      "title": "Cross-modality and cohort boundaries",
+      "status": "implemented-scoped",
+      "implemented_scope_or_gap": "explicit scalp-EEG acquisition identity and narrow cohort/run claim in reports",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    },
+    {
+      "id": "R-040",
+      "title": "Deployment and support continuity",
+      "status": "partial",
+      "implemented_scope_or_gap": "offline packaged data/models, reproduction, migration and version scope documented; long-term support program absent",
+      "original_acceptance_case_completed": false,
+      "note": "New executable scoped tests do not substitute for the entire original acceptance protocol."
+    }
+  ]
+}

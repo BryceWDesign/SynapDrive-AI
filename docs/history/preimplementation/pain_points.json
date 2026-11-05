@@ -1,0 +1,316 @@
+{
+  "schema": "synapdrive.design.pains.v1",
+  "pain_points": [
+    {
+      "id": "P01",
+      "title": "Loss of communication or computer access during ordinary daily use",
+      "priority": "critical",
+      "horizon": "current",
+      "stakes": "Loss of independence and communication continuity.",
+      "source_ids": [
+        "S01",
+        "S02",
+        "S04",
+        "S05"
+      ],
+      "module_ids": [
+        "M03",
+        "M04",
+        "M07",
+        "M09"
+      ],
+      "design_response": "Preserve usable access through explicit degradation, recovery and alternative input; measure useful independent task time.",
+      "ranking_basis": "Engineering judgment based on consequence, evidence, and software tractability; not a measured prevalence ranking."
+    },
+    {
+      "id": "P02",
+      "title": "Unintended commands during idle or ambiguous transitions",
+      "priority": "critical",
+      "horizon": "current",
+      "stakes": "Unwanted disclosure, selection or movement.",
+      "source_ids": [
+        "S03",
+        "S09",
+        "S15",
+        "S23",
+        "S27"
+      ],
+      "module_ids": [
+        "M03",
+        "M04",
+        "M05"
+      ],
+      "design_response": "Explicit no-command state, engagement, veto and consequence-dependent commit rules.",
+      "ranking_basis": "Engineering judgment based on consequence, evidence, and software tractability; not a measured prevalence ranking."
+    },
+    {
+      "id": "P03",
+      "title": "Session, device, montage or preprocessing shift",
+      "priority": "critical",
+      "horizon": "current_and_emerging",
+      "stakes": "Silent loss of decoding validity and calibration.",
+      "source_ids": [
+        "S06",
+        "S07",
+        "S10",
+        "S11",
+        "S19",
+        "S20"
+      ],
+      "module_ids": [
+        "M01",
+        "M02",
+        "M03",
+        "M07"
+      ],
+      "design_response": "Identity-bound qualification, drift diagnosis, expiry, bounded recalibration and rollback.",
+      "ranking_basis": "Engineering judgment based on consequence, evidence, and software tractability; not a measured prevalence ranking."
+    },
+    {
+      "id": "P04",
+      "title": "Sensor or timestamp faults mistaken for valid intent",
+      "priority": "critical",
+      "horizon": "current",
+      "stakes": "High-confidence action on unsuitable or stale observations.",
+      "source_ids": [
+        "S20",
+        "S21",
+        "S22"
+      ],
+      "module_ids": [
+        "M01",
+        "M02",
+        "M05"
+      ],
+      "design_response": "Finite data, channel-specific hard exclusions, timing bounds and decoder-required channel contracts.",
+      "ranking_basis": "Engineering judgment based on consequence, evidence, and software tractability; not a measured prevalence ranking."
+    },
+    {
+      "id": "P05",
+      "title": "Caregiver, setup, correction and support burden",
+      "priority": "high",
+      "horizon": "current",
+      "stakes": "A technically functioning system may remain unusable.",
+      "source_ids": [
+        "S01",
+        "S03",
+        "S04",
+        "S05"
+      ],
+      "module_ids": [
+        "M04",
+        "M09",
+        "M10"
+      ],
+      "design_response": "Accessible setup/recovery, versioned profiles, understandable failure states and burden metrics.",
+      "ranking_basis": "Engineering judgment based on consequence, evidence, and software tractability; not a measured prevalence ranking."
+    },
+    {
+      "id": "P06",
+      "title": "Machine assistance overrides or misrepresents the person",
+      "priority": "critical",
+      "horizon": "current_and_emerging",
+      "stakes": "Wrong goal, unwanted speech or unauthorized external commitment.",
+      "source_ids": [
+        "S05",
+        "S13",
+        "S14",
+        "S16",
+        "S25"
+      ],
+      "module_ids": [
+        "M04",
+        "M05",
+        "M06",
+        "M08"
+      ],
+      "design_response": "User-selected assistance scope, proposal/approval separation, exact commit identity and correction.",
+      "ranking_basis": "Engineering judgment based on consequence, evidence, and software tractability; not a measured prevalence ranking."
+    },
+    {
+      "id": "P07",
+      "title": "Unstable or contaminated adaptation",
+      "priority": "critical",
+      "horizon": "current_and_emerging",
+      "stakes": "Feedback loops, semantic inversion, forgetting or repeated-holdout overfitting.",
+      "source_ids": [
+        "S06",
+        "S07",
+        "S08",
+        "S12",
+        "S17"
+      ],
+      "module_ids": [
+        "M03",
+        "M07",
+        "M10"
+      ],
+      "design_response": "Separate learning and control timescales; shadow, label provenance, locked audit data and rollback.",
+      "ranking_basis": "Engineering judgment based on consequence, evidence, and software tractability; not a measured prevalence ranking."
+    },
+    {
+      "id": "P08",
+      "title": "Fallback selected too late or unsuitable for the plant",
+      "priority": "critical",
+      "horizon": "current",
+      "stakes": "Withholding a new command may not stop ongoing motion.",
+      "source_ids": [
+        "S18",
+        "S21"
+      ],
+      "module_ids": [
+        "M05",
+        "M06"
+      ],
+      "design_response": "Model recoverability, deadline/uncertainty bounds and an independently supervised baseline controller.",
+      "ranking_basis": "Engineering judgment based on consequence, evidence, and software tractability; not a measured prevalence ranking."
+    },
+    {
+      "id": "P09",
+      "title": "Incomplete replay, asynchronous feedback or crash recovery",
+      "priority": "critical",
+      "horizon": "current_and_emerging",
+      "stakes": "Unexplained behavior, wrong learning consequence, duplicate external effects.",
+      "source_ids": [
+        "S04",
+        "S19",
+        "S20",
+        "S21"
+      ],
+      "module_ids": [
+        "M05",
+        "M07",
+        "M09"
+      ],
+      "design_response": "Versioned capsules, pre-dispatch/outcome records, pending feedback and idempotent endpoint recovery.",
+      "ranking_basis": "Engineering judgment based on consequence, evidence, and software tractability; not a measured prevalence ranking."
+    },
+    {
+      "id": "P10",
+      "title": "Evaluation leakage and misleading generalization claims",
+      "priority": "high",
+      "horizon": "current",
+      "stakes": "A convincing benchmark may fail on a new person or session.",
+      "source_ids": [
+        "S09",
+        "S10",
+        "S19",
+        "S23",
+        "S26"
+      ],
+      "module_ids": [
+        "M03",
+        "M10"
+      ],
+      "design_response": "Group before epoching, lock splits, quantify clustered uncertainty and distinguish evidence levels.",
+      "ranking_basis": "Engineering judgment based on consequence, evidence, and software tractability; not a measured prevalence ranking."
+    },
+    {
+      "id": "P11",
+      "title": "Neural privacy and sensitive content exposure",
+      "priority": "critical",
+      "horizon": "current_and_emerging",
+      "stakes": "Unauthorized recording, interpretation, output or transfer.",
+      "source_ids": [
+        "S01",
+        "S04",
+        "S15",
+        "S16"
+      ],
+      "module_ids": [
+        "M04",
+        "M08",
+        "M09"
+      ],
+      "design_response": "Explicit privacy modes, output lock, local processing and content retention controls.",
+      "ranking_basis": "Engineering judgment based on consequence, evidence, and software tractability; not a measured prevalence ranking."
+    },
+    {
+      "id": "P12",
+      "title": "Malicious or compromised model, worker or data path",
+      "priority": "critical",
+      "horizon": "current_and_emerging",
+      "stakes": "Unauthorized actuation or corrupted scientific evidence.",
+      "source_ids": [
+        "S17",
+        "S18",
+        "S20"
+      ],
+      "module_ids": [
+        "M01",
+        "M05",
+        "M07",
+        "M08",
+        "M09"
+      ],
+      "design_response": "Typed bounded IPC, isolated proposal workers, artifact verification, revocation and limited threat claims.",
+      "ranking_basis": "Engineering judgment based on consequence, evidence, and software tractability; not a measured prevalence ranking."
+    },
+    {
+      "id": "P13",
+      "title": "Compute, power or network limits destroy availability",
+      "priority": "high",
+      "horizon": "current_and_emerging",
+      "stakes": "Useful access fails during overload, disconnection or unsupported model scaling.",
+      "source_ids": [
+        "S01",
+        "S10",
+        "S12",
+        "S26"
+      ],
+      "module_ids": [
+        "M03",
+        "M05",
+        "M08",
+        "M09",
+        "M10"
+      ],
+      "design_response": "Local compact baseline, bounded queues, cancellation, explicit resource profiles and no required cloud path.",
+      "ranking_basis": "Engineering judgment based on consequence, evidence, and software tractability; not a measured prevalence ranking."
+    },
+    {
+      "id": "P14",
+      "title": "Evidence expiry as abilities, preferences and deployment change",
+      "priority": "high",
+      "horizon": "current_and_emerging",
+      "stakes": "An old successful qualification is misapplied indefinitely.",
+      "source_ids": [
+        "S01",
+        "S04",
+        "S05",
+        "S06",
+        "S20"
+      ],
+      "module_ids": [
+        "M03",
+        "M04",
+        "M07",
+        "M09"
+      ],
+      "design_response": "Versioned user profiles and dependency invalidation; continuation/support and export design.",
+      "ranking_basis": "Engineering judgment based on consequence, evidence, and software tractability; not a measured prevalence ranking."
+    },
+    {
+      "id": "P15",
+      "title": "Ambition exceeds what software can establish",
+      "priority": "high",
+      "horizon": "current_and_emerging",
+      "stakes": "Unsupported physiological, clinical, novelty or physical safety promises.",
+      "source_ids": [
+        "S02",
+        "S04",
+        "S15",
+        "S18",
+        "S23"
+      ],
+      "module_ids": [
+        "M06",
+        "M10"
+      ],
+      "design_response": "Explicit external-evidence gates and cohort/modality/plant limits; do not disguise absence as performance.",
+      "ranking_basis": "Engineering judgment based on consequence, evidence, and software tractability; not a measured prevalence ranking."
+    }
+  ],
+  "_historical_snapshot": true,
+  "_current_implementation_status": "../../REQUIREMENT_STATUS.json"
+}

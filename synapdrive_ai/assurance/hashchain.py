@@ -7,7 +7,9 @@ from typing import Any, Dict, Iterable, List
 
 
 def canonical_json(payload: Dict[str, Any]) -> bytes:
-    return json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")
+    return json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False).encode(
+        "utf-8"
+    )
 
 
 @dataclass(frozen=True)
@@ -33,6 +35,7 @@ class EvidenceHashChain:
         self._entries: List[ChainEntry] = []
 
     def append(self, payload: Dict[str, Any]) -> ChainEntry:
+        payload = json.loads(canonical_json(payload))
         previous = self._entries[-1].event_hash if self._entries else self.GENESIS
         event_hash = self._digest(len(self._entries) + 1, previous, payload)
         entry = ChainEntry(len(self._entries) + 1, previous, event_hash, dict(payload))
@@ -43,8 +46,15 @@ class EvidenceHashChain:
         return list(self._entries)
 
     @classmethod
-    def verify(cls, entries: Iterable[ChainEntry | Dict[str, Any]]) -> bool:
+    def verify(
+        cls,
+        entries: Iterable[ChainEntry | Dict[str, Any]],
+        *,
+        expected_count: int | None = None,
+        expected_head: str | None = None,
+    ) -> bool:
         previous = cls.GENESIS
+        count = 0
         for expected_index, raw in enumerate(entries, 1):
             if isinstance(raw, ChainEntry):
                 entry = raw
@@ -61,7 +71,10 @@ class EvidenceHashChain:
             if entry.event_hash != expected:
                 return False
             previous = entry.event_hash
-        return True
+            count += 1
+        return (expected_count is None or count == expected_count) and (
+            expected_head is None or previous == expected_head
+        )
 
     @staticmethod
     def _digest(index: int, previous_hash: str, payload: Dict[str, Any]) -> str:

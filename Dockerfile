@@ -25,7 +25,7 @@ RUN pip install -r requirements.txt && \
 
 # Copy the rest of the repo and install the package so console entry points are available.
 COPY . /app
-RUN pip install --no-deps .
+RUN pip install ".[eeg]"
 
 # Default port used by the web dashboard
 EXPOSE 5055

@@ -1,0 +1,21 @@
+{
+  "schema": "synapdrive.test-run.v2",
+  "pytest": {
+    "tests": 225,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "warning_count": 1,
+  "warning_type": "third-party AnyIO pytest-plugin deprecation",
+  "coverage": {
+    "statements": 73.31618334892423,
+    "branches": 57.04365079365079,
+    "combined": 70.21196063588191
+  },
+  "environment": {
+    "os": "Linux",
+    "architecture": "x86_64",
+    "python": "3.12.14"
+  }
+}

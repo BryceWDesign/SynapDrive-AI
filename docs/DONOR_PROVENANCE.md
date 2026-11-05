@@ -1,18 +1,18 @@
 # Donor Repository Provenance
 
-The v1 upgrade was informed by the donor repositories supplied for the upgrade. The implementation deliberately avoids a blind repository merge.
+The v1 architecture draws on the repositories listed below. This record describes their licensing and the implementation decisions made for SynapDrive-AI.
 
 ## IX-IntentRealityLoop
 
 Useful architectural ideas included separation of intent, permission, bounded action, feedback, outcome delta, memory consequence, and replay evidence.
 
-Its supplied license is source-available rather than permissive. SynapDrive v1 therefore does not bulk-copy its source. The corresponding SynapDrive mechanisms are clean implementations inside this repository.
+The reviewed license is source-available rather than permissive. SynapDrive v1 therefore does not bulk-copy its source. The corresponding SynapDrive mechanisms are clean implementations inside this repository.
 
 ## IX-Sally
 
 Useful architectural ideas included explicit world state, planning, uncertainty, memory governance, and proposal/review separation.
 
-Its supplied license is also source-available. SynapDrive v1 does not bulk-copy its source. The world model, counterfactual planner, shared-autonomy arbiter, guarded adaptation, and evidence-memory code in this repo are local implementations.
+The reviewed license is also source-available. SynapDrive v1 does not bulk-copy its source. The world model, counterfactual planner, shared-autonomy arbiter, guarded adaptation, and evidence-memory code in this repo are local implementations.
 
 ## IX-Autonomy-Assurance-Case-Runtime
 

@@ -36,14 +36,28 @@ def test_permission_deny_pattern():
 
 def test_runtime_blocks_low_confidence():
     rt = GovernedRuntime(policy=RuntimePolicy(min_confidence=0.7))
-    out = rt.assess({"intent": "move_left", "confidence": 0.6, "uncertainty": 0.1})
+    out = rt.assess(
+        {
+            "intent": "move_left",
+            "source": "trusted-test-fixture",
+            "confidence": 0.6,
+            "uncertainty": 0.1,
+        }
+    )
     assert out.allowed is False
     assert "confidence-below-policy" in out.assessment.issues
 
 
 def test_runtime_blocks_uncertainty():
     rt = GovernedRuntime(policy=RuntimePolicy(max_uncertainty=0.2))
-    out = rt.assess({"intent": "move_left", "confidence": 0.9, "uncertainty": 0.5})
+    out = rt.assess(
+        {
+            "intent": "move_left",
+            "source": "trusted-test-fixture",
+            "confidence": 0.9,
+            "uncertainty": 0.5,
+        }
+    )
     assert out.allowed is False
     assert "uncertainty-above-policy" in out.assessment.issues
 
@@ -53,6 +67,7 @@ def test_runtime_blocks_signal_quality():
     out = rt.assess(
         {
             "intent": "move_left",
+            "source": "trusted-test-fixture",
             "confidence": 0.9,
             "uncertainty": 0.1,
             "signal_quality": 0.2,
@@ -66,7 +81,14 @@ def test_runtime_world_precondition_failure():
     world = WorldModel({"armed": False})
     world.register(ActionModel("move_left", required={"armed": True}))
     rt = GovernedRuntime(world_model=world)
-    out = rt.assess({"intent": "move_left", "confidence": 0.9, "uncertainty": 0.1})
+    out = rt.assess(
+        {
+            "intent": "move_left",
+            "source": "trusted-test-fixture",
+            "confidence": 0.9,
+            "uncertainty": 0.1,
+        }
+    )
     assert out.allowed is False
     assert "world-model-precondition-failed" in out.assessment.issues
 
@@ -75,6 +97,13 @@ def test_runtime_blocks_predicted_risk():
     world = WorldModel()
     world.register(ActionModel("move_left", predicted_risk=0.9))
     rt = GovernedRuntime(world_model=world)
-    out = rt.assess({"intent": "move_left", "confidence": 0.9, "uncertainty": 0.1})
+    out = rt.assess(
+        {
+            "intent": "move_left",
+            "source": "trusted-test-fixture",
+            "confidence": 0.9,
+            "uncertainty": 0.1,
+        }
+    )
     assert out.allowed is False
     assert "predicted-risk-above-policy" in out.assessment.issues

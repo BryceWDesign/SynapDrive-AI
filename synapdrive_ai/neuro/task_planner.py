@@ -7,7 +7,7 @@ from typing import List, Literal, Optional
 from synapdrive_ai.bci.intent_generator import generate_intent
 from synapdrive_ai.pipeline import SynapDrivePipeline
 
-FallbackPolicy = Literal["freeze", "abort", "complete"]
+FallbackPolicy = Literal["freeze", "abort", "complete", "defer"]
 
 
 @dataclass
@@ -17,8 +17,15 @@ class TaskStep:
     fallback: FallbackPolicy = "freeze"
     image_label: Optional[str] = None
     label: Optional[str] = None
+    requires: tuple[int, ...] = ()
 
     def __post_init__(self) -> None:
+        import math
+
+        if not math.isfinite(self.min_confidence) or not 0 <= self.min_confidence <= 1:
+            raise ValueError("min_confidence must be in [0, 1]")
+        if self.fallback not in {"freeze", "abort", "complete", "defer"}:
+            raise ValueError("unknown fallback")
         if self.label is None:
             self.label = self.intent_text
 
@@ -100,6 +107,11 @@ class ExecutorBridge:
         n_completed = n_deferred = n_aborted = 0
 
         for idx, step in enumerate(plan.steps):
+            if any(i < 0 or i >= idx for i in step.requires):
+                raise ValueError("prerequisites must refer to earlier steps")
+            if any(step_traces[i].pipeline_status != "success" for i in step.requires):
+                overall_outcome = "frozen"
+                break
             step_start = time.time()
             trace = self._execute_step(idx, step)
             trace.elapsed_s = round(time.time() - step_start, 4)
@@ -111,6 +123,8 @@ class ExecutorBridge:
                 n_deferred += 1
                 if overall_outcome == "completed":
                     overall_outcome = "frozen"
+                if step.fallback == "freeze":
+                    break
             elif trace.pipeline_status == "aborted":
                 n_aborted += 1
                 overall_outcome = "aborted"
@@ -123,6 +137,8 @@ class ExecutorBridge:
                 n_deferred += 1
                 if overall_outcome == "completed":
                     overall_outcome = "frozen"
+                if step.fallback == "freeze":
+                    break
 
         if overall_outcome == "completed" and (n_deferred > 0 or n_aborted > 0):
             overall_outcome = "partial"
@@ -153,9 +169,9 @@ class ExecutorBridge:
         eval_score = float(eval_out.get("score", 0.0))
         fallback_applied: Optional[FallbackPolicy] = None
 
-        if pipeline_status == "blocked" and "confidence-below-policy" in str(block_reason):
+        if pipeline_status == "blocked":
             fallback_applied = step.fallback
-            if step.fallback == "freeze":
+            if step.fallback in {"freeze", "defer"}:
                 pipeline_status = "deferred"
                 block_reason = (
                     f"Step confidence {confidence:.2f} < required "

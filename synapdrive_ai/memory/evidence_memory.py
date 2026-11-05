@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import time
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from typing import Any, Dict, List, Literal
 
-MemoryState = Literal["validated", "quarantined"]
+MemoryState = Literal["validated", "quarantined", "unconfirmed"]
 
 
 @dataclass(frozen=True)
@@ -36,6 +36,7 @@ class EvidenceMemory:
         outcome: str,
         aligned: bool,
         reason: str,
+        confirmed: bool = True,
     ) -> EvidenceMemoryRecord:
         record = EvidenceMemoryRecord(
             timestamp=time.time(),
@@ -43,7 +44,7 @@ class EvidenceMemory:
             intent=intent,
             confidence=max(0.0, min(1.0, float(confidence))),
             outcome=outcome,
-            state="validated" if aligned else "quarantined",
+            state=("validated" if confirmed else "unconfirmed") if aligned else "quarantined",
             reason=reason,
         )
         self._records.append(record)
@@ -57,3 +58,15 @@ class EvidenceMemory:
 
     def all(self) -> List[EvidenceMemoryRecord]:
         return list(self._records)
+
+    def apply_feedback(self, cycle_id: str, accepted: bool) -> EvidenceMemoryRecord:
+        for i, record in enumerate(self._records):
+            if record.cycle_id == cycle_id:
+                revised = replace(
+                    record,
+                    state="validated" if accepted else "quarantined",
+                    reason="explicit delayed user feedback",
+                )
+                self._records[i] = revised
+                return revised
+        raise KeyError(cycle_id)

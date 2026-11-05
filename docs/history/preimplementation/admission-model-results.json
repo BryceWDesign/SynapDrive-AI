@@ -1,0 +1,273 @@
+{
+  "schema": "synapdrive.design.admission-model.v1",
+  "scope": "bounded_abstract_protocol_only",
+  "runtime_implementation_verified": false,
+  "bounds": {
+    "permits": 1,
+    "action_values": 2,
+    "world_changes": 1,
+    "capability_epoch": [
+      0,
+      1,
+      2
+    ],
+    "clock_ticks": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "dispatch": "atomic abstract event; no in-flight physical cancellation modeled"
+  },
+  "unmodeled": [
+    "decoder and sensor truth",
+    "policy/consent/artifact dependencies beyond the modeled capability version",
+    "OS scheduler, isolation, memory ordering and implementation races",
+    "multi-process or network delivery/acknowledgment",
+    "physical dynamics and post-dispatch cancellation",
+    "unbounded permits, time or version histories"
+  ],
+  "normal_protocol": {
+    "property_holds": true,
+    "states_visited": 2256,
+    "transitions_checked": 5960,
+    "dispatch_edges": 32,
+    "counterexample": null
+  },
+  "guard_removal_counterexamples": {
+    "action_identity": {
+      "property_holds": false,
+      "states_visited": 196,
+      "transitions_checked": 338,
+      "dispatch_edges": 5,
+      "counterexample": {
+        "events": [
+          "issue_permit",
+          "replace_action",
+          "prepare_audit",
+          "dispatch"
+        ],
+        "failed_obligations": [
+          "action_identity"
+        ],
+        "pre_dispatch_state": {
+          "action": 1,
+          "capability_epoch": 0,
+          "permission": true,
+          "world_epoch": 0,
+          "tick": 0,
+          "permit": {
+            "action": 0,
+            "capability_epoch": 0,
+            "world_epoch": 0,
+            "expires_at": 1
+          },
+          "consumed": false,
+          "prepared": true,
+          "veto": false
+        }
+      }
+    },
+    "capability_epoch": {
+      "property_holds": false,
+      "states_visited": 449,
+      "transitions_checked": 873,
+      "dispatch_edges": 10,
+      "counterexample": {
+        "events": [
+          "issue_permit",
+          "revoke",
+          "restore_new_epoch",
+          "prepare_audit",
+          "dispatch"
+        ],
+        "failed_obligations": [
+          "capability_epoch"
+        ],
+        "pre_dispatch_state": {
+          "action": 0,
+          "capability_epoch": 2,
+          "permission": true,
+          "world_epoch": 0,
+          "tick": 0,
+          "permit": {
+            "action": 0,
+            "capability_epoch": 0,
+            "world_epoch": 0,
+            "expires_at": 1
+          },
+          "consumed": false,
+          "prepared": true,
+          "veto": false
+        }
+      }
+    },
+    "world_epoch": {
+      "property_holds": false,
+      "states_visited": 211,
+      "transitions_checked": 377,
+      "dispatch_edges": 5,
+      "counterexample": {
+        "events": [
+          "issue_permit",
+          "change_world",
+          "prepare_audit",
+          "dispatch"
+        ],
+        "failed_obligations": [
+          "world_epoch"
+        ],
+        "pre_dispatch_state": {
+          "action": 0,
+          "capability_epoch": 0,
+          "permission": true,
+          "world_epoch": 1,
+          "tick": 0,
+          "permit": {
+            "action": 0,
+            "capability_epoch": 0,
+            "world_epoch": 0,
+            "expires_at": 1
+          },
+          "consumed": false,
+          "prepared": true,
+          "veto": false
+        }
+      }
+    },
+    "deadline": {
+      "property_holds": false,
+      "states_visited": 215,
+      "transitions_checked": 393,
+      "dispatch_edges": 5,
+      "counterexample": {
+        "events": [
+          "issue_permit",
+          "advance_clock",
+          "prepare_audit",
+          "dispatch"
+        ],
+        "failed_obligations": [
+          "deadline"
+        ],
+        "pre_dispatch_state": {
+          "action": 0,
+          "capability_epoch": 0,
+          "permission": true,
+          "world_epoch": 0,
+          "tick": 1,
+          "permit": {
+            "action": 0,
+            "capability_epoch": 0,
+            "world_epoch": 0,
+            "expires_at": 1
+          },
+          "consumed": false,
+          "prepared": true,
+          "veto": false
+        }
+      }
+    },
+    "single_use": {
+      "property_holds": false,
+      "states_visited": 220,
+      "transitions_checked": 402,
+      "dispatch_edges": 5,
+      "counterexample": {
+        "events": [
+          "issue_permit",
+          "prepare_audit",
+          "dispatch",
+          "dispatch"
+        ],
+        "failed_obligations": [
+          "single_use"
+        ],
+        "pre_dispatch_state": {
+          "action": 0,
+          "capability_epoch": 0,
+          "permission": true,
+          "world_epoch": 0,
+          "tick": 0,
+          "permit": {
+            "action": 0,
+            "capability_epoch": 0,
+            "world_epoch": 0,
+            "expires_at": 1
+          },
+          "consumed": true,
+          "prepared": true,
+          "veto": false
+        }
+      }
+    },
+    "prepared_audit": {
+      "property_holds": false,
+      "states_visited": 28,
+      "transitions_checked": 38,
+      "dispatch_edges": 1,
+      "counterexample": {
+        "events": [
+          "issue_permit",
+          "dispatch"
+        ],
+        "failed_obligations": [
+          "prepared_audit"
+        ],
+        "pre_dispatch_state": {
+          "action": 0,
+          "capability_epoch": 0,
+          "permission": true,
+          "world_epoch": 0,
+          "tick": 0,
+          "permit": {
+            "action": 0,
+            "capability_epoch": 0,
+            "world_epoch": 0,
+            "expires_at": 1
+          },
+          "consumed": false,
+          "prepared": false,
+          "veto": false
+        }
+      }
+    },
+    "veto": {
+      "property_holds": false,
+      "states_visited": 215,
+      "transitions_checked": 397,
+      "dispatch_edges": 5,
+      "counterexample": {
+        "events": [
+          "issue_permit",
+          "veto",
+          "prepare_audit",
+          "dispatch"
+        ],
+        "failed_obligations": [
+          "veto"
+        ],
+        "pre_dispatch_state": {
+          "action": 0,
+          "capability_epoch": 0,
+          "permission": true,
+          "world_epoch": 0,
+          "tick": 0,
+          "permit": {
+            "action": 0,
+            "capability_epoch": 0,
+            "world_epoch": 0,
+            "expires_at": 1
+          },
+          "consumed": false,
+          "prepared": true,
+          "veto": true
+        }
+      }
+    }
+  },
+  "all_guard_removals_detected": true,
+  "passed": true,
+  "_historical_snapshot": true,
+  "_current_implementation_status": "../../REQUIREMENT_STATUS.json"
+}

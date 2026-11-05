@@ -1,0 +1,170 @@
+[
+  {
+    "file": "S001R04.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S001/S001R04.edf",
+    "bytes": 2596896,
+    "sha256": "3d161f88e1c00632585287d2ce584c2bc0f08862438eb255ea8723e00fac693d",
+    "official_sha256": "3d161f88e1c00632585287d2ce584c2bc0f08862438eb255ea8723e00fac693d"
+  },
+  {
+    "file": "S001R08.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S001/S001R08.edf",
+    "bytes": 2596896,
+    "sha256": "358fb5189220725141968ae285fbe9e3f36210b834ffba71d940af308e3aca68",
+    "official_sha256": "358fb5189220725141968ae285fbe9e3f36210b834ffba71d940af308e3aca68"
+  },
+  {
+    "file": "S001R12.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S001/S001R12.edf",
+    "bytes": 2596896,
+    "sha256": "2b281c9b687b4c4176e83251d74743721f2d6ebd76656a972a3b9c44d9d88cd5",
+    "official_sha256": "2b281c9b687b4c4176e83251d74743721f2d6ebd76656a972a3b9c44d9d88cd5"
+  },
+  {
+    "file": "S002R04.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S002/S002R04.edf",
+    "bytes": 2555616,
+    "sha256": "fcd37831378c411d50c223d97ffbc00949be2271d093f1d8e56bbe7c02bd1539",
+    "official_sha256": "fcd37831378c411d50c223d97ffbc00949be2271d093f1d8e56bbe7c02bd1539"
+  },
+  {
+    "file": "S002R08.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S002/S002R08.edf",
+    "bytes": 2555616,
+    "sha256": "02d64941f6bcd1635bc7dd187a9553331b73933e9771f4e7c59249dfc5632c5a",
+    "official_sha256": "02d64941f6bcd1635bc7dd187a9553331b73933e9771f4e7c59249dfc5632c5a"
+  },
+  {
+    "file": "S002R12.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S002/S002R12.edf",
+    "bytes": 2555616,
+    "sha256": "a3d166b23375942a5ccf352924f7766f0ca9cfd1bac7951175e710d978f5239f",
+    "official_sha256": "a3d166b23375942a5ccf352924f7766f0ca9cfd1bac7951175e710d978f5239f"
+  },
+  {
+    "file": "S003R04.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S003/S003R04.edf",
+    "bytes": 2596896,
+    "sha256": "7d0732eea963488a53153835524e55c2b68220b0a0c7c5be99e535a9f5367e7f",
+    "official_sha256": "7d0732eea963488a53153835524e55c2b68220b0a0c7c5be99e535a9f5367e7f"
+  },
+  {
+    "file": "S003R08.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S003/S003R08.edf",
+    "bytes": 2596896,
+    "sha256": "0f50978bb972e693b8c758a9223a2d9fa35c7f117226391090bcc32a83ce765d",
+    "official_sha256": "0f50978bb972e693b8c758a9223a2d9fa35c7f117226391090bcc32a83ce765d"
+  },
+  {
+    "file": "S003R12.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S003/S003R12.edf",
+    "bytes": 2596896,
+    "sha256": "bbf7137bfa7905724741e95359fa090439d4422c07bdba16c792acb09ebd6421",
+    "official_sha256": "bbf7137bfa7905724741e95359fa090439d4422c07bdba16c792acb09ebd6421"
+  },
+  {
+    "file": "S004R04.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S004/S004R04.edf",
+    "bytes": 2555616,
+    "sha256": "c9ddf0294961f0b877192a2479802b9c6c88403682a17b5ad679fd6485aa6f59",
+    "official_sha256": "c9ddf0294961f0b877192a2479802b9c6c88403682a17b5ad679fd6485aa6f59"
+  },
+  {
+    "file": "S004R08.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S004/S004R08.edf",
+    "bytes": 2555616,
+    "sha256": "1ab5909b183413283a7ea76e35311a68a4688558f0044b9faab3987291cbdb92",
+    "official_sha256": "1ab5909b183413283a7ea76e35311a68a4688558f0044b9faab3987291cbdb92"
+  },
+  {
+    "file": "S004R12.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S004/S004R12.edf",
+    "bytes": 2555616,
+    "sha256": "c44b7be0464d86be4d460ec66432869b7b3e8dcaa2067af02d6e772abf5c11de",
+    "official_sha256": "c44b7be0464d86be4d460ec66432869b7b3e8dcaa2067af02d6e772abf5c11de"
+  },
+  {
+    "file": "S005R04.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S005/S005R04.edf",
+    "bytes": 2555616,
+    "sha256": "956d0857b17b040955fee9b2384f818f85bfb02248c387d9aa7930c42934ca0c",
+    "official_sha256": "956d0857b17b040955fee9b2384f818f85bfb02248c387d9aa7930c42934ca0c"
+  },
+  {
+    "file": "S005R08.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S005/S005R08.edf",
+    "bytes": 2555616,
+    "sha256": "eeed6c328ee256dd2c20d1808e05819bed4ce56b8de1c57914ded00565b6b7bc",
+    "official_sha256": "eeed6c328ee256dd2c20d1808e05819bed4ce56b8de1c57914ded00565b6b7bc"
+  },
+  {
+    "file": "S005R12.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S005/S005R12.edf",
+    "bytes": 2555616,
+    "sha256": "dfaf07c8ecc583b07363485596258e66a75fb33169496c62918c6dd0803814ce",
+    "official_sha256": "dfaf07c8ecc583b07363485596258e66a75fb33169496c62918c6dd0803814ce"
+  },
+  {
+    "file": "S006R04.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S006/S006R04.edf",
+    "bytes": 2555616,
+    "sha256": "4bd532bb728e1f2ed2afc0a5c162830a07465b6a4a58e105d1316c6ff1921f3b",
+    "official_sha256": "4bd532bb728e1f2ed2afc0a5c162830a07465b6a4a58e105d1316c6ff1921f3b"
+  },
+  {
+    "file": "S006R08.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S006/S006R08.edf",
+    "bytes": 2555616,
+    "sha256": "006e55ec16590f5f5b9230ac53a2f8fd0660960fa7b4b512ff61f8f7e2f8714e",
+    "official_sha256": "006e55ec16590f5f5b9230ac53a2f8fd0660960fa7b4b512ff61f8f7e2f8714e"
+  },
+  {
+    "file": "S006R12.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S006/S006R12.edf",
+    "bytes": 2555616,
+    "sha256": "296b5cb14549098dc55ee047cc9ff63faccf480e432b94797ff73cc7209b7353",
+    "official_sha256": "296b5cb14549098dc55ee047cc9ff63faccf480e432b94797ff73cc7209b7353"
+  },
+  {
+    "file": "S007R04.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S007/S007R04.edf",
+    "bytes": 2596896,
+    "sha256": "3b31e50c4a5ebbb25459b1ebdf802b7ca86010857637580aacd53067350553a6",
+    "official_sha256": "3b31e50c4a5ebbb25459b1ebdf802b7ca86010857637580aacd53067350553a6"
+  },
+  {
+    "file": "S007R08.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S007/S007R08.edf",
+    "bytes": 2596896,
+    "sha256": "fa8cfc38727e908be4626cf82b19533f7a761f102319696e53e4ee2d61b1092b",
+    "official_sha256": "fa8cfc38727e908be4626cf82b19533f7a761f102319696e53e4ee2d61b1092b"
+  },
+  {
+    "file": "S007R12.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S007/S007R12.edf",
+    "bytes": 2596896,
+    "sha256": "70cd3287d6b4821661521954206f86dde9f5e62904edd76cc0cf1d03fe112df3",
+    "official_sha256": "70cd3287d6b4821661521954206f86dde9f5e62904edd76cc0cf1d03fe112df3"
+  },
+  {
+    "file": "S008R04.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S008/S008R04.edf",
+    "bytes": 2555616,
+    "sha256": "034a26131e1425e6374a459e5887b1f831f7bfdb101a3658d2cd07620cf2c06b",
+    "official_sha256": "034a26131e1425e6374a459e5887b1f831f7bfdb101a3658d2cd07620cf2c06b"
+  },
+  {
+    "file": "S008R08.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S008/S008R08.edf",
+    "bytes": 2555616,
+    "sha256": "534c25b65a4fa68afe29a5c0272a686ac474e638c86521b177660d888401f374",
+    "official_sha256": "534c25b65a4fa68afe29a5c0272a686ac474e638c86521b177660d888401f374"
+  },
+  {
+    "file": "S008R12.edf",
+    "url": "https://physionet.org/files/eegmmidb/1.0.0/S008/S008R12.edf",
+    "bytes": 2555616,
+    "sha256": "ddced4ba4dc801313554039823fa1826d0dd52648f87a5ee5ada8e9cdd0678c8",
+    "official_sha256": "ddced4ba4dc801313554039823fa1826d0dd52648f87a5ee5ada8e9cdd0678c8"
+  }
+]

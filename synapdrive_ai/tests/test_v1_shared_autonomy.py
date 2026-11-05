@@ -21,9 +21,7 @@ def test_shared_autonomy_can_choose_lower_risk_machine_action():
         user_intent="direct",
         user_confidence=0.8,
         machine_candidates=[CandidateAction("detour", 0.95, 0.9)],
-        goal=lambda state: float(
-            cast(int | float, state.get("goal", 0))
-        ),
+        goal=lambda state: float(cast(int | float, state.get("goal", 0))),
     )
 
     assert proposal.selected_action == "detour"
@@ -54,6 +52,7 @@ def test_simplex_uses_reversionary_controller_when_blocked():
     runtime = GovernedRuntime()
     packet = {
         "intent": "move_left",
+        "source": "trusted-test-fixture",
         "confidence": 0.1,
         "uncertainty": 0.1,
     }
@@ -68,6 +67,7 @@ def test_simplex_uses_reversionary_controller_when_blocked():
             "status": "safe-state",
             "action": action,
         },
+        runtime=runtime,
     )
 
     out = simplex.execute(packet, decision)
@@ -80,6 +80,7 @@ def test_simplex_uses_advanced_controller_when_allowed():
     runtime = GovernedRuntime()
     packet = {
         "intent": "move_left",
+        "source": "trusted-test-fixture",
         "confidence": 0.95,
         "uncertainty": 0.1,
     }
@@ -94,6 +95,7 @@ def test_simplex_uses_advanced_controller_when_allowed():
             "status": "safe-state",
             "action": action,
         },
+        runtime=runtime,
     )
 
     assert simplex.execute(packet, decision).controller == "advanced"

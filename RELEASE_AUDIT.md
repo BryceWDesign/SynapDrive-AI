@@ -1,41 +1,33 @@
-# Local Release Audit
+# Local release verification: 2.0.0
 
-This file records checks executed against the source used for the SynapDrive-AI v1.0.0 handoff. It is not a hardware, clinical, or human-BCI certification.
+Verified on Linux x86_64, Python 3.12.14. The runtime contains
+new executable implementations; it is no longer the original design-only package.
 
-- Release: `1.0.0`
-- Original isolated-build audit timestamp (UTC): `2026-08-26T17:12:37+00:00`
-- Original isolated-build Python: `3.13.5`
-- Windows verification Python: `3.13.2`
-- Pytest: **138 passed, 0 failed, 0 skipped**
-- Package-wide branch coverage: **69.699%** (`3052` statements, `608` branches), measured in the isolated build audit
-- Canonical pipeline coverage: **97.2%**, measured in the same isolated coverage run
-- Release validator: **24/24 checks passed**
-- Ruff on Windows: **All checks passed**
-- Pyright on Windows: **0 errors, 0 warnings, 0 informations**
-- Python compileall: passed in the isolated build audit
-- Offline wheel build: passed
-- Wheel installed into an isolated target directory: passed
-- Discovered installed runtime modules: **88**, import failures: **0**
-- Canonical pipeline executed from isolated wheel install: passed
-- Static source audit: 0 syntax, line-length, trailing-whitespace, tab, bare-except, ambiguous-name, or unused-import findings under the repository audit rules
+| Check | Observed result |
+| --- | --- |
+| Pytest | 225 passed; zero failed, errored or skipped |
+| Ruff | Passed |
+| Pyright | Zero errors, zero warnings |
+| Statement coverage | 73.32% |
+| Branch coverage | 57.04% |
+| Combined statement/branch coverage | 70.21% |
+| Independent fault fixtures | 120 cases passed, including clean acceptance controls |
+| Declared 1D recoverable states | 933 stopped inside the envelope; zero failures |
+| Concurrency | 800 successful cycles, eight threads; complete valid ledger |
+| Build | Source distribution and wheel built successfully |
+| Installed-wheel checks | Demo, EEG reproduction, command recording and rejection-feedback replay passed outside checkout |
+| Original data | All 24 source EDF hashes matched the official manifest |
+| Remote GitHub Actions | Unverified |
 
-## Static-analysis verification
+Coverage excludes the test source. The existing suite was extended with audit regression,
+state/replay/permit tests and real-data inference. One third-party AnyIO plugin emitted
+a deprecation warning. All recorded-data predictions and artifact identities reproduced
+from the installed wheel.
 
-Ruff and Pyright could not be obtained inside the original isolated build environment because outbound package acquisition was unavailable there.
+The original design is not fully complete. Recorded EEG performance remains inadequate
+for a dependable-control claim; 3 of 7 admitted actions were wrong. See `RESULTS.md` and
+`docs/REQUIREMENT_STATUS.json`. Passing these software checks does not establish clinical
+benefit, hardware safety, OS isolation, or remote CI status.
 
-They were subsequently installed from the repository's declared development requirements and executed against the final v1.0.0 working tree on Windows 11 with Python 3.13.2.
-
-Final Windows results:
-
-- `python -m ruff check .` → **All checks passed**
-- `python -m pyright` → **0 errors, 0 warnings, 0 informations**
-- `python -m pytest -q` → **138 passed**
-- `python -m scripts.run_v1_validation` → **passed: true, 24/24 checks passed**
-
-GitHub CI remains configured to independently run the repository's quality gates on its declared Python matrix.
-
-## Evidence boundary
-
-`RELEASE_VALIDATION.json` uses deterministic synthetic verification data for software-path checks. Its benchmark metrics are not human EEG performance, clinical validation, hardware safety evidence, or proof of physical actuation.
-
-No claim in this release should be interpreted as evidence of medical efficacy, clinical validation, physical BCI safety, or validated human neural-decoding performance.
+Reproduce with `python -m pytest -q`, `python -m ruff check .`, `python -m pyright`,
+`python -m scripts.validate_release`, and `python -m synapdrive_ai.v2 eeg`.

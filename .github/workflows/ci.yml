@@ -25,7 +25,7 @@ jobs:
       - name: Install package and development checks
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[dev]"
+          pip install -e ".[dev,eeg]"
 
       - name: Lint (ruff)
         run: |
@@ -41,7 +41,7 @@ jobs:
 
       - name: Run release validation
         run: |
-          python -m scripts.run_v1_validation --out validation.json
+          python -m scripts.validate_release --out validation.json
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4

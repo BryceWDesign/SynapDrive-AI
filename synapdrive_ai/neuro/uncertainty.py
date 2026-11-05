@@ -48,8 +48,7 @@ def packet_distribution(packet: Mapping[str, object]) -> Dict[str, float]:
     provided = packet.get("probabilities")
     if isinstance(provided, Mapping) and provided:
         parsed = {
-            str(k): _numeric_value(v, field=f"probabilities[{k!r}]")
-            for k, v in provided.items()
+            str(k): _numeric_value(v, field=f"probabilities[{k!r}]") for k, v in provided.items()
         }
         return normalize_distribution(parsed)
 
@@ -91,30 +90,17 @@ def estimate_uncertainty(
         entropy = 0.0
         margin_u = 0.0
     else:
-        raw_entropy = -float(
-            np.sum(arr * np.log(np.clip(arr, 1e-12, 1.0)))
-        )
+        raw_entropy = -float(np.sum(arr * np.log(np.clip(arr, 1e-12, 1.0))))
         entropy = raw_entropy / math.log(len(arr))
         sorted_probs = np.sort(arr)[::-1]
-        margin_u = 1.0 - float(
-            sorted_probs[0] - sorted_probs[1]
-        )
+        margin_u = 1.0 - float(sorted_probs[0] - sorted_probs[1])
 
     disagreement = 0.0
     if ensemble_probabilities and len(ensemble_probabilities) > 1:
-        union = sorted(
-            {
-                k
-                for member in ensemble_probabilities
-                for k in member
-            }
-        )
+        union = sorted({k for member in ensemble_probabilities for k in member})
         matrix = np.array(
             [
-                [
-                    normalize_distribution(member).get(k, 0.0)
-                    for k in union
-                ]
+                [normalize_distribution(member).get(k, 0.0) for k in union]
                 for member in ensemble_probabilities
             ],
             dtype=float,
@@ -129,9 +115,7 @@ def estimate_uncertainty(
 
     combined = float(
         np.clip(
-            0.55 * entropy
-            + 0.30 * margin_u
-            + 0.15 * disagreement,
+            0.55 * entropy + 0.30 * margin_u + 0.15 * disagreement,
             0.0,
             1.0,
         )
@@ -184,9 +168,7 @@ class ReliabilityCalibrator:
         ok = np.asarray(list(correct), dtype=float)
 
         if conf.size == 0 or conf.size != ok.size:
-            raise ValueError(
-                "confidence and correct must be non-empty and equal length"
-            )
+            raise ValueError("confidence and correct must be non-empty and equal length")
 
         indices = np.minimum(
             (conf * self.n_bins).astype(int),
@@ -200,11 +182,7 @@ class ReliabilityCalibrator:
         for idx in range(self.n_bins):
             mask = indices == idx
             counts[idx] = int(np.sum(mask))
-            rates[idx] = (
-                float(np.mean(ok[mask]))
-                if counts[idx]
-                else global_rate
-            )
+            rates[idx] = float(np.mean(ok[mask])) if counts[idx] else global_rate
 
         self._rates = rates
         self._counts = counts

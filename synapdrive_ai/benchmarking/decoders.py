@@ -46,9 +46,7 @@ class SpectralCentroidDecoder:
         freqs = np.fft.rfftfreq(n, d=1.0 / sampling_rate)
         centered = x - np.mean(x, axis=-1, keepdims=True)
         power = np.abs(np.fft.rfft(centered, axis=-1)) ** 2
-        total_mask = (freqs >= 1.0) & (
-            freqs <= min(45.0, sampling_rate / 2)
-        )
+        total_mask = (freqs >= 1.0) & (freqs <= min(45.0, sampling_rate / 2))
         total = np.sum(power[..., total_mask], axis=-1) + 1e-12
         feats: List[np.ndarray] = []
         for lo, hi in self.bands:
@@ -70,9 +68,7 @@ class SpectralCentroidDecoder:
             raise ValueError("at least two classes are required")
         self.scale_ = np.std(f, axis=0) + 1e-6
         z = f / self.scale_
-        self.centroids_ = {
-            cls: np.mean(z[y == cls], axis=0) for cls in self.classes_
-        }
+        self.centroids_ = {cls: np.mean(z[y == cls], axis=0) for cls in self.classes_}
         return self
 
     def predict_proba(
@@ -84,10 +80,7 @@ class SpectralCentroidDecoder:
             raise RuntimeError("decoder has not been fit")
         f = self._features(epochs, sampling_rate) / self.scale_
         distances = np.stack(
-            [
-                np.sum((f - self.centroids_[cls]) ** 2, axis=1)
-                for cls in self.classes_
-            ],
+            [np.sum((f - self.centroids_[cls]) ** 2, axis=1) for cls in self.classes_],
             axis=1,
         )
         return _softmax(-distances)
@@ -119,9 +112,7 @@ class RiemannianCentroidDecoder:
             scale = trace / max(cov.shape[0], 1) if trace > 0 else 1.0
             cov = cov + np.eye(cov.shape[0]) * self.regularization * scale
             vals, vecs = np.linalg.eigh(cov)
-            log_cov = (
-                vecs * np.log(np.clip(vals, 1e-12, None))
-            ) @ vecs.T
+            log_cov = (vecs * np.log(np.clip(vals, 1e-12, None))) @ vecs.T
             idx = np.triu_indices(log_cov.shape[0])
             feat = log_cov[idx].copy()
             offdiag = idx[0] != idx[1]
@@ -142,9 +133,7 @@ class RiemannianCentroidDecoder:
             raise ValueError("at least two classes are required")
         self.scale_ = np.std(f, axis=0) + 1e-6
         z = f / self.scale_
-        self.centroids_ = {
-            cls: np.mean(z[y == cls], axis=0) for cls in self.classes_
-        }
+        self.centroids_ = {cls: np.mean(z[y == cls], axis=0) for cls in self.classes_}
         return self
 
     def predict_proba(
@@ -156,10 +145,7 @@ class RiemannianCentroidDecoder:
             raise RuntimeError("decoder has not been fit")
         f = self._features(epochs, sampling_rate) / self.scale_
         distances = np.stack(
-            [
-                np.sum((f - self.centroids_[cls]) ** 2, axis=1)
-                for cls in self.classes_
-            ],
+            [np.sum((f - self.centroids_[cls]) ** 2, axis=1) for cls in self.classes_],
             axis=1,
         )
         return _softmax(-distances)
@@ -193,8 +179,5 @@ class EnsembleDecoder:
         epochs: np.ndarray,
         sampling_rate: float,
     ) -> np.ndarray:
-        arrays = [
-            decoder.predict_proba(epochs, sampling_rate)
-            for decoder in self.decoders
-        ]
+        arrays = [decoder.predict_proba(epochs, sampling_rate) for decoder in self.decoders]
         return np.mean(np.stack(arrays, axis=0), axis=0)

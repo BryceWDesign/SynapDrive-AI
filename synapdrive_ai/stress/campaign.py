@@ -48,15 +48,21 @@ class StressCampaign:
 
     def run(
         self,
-        trials: Iterable[tuple[str, np.ndarray]],
+        trials: Iterable[tuple[str, np.ndarray] | tuple[str, np.ndarray, bool]],
         callback: Callable[[np.ndarray, float], bool],
     ) -> CampaignReport:
         results: List[CampaignTrial] = []
-        for idx, (fault_name, signal) in enumerate(trials, 1):
+        for idx, trial in enumerate(trials, 1):
+            fault_name, signal = trial[:2]
+            if len(trial) == 3:
+                expected_block = bool(trial[2])
+            elif fault_name in {"clean", "flatline"}:
+                expected_block = fault_name == "flatline"
+            else:
+                raise ValueError("explicit independent expected-block label required")
             quality = self.quality.analyze(signal)
-            expected_block = quality.score < self.min_quality
             blocked = bool(callback(signal, quality.score))
-            invariant = (not expected_block) or blocked
+            invariant = expected_block == blocked
             results.append(
                 CampaignTrial(
                     idx,

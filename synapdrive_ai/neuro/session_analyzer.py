@@ -125,6 +125,10 @@ class SessionAnalyzer:
         self.channel = channel
         self.window_s = float(window_s)
         self.step_s = float(step_s)
+        if not np.isfinite(self.window_s) or self.window_s <= 0:
+            raise ValueError("window_s must be finite and positive")
+        if not np.isfinite(self.step_s) or self.step_s <= 0:
+            raise ValueError("step_s must be finite and positive")
         self.image_label = image_label
         self._pipe = pipeline or SynapDrivePipeline(simulate_delay=simulate_delay)
         self.decoder = decoder
@@ -144,6 +148,9 @@ class SessionAnalyzer:
             raise ValueError(
                 f"Window too short: {self.window_s}s @ {sr}Hz = {window_samples} samples (min 4)"
             )
+
+        if step_samples < 1:
+            raise ValueError("step_s must advance at least one sample")
 
         epochs: List[EpochResult] = []
         start = 0

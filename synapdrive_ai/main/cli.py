@@ -130,10 +130,22 @@ def main(argv=None) -> int:
         pipe = SynapDrivePipeline(simulate_delay=False)
         for rec in iter_jsonl(args.replay):
             intent_packet = rec["intent_packet"]
-            image_label = rec.get("image_label")
-            out = pipe.run_intent_packet(
-                intent_packet, image_label=image_label, feedback=feedback
-            )
+            rec.get("image_label")
+            if rec.get("capsule"):
+                from synapdrive_ai.replay.recording import replay_capsule
+
+                out = replay_capsule(rec["capsule"])
+                from synapdrive_ai.runtime.dispatch import digest
+
+                pipe.evidence.record(
+                    {
+                        "schema": "synapdrive.replay-outcome.v2",
+                        "capsule_digest": digest(rec["capsule"]),
+                        "decision": out["replay_context"]["expected"],
+                    }
+                )
+            else:
+                raise ValueError("legacy record lacks complete context; re-record with v2")
             _print_summary(out)
         if args.evidence_out:
             pipe.evidence.export_jsonl(args.evidence_out)
@@ -147,9 +159,7 @@ def main(argv=None) -> int:
         if args.text is not None:
             mode = "text"
             raw_input = {"text": args.text}
-            out = pipe.run_text_command(
-                args.text, image_label=args.image, feedback=feedback
-            )
+            out = pipe.run_text_command(args.text, image_label=args.image, feedback=feedback)
 
         elif args.brainflow:
             mode = "brainflow"
@@ -162,9 +172,7 @@ def main(argv=None) -> int:
             )
             intent_packet = src.next_intent_packet()
             raw_input = {"brainflow": {"board_id": args.bf_board_id, "seconds": args.bf_seconds}}
-            out = pipe.run_intent_packet(
-                intent_packet, image_label=args.image, feedback=feedback
-            )
+            out = pipe.run_intent_packet(intent_packet, image_label=args.image, feedback=feedback)
 
         elif args.lsl:
             mode = "lsl"
@@ -180,17 +188,13 @@ def main(argv=None) -> int:
             raw_input = {
                 "lsl": {"name": args.lsl_name, "type": args.lsl_type, "seconds": args.lsl_seconds}
             }
-            out = pipe.run_intent_packet(
-                intent_packet, image_label=args.image, feedback=feedback
-            )
+            out = pipe.run_intent_packet(intent_packet, image_label=args.image, feedback=feedback)
 
         else:
             mode = "signal"
             label = None if args.signal == "RANDOM" else args.signal
             raw_input = {"label": label or "RANDOM"}
-            out = pipe.run_signal_event(
-                label=label, image_label=args.image, feedback=feedback
-            )
+            out = pipe.run_signal_event(label=label, image_label=args.image, feedback=feedback)
 
         _print_summary(out)
 

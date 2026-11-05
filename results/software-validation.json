@@ -1,0 +1,865 @@
+{
+  "schema": "synapdrive.release-validation.v2",
+  "software_validation_passed": true,
+  "scope": "local software, independent labeled fault fixtures and bounded 1D simulation",
+  "checks": {
+    "executable_local_tasks": true,
+    "independent_fault_oracle": true,
+    "independent_recovery_oracle": true,
+    "canonical_plant_envelope": true,
+    "plant_capsule_replay": true,
+    "800_concurrent_cycles": true
+  },
+  "fault_cases": [
+    {
+      "scenario": "clean",
+      "trial": 0,
+      "expected": "success",
+      "observed": "success",
+      "passed": true
+    },
+    {
+      "scenario": "clean",
+      "trial": 1,
+      "expected": "success",
+      "observed": "success",
+      "passed": true
+    },
+    {
+      "scenario": "clean",
+      "trial": 2,
+      "expected": "success",
+      "observed": "success",
+      "passed": true
+    },
+    {
+      "scenario": "clean",
+      "trial": 3,
+      "expected": "success",
+      "observed": "success",
+      "passed": true
+    },
+    {
+      "scenario": "clean",
+      "trial": 4,
+      "expected": "success",
+      "observed": "success",
+      "passed": true
+    },
+    {
+      "scenario": "clean",
+      "trial": 5,
+      "expected": "success",
+      "observed": "success",
+      "passed": true
+    },
+    {
+      "scenario": "clean",
+      "trial": 6,
+      "expected": "success",
+      "observed": "success",
+      "passed": true
+    },
+    {
+      "scenario": "clean",
+      "trial": 7,
+      "expected": "success",
+      "observed": "success",
+      "passed": true
+    },
+    {
+      "scenario": "clean",
+      "trial": 8,
+      "expected": "success",
+      "observed": "success",
+      "passed": true
+    },
+    {
+      "scenario": "clean",
+      "trial": 9,
+      "expected": "success",
+      "observed": "success",
+      "passed": true
+    },
+    {
+      "scenario": "clean",
+      "trial": 10,
+      "expected": "success",
+      "observed": "success",
+      "passed": true
+    },
+    {
+      "scenario": "clean",
+      "trial": 11,
+      "expected": "success",
+      "observed": "success",
+      "passed": true
+    },
+    {
+      "scenario": "clean",
+      "trial": 12,
+      "expected": "success",
+      "observed": "success",
+      "passed": true
+    },
+    {
+      "scenario": "clean",
+      "trial": 13,
+      "expected": "success",
+      "observed": "success",
+      "passed": true
+    },
+    {
+      "scenario": "clean",
+      "trial": 14,
+      "expected": "success",
+      "observed": "success",
+      "passed": true
+    },
+    {
+      "scenario": "clean",
+      "trial": 15,
+      "expected": "success",
+      "observed": "success",
+      "passed": true
+    },
+    {
+      "scenario": "clean",
+      "trial": 16,
+      "expected": "success",
+      "observed": "success",
+      "passed": true
+    },
+    {
+      "scenario": "clean",
+      "trial": 17,
+      "expected": "success",
+      "observed": "success",
+      "passed": true
+    },
+    {
+      "scenario": "clean",
+      "trial": 18,
+      "expected": "success",
+      "observed": "success",
+      "passed": true
+    },
+    {
+      "scenario": "clean",
+      "trial": 19,
+      "expected": "success",
+      "observed": "success",
+      "passed": true
+    },
+    {
+      "scenario": "flatline",
+      "trial": 0,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "flatline",
+      "trial": 1,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "flatline",
+      "trial": 2,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "flatline",
+      "trial": 3,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "flatline",
+      "trial": 4,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "flatline",
+      "trial": 5,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "flatline",
+      "trial": 6,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "flatline",
+      "trial": 7,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "flatline",
+      "trial": 8,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "flatline",
+      "trial": 9,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "flatline",
+      "trial": 10,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "flatline",
+      "trial": 11,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "flatline",
+      "trial": 12,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "flatline",
+      "trial": 13,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "flatline",
+      "trial": 14,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "flatline",
+      "trial": 15,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "flatline",
+      "trial": 16,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "flatline",
+      "trial": 17,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "flatline",
+      "trial": 18,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "flatline",
+      "trial": 19,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "nonfinite",
+      "trial": 0,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "nonfinite",
+      "trial": 1,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "nonfinite",
+      "trial": 2,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "nonfinite",
+      "trial": 3,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "nonfinite",
+      "trial": 4,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "nonfinite",
+      "trial": 5,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "nonfinite",
+      "trial": 6,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "nonfinite",
+      "trial": 7,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "nonfinite",
+      "trial": 8,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "nonfinite",
+      "trial": 9,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "nonfinite",
+      "trial": 10,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "nonfinite",
+      "trial": 11,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "nonfinite",
+      "trial": 12,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "nonfinite",
+      "trial": 13,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "nonfinite",
+      "trial": 14,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "nonfinite",
+      "trial": 15,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "nonfinite",
+      "trial": 16,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "nonfinite",
+      "trial": 17,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "nonfinite",
+      "trial": 18,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "nonfinite",
+      "trial": 19,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "dropout",
+      "trial": 0,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "dropout",
+      "trial": 1,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "dropout",
+      "trial": 2,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "dropout",
+      "trial": 3,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "dropout",
+      "trial": 4,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "dropout",
+      "trial": 5,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "dropout",
+      "trial": 6,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "dropout",
+      "trial": 7,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "dropout",
+      "trial": 8,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "dropout",
+      "trial": 9,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "dropout",
+      "trial": 10,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "dropout",
+      "trial": 11,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "dropout",
+      "trial": 12,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "dropout",
+      "trial": 13,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "dropout",
+      "trial": 14,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "dropout",
+      "trial": 15,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "dropout",
+      "trial": 16,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "dropout",
+      "trial": 17,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "dropout",
+      "trial": 18,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "dropout",
+      "trial": 19,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "line-noise",
+      "trial": 0,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "line-noise",
+      "trial": 1,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "line-noise",
+      "trial": 2,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "line-noise",
+      "trial": 3,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "line-noise",
+      "trial": 4,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "line-noise",
+      "trial": 5,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "line-noise",
+      "trial": 6,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "line-noise",
+      "trial": 7,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "line-noise",
+      "trial": 8,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "line-noise",
+      "trial": 9,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "line-noise",
+      "trial": 10,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "line-noise",
+      "trial": 11,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "line-noise",
+      "trial": 12,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "line-noise",
+      "trial": 13,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "line-noise",
+      "trial": 14,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "line-noise",
+      "trial": 15,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "line-noise",
+      "trial": 16,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "line-noise",
+      "trial": 17,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "line-noise",
+      "trial": 18,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "line-noise",
+      "trial": 19,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "single-channel-flat",
+      "trial": 0,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "single-channel-flat",
+      "trial": 1,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "single-channel-flat",
+      "trial": 2,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "single-channel-flat",
+      "trial": 3,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "single-channel-flat",
+      "trial": 4,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "single-channel-flat",
+      "trial": 5,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "single-channel-flat",
+      "trial": 6,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "single-channel-flat",
+      "trial": 7,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "single-channel-flat",
+      "trial": 8,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "single-channel-flat",
+      "trial": 9,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "single-channel-flat",
+      "trial": 10,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "single-channel-flat",
+      "trial": 11,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "single-channel-flat",
+      "trial": 12,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "single-channel-flat",
+      "trial": 13,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "single-channel-flat",
+      "trial": 14,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "single-channel-flat",
+      "trial": 15,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "single-channel-flat",
+      "trial": 16,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "single-channel-flat",
+      "trial": 17,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "single-channel-flat",
+      "trial": 18,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    },
+    {
+      "scenario": "single-channel-flat",
+      "trial": 19,
+      "expected": "blocked",
+      "observed": "blocked",
+      "passed": true
+    }
+  ],
+  "recovery_cases": 933,
+  "recovery_failures": 0,
+  "concurrency": {
+    "threads": 8,
+    "cycles": 800,
+    "elapsed_s": 0.9735001050000847
+  },
+  "remote_ci_verified": false,
+  "physical_safety_verified": false,
+  "clinical_benefit_verified": false
+}

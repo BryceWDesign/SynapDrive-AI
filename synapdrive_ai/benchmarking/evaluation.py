@@ -59,11 +59,7 @@ def expected_calibration_error(
     total = len(confidence)
     value = 0.0
     for i in range(bins):
-        upper = (
-            confidence < edges[i + 1]
-            if i < bins - 1
-            else confidence <= edges[i + 1]
-        )
+        upper = confidence < edges[i + 1] if i < bins - 1 else confidence <= edges[i + 1]
         mask = (confidence >= edges[i]) & upper
         count = int(np.sum(mask))
         if count:
@@ -82,7 +78,24 @@ def evaluate_decoder(
     abstain_threshold: float = 0.55,
 ) -> BenchmarkReport:
     y = np.asarray(dataset.labels)
-    train_idx, test_idx = _split_indices(y, test_fraction, seed)
+    if dataset.groups is not None:
+        groups = np.unique(dataset.groups)
+        if len(groups) < 2:
+            raise ValueError("at least two independent groups required")
+        rng = np.random.default_rng(seed)
+        rng.shuffle(groups)
+        test_groups = groups[: max(1, round(len(groups) * test_fraction))]
+        test_idx = np.flatnonzero(np.isin(dataset.groups, test_groups))
+        train_idx = np.flatnonzero(~np.isin(dataset.groups, test_groups))
+        if set(y[train_idx]) != set(y[test_idx]):
+            raise ValueError("grouped split must contain all classes in train and test")
+    else:
+        train_idx, test_idx = _split_indices(y, test_fraction, seed)
+    import hashlib
+
+    train_hashes = {hashlib.sha256(e.tobytes()).digest() for e in dataset.epochs[train_idx]}
+    if any(hashlib.sha256(e.tobytes()).digest() in train_hashes for e in dataset.epochs[test_idx]):
+        raise ValueError("duplicate epochs cross the train/test boundary")
     decoder.fit(
         dataset.epochs[train_idx],
         y[train_idx],
@@ -112,9 +125,7 @@ def evaluate_decoder(
     ece = expected_calibration_error(confidence, correct.astype(float))
     accepted = confidence >= abstain_threshold
     coverage = float(np.mean(accepted))
-    selective_accuracy = (
-        float(np.mean(correct[accepted])) if np.any(accepted) else 0.0
-    )
+    selective_accuracy = float(np.mean(correct[accepted])) if np.any(accepted) else 0.0
     return BenchmarkReport(
         decoder=type(decoder).__name__,
         n_samples=len(y),
@@ -148,9 +159,7 @@ def run_arena(
     decoders = [
         SpectralCentroidDecoder(),
         RiemannianCentroidDecoder(),
-        EnsembleDecoder(
-            [SpectralCentroidDecoder(), RiemannianCentroidDecoder()]
-        ),
+        EnsembleDecoder([SpectralCentroidDecoder(), RiemannianCentroidDecoder()]),
     ]
     reports = [
         evaluate_decoder(

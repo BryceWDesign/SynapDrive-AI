@@ -44,9 +44,7 @@ class CounterfactualPlanner:
         for candidate in candidates:
             prediction: Prediction = self.world_model.predict(candidate.action)
             goal_score = (
-                float(max(0.0, min(1.0, goal(prediction.after))))
-                if prediction.feasible
-                else 0.0
+                float(max(0.0, min(1.0, goal(prediction.after)))) if prediction.feasible else 0.0
             )
             utility = (
                 0.35 * max(0.0, min(1.0, candidate.intent_alignment))

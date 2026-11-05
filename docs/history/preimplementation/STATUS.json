@@ -1,0 +1,63 @@
+{
+  "schema": "synapdrive.design.delivery-status.v1",
+  "date": "2026-11-02",
+  "delivery": "integrated_update_design_with_executable_design_checks",
+  "stage": "R0",
+  "baseline_runtime_version": "1.0.0",
+  "new_runtime_capabilities_implemented": false,
+  "runtime_release_ready": false,
+  "planned_requirements": 40,
+  "planned_runtime_acceptance_cases": 40,
+  "runtime_acceptance_cases_executed": 0,
+  "planned_experiments": 10,
+  "experiments_executed": 0,
+  "checks": {
+    "specification_consistency": true,
+    "specification_negative_controls_detected": {
+      "missing_acceptance_link_detected": true,
+      "unsupported_pass_claim_detected": true,
+      "post_cutoff_source_detected": true,
+      "external_dispatch_enablement_detected": true,
+      "implementation_without_evidence_detected": true,
+      "lost_audit_finding_detected": true,
+      "dependency_cycle_detected": true,
+      "publication_digest_mismatch_detected": true,
+      "unlisted_baseline_change_detected": true
+    },
+    "bounded_admission_model": true,
+    "model_states": 2256,
+    "model_transitions": 5960,
+    "model_guard_removal_counterexamples": 7,
+    "strict_release_correctly_refused": true,
+    "original_runtime_pytest": {
+      "passed": 138,
+      "failed": 0,
+      "scope": "existing v1 suite; one test name/message revised without changing its assertions",
+      "warnings": 1,
+      "warning_scope": "verification-environment AnyIO plugin deprecation"
+    },
+    "ruff": "passed across package",
+    "pyright": "passed for configured runtime analysis and both v2 design utilities",
+    "markdown_links_and_fences": "passed",
+    "remote_github_ci": "not_verified"
+  },
+  "remaining_external_decisions": [
+    "B01",
+    "B02",
+    "B03",
+    "B04",
+    "B05",
+    "B06"
+  ],
+  "known_original_issue": "The original archive had a stale RELEASE_VALIDATION.json checksum. Original file hashes are retained in baseline.json; current package checksums are regenerated in RELEASE_MANIFEST.sha256.",
+  "baseline_file_integrity": {
+    "original_files": 145,
+    "unchanged": 137,
+    "recorded_publication_edits": 7,
+    "regenerated_manifest": 1
+  },
+  "runtime_logic_modified": false,
+  "maintenance_scope": "documentation_and_verification_records",
+  "_historical_snapshot": true,
+  "_current_implementation_status": "../../REQUIREMENT_STATUS.json"
+}

@@ -1,0 +1,13 @@
+Contains information from the EEG Motor Movement/Imagery Dataset v1.0.0,
+Gerwin Schalk (2009), PhysioNet, https://doi.org/10.13026/C28G6P ,
+https://physionet.org/content/eegmmidb/1.0.0/ , made available under the
+Open Data Commons Attribution License (ODC-By) v1.0:
+https://physionet.org/content/eegmmidb/view-license/1.0.0/
+https://opendatacommons.org/licenses/by/1-0/
+
+This transformed subset selects S001-S008, runs 04/08/12, nine channels,
+one 0.5-3.5s epoch per eligible event, float32 values in volts, and adds explicit
+subject/run/trial arrays. The source data retain their separate database license;
+the repository code's Apache-2.0 license does not replace those terms.
+
+See docs/RECORDED_EEG.md for attribution, transformation and reproduction details.

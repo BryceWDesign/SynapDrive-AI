@@ -1,0 +1,303 @@
+{
+  "schema": "synapdrive.design.experiments.v1",
+  "experiments": [
+    {
+      "id": "E01",
+      "title": "Cross-session selective decoding and no-command control",
+      "pain_ids": [
+        "P01",
+        "P02",
+        "P03",
+        "P10"
+      ],
+      "source_ids": [
+        "S09",
+        "S19",
+        "S23",
+        "S27"
+      ],
+      "requirement_ids": [
+        "R-007",
+        "R-008",
+        "R-010"
+      ],
+      "level": "offline_data",
+      "primary_metrics": [
+        "issued_command_error",
+        "coverage",
+        "false_activations_per_no_command_hour",
+        "response_delay"
+      ],
+      "falsification": "Benefit vanishes at matched coverage, no-control time, or held-out-session evaluation.",
+      "status": "planned_not_executed",
+      "results": null
+    },
+    {
+      "id": "E02",
+      "title": "Qualification expiry and identity transfer",
+      "pain_ids": [
+        "P03",
+        "P04",
+        "P14"
+      ],
+      "source_ids": [
+        "S11",
+        "S20",
+        "S21"
+      ],
+      "requirement_ids": [
+        "R-002",
+        "R-003",
+        "R-009"
+      ],
+      "level": "software",
+      "primary_metrics": [
+        "mismatch_rejection",
+        "false_rejection",
+        "transition_recovery"
+      ],
+      "falsification": "Consequential identity changes are accepted or valid supported inputs are broadly rejected.",
+      "status": "planned_not_executed",
+      "results": null
+    },
+    {
+      "id": "E03",
+      "title": "Accessible local communication and computer tasks",
+      "pain_ids": [
+        "P01",
+        "P05",
+        "P06"
+      ],
+      "source_ids": [
+        "S01",
+        "S02",
+        "S05"
+      ],
+      "requirement_ids": [
+        "R-020",
+        "R-021",
+        "R-022",
+        "R-023",
+        "R-036"
+      ],
+      "level": "human_study",
+      "primary_metrics": [
+        "task_completion",
+        "wrong_commit",
+        "setup_and_recovery_burden",
+        "user_reported_control"
+      ],
+      "falsification": "The proposed system is less useful than the person's existing access method or requires unacceptable support.",
+      "status": "planned_not_executed",
+      "results": null
+    },
+    {
+      "id": "E04",
+      "title": "Hypothesis-compatible assistance and clarification",
+      "pain_ids": [
+        "P01",
+        "P02",
+        "P06"
+      ],
+      "source_ids": [
+        "S13",
+        "S14",
+        "S25"
+      ],
+      "requirement_ids": [
+        "R-018",
+        "R-019"
+      ],
+      "level": "simulation",
+      "primary_metrics": [
+        "wrong_goal_commit",
+        "task_progress",
+        "clarification_cost",
+        "override_latency"
+      ],
+      "falsification": "Progress relies on oracle goals, silently changes intent, or fails at matched risk.",
+      "status": "planned_not_executed",
+      "results": null
+    },
+    {
+      "id": "E05",
+      "title": "Recoverable simulated mobility and fallback",
+      "pain_ids": [
+        "P04",
+        "P08"
+      ],
+      "source_ids": [
+        "S18",
+        "S21"
+      ],
+      "requirement_ids": [
+        "R-016",
+        "R-017"
+      ],
+      "level": "simulation",
+      "primary_metrics": [
+        "constraint_violation",
+        "minimum_clearance",
+        "recovery_success",
+        "deadline_miss"
+      ],
+      "falsification": "Constraints fail inside stated bounds, or apparent safety comes only from never moving.",
+      "status": "planned_not_executed",
+      "results": null
+    },
+    {
+      "id": "E06",
+      "title": "Chronological supervised adaptation and rollback",
+      "pain_ids": [
+        "P01",
+        "P03",
+        "P07"
+      ],
+      "source_ids": [
+        "S06",
+        "S07",
+        "S08"
+      ],
+      "requirement_ids": [
+        "R-028",
+        "R-029",
+        "R-030",
+        "R-031"
+      ],
+      "level": "offline_data",
+      "primary_metrics": [
+        "selective_risk",
+        "coverage",
+        "calibration_burden",
+        "forgetting",
+        "rollback_rate"
+      ],
+      "falsification": "Gains disappear without audit-set reuse or system-generated semantic labels; user effort rises.",
+      "status": "planned_not_executed",
+      "results": null
+    },
+    {
+      "id": "E07",
+      "title": "Compact decoders versus optional advanced encoders",
+      "pain_ids": [
+        "P03",
+        "P13"
+      ],
+      "source_ids": [
+        "S10",
+        "S12",
+        "S24",
+        "S26"
+      ],
+      "requirement_ids": [
+        "R-011",
+        "R-034"
+      ],
+      "level": "offline_data",
+      "primary_metrics": [
+        "risk_coverage",
+        "latency",
+        "memory",
+        "energy_when_measured"
+      ],
+      "falsification": "Larger/complex model lacks benefit after matching data and inference budget.",
+      "status": "planned_not_executed",
+      "results": null
+    },
+    {
+      "id": "E08",
+      "title": "Privacy and assisted-output integrity",
+      "pain_ids": [
+        "P06",
+        "P11",
+        "P12"
+      ],
+      "source_ids": [
+        "S15",
+        "S16",
+        "S17"
+      ],
+      "requirement_ids": [
+        "R-023",
+        "R-024",
+        "R-025",
+        "R-026",
+        "R-027"
+      ],
+      "level": "software",
+      "primary_metrics": [
+        "unauthorized_output",
+        "content_leak",
+        "incorrect_attribution",
+        "veto_availability"
+      ],
+      "falsification": "Forbidden content escapes the tested boundary or assistance is falsely represented as user-confirmed meaning.",
+      "status": "planned_not_executed",
+      "results": null
+    },
+    {
+      "id": "E09",
+      "title": "Crash, revocation and replay continuity",
+      "pain_ids": [
+        "P08",
+        "P09",
+        "P12"
+      ],
+      "source_ids": [
+        "S18",
+        "S21"
+      ],
+      "requirement_ids": [
+        "R-012",
+        "R-013",
+        "R-014",
+        "R-032",
+        "R-033"
+      ],
+      "level": "software",
+      "primary_metrics": [
+        "stale_dispatch",
+        "duplicate_effect",
+        "unresolved_outcome",
+        "replay_divergence"
+      ],
+      "falsification": "A valid old permit causes a forbidden new dispatch, or rejection/permission history cannot be reproduced.",
+      "status": "planned_not_executed",
+      "results": null
+    },
+    {
+      "id": "E10",
+      "title": "Longitudinal usefulness and continuation",
+      "pain_ids": [
+        "P01",
+        "P05",
+        "P14",
+        "P15"
+      ],
+      "source_ids": [
+        "S01",
+        "S04",
+        "S05"
+      ],
+      "requirement_ids": [
+        "R-036",
+        "R-037",
+        "R-038",
+        "R-040"
+      ],
+      "level": "deployment",
+      "primary_metrics": [
+        "usable_access_time",
+        "support_burden",
+        "failed_starts",
+        "continued_use",
+        "withdrawal_reasons"
+      ],
+      "falsification": "Short task improvements do not persist, support burden dominates, or users discontinue.",
+      "status": "planned_not_executed",
+      "results": null
+    }
+  ],
+  "_historical_snapshot": true,
+  "_current_implementation_status": "../../REQUIREMENT_STATUS.json"
+}

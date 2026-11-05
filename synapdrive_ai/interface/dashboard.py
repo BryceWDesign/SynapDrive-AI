@@ -10,9 +10,7 @@ from synapdrive_ai.interface.bridge import SynapDriveBridge
 class SynapDriveDashboard:
     """Console monitor for the canonical governed simulation bridge.
 
-    Historical versions contained a fabricated "cloud" router and a feedback learner that
-    updated weights outside the governed adaptation path. Both have been removed. This
-    dashboard only displays results already produced by the canonical runtime.
+    Displays results produced by the canonical runtime through SynapDriveBridge.
     """
 
     def __init__(self) -> None:

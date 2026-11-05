@@ -1,3 +1,3 @@
-from core.planning.agi_planner import AGIPlanner, DeterministicPlanner, PlanStep
+from core.planning.deterministic_planner import DeterministicPlanner, PlanStep
 
-__all__ = ["AGIPlanner", "DeterministicPlanner", "PlanStep"]
+__all__ = ["DeterministicPlanner", "PlanStep"]

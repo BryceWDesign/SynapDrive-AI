@@ -35,7 +35,7 @@ def main(argv=None) -> int:
             res = injector.clip(base, quantile=0.6)
         else:
             res = injector.gaussian_noise(base, sigma=1.0)
-        trials.append((str(res.metadata["fault"]), res.signal))
+        trials.append((str(res.metadata["fault"]), res.signal, mode != 3))
 
     pipe = SynapDrivePipeline(simulate_delay=False)
     campaign = StressCampaign(

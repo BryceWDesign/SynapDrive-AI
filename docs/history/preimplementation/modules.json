@@ -1,0 +1,114 @@
+{
+  "schema": "synapdrive.design.modules.v1",
+  "modules": [
+    {
+      "id": "M01",
+      "title": "Validated observation and timing contracts",
+      "planned_paths": [
+        "synapdrive_ai/contracts/",
+        "synapdrive_ai/integrations/",
+        "synapdrive_ai/neuro/eeg_loader.py"
+      ],
+      "boundary": "Acquisition truth is not established by metadata or signatures.",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "M02",
+      "title": "Per-channel integrity and usable-input assessment",
+      "planned_paths": [
+        "synapdrive_ai/neuro/signal_quality.py",
+        "synapdrive_ai/neuro/drift.py"
+      ],
+      "boundary": "Engineering integrity checks are not neurological diagnoses.",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "M03",
+      "title": "Qualified decoding and temporal intent evidence",
+      "planned_paths": [
+        "synapdrive_ai/benchmarking/",
+        "synapdrive_ai/intent/belief.py",
+        "synapdrive_ai/neuro/uncertainty.py"
+      ],
+      "boundary": "A supported class is a hypothesis, not proof of true intent.",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "M04",
+      "title": "Accessible interaction and assistance negotiation",
+      "planned_paths": [
+        "synapdrive_ai/access/",
+        "synapdrive_ai/cognition/shared_autonomy.py"
+      ],
+      "boundary": "No universal interface or preferred assistance level is assumed.",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "M05",
+      "title": "Independent action admission and execution protocol",
+      "planned_paths": [
+        "synapdrive_ai/governance/",
+        "synapdrive_ai/runtime/",
+        "synapdrive_ai/pipeline.py"
+      ],
+      "boundary": "Atomic dispatch assumptions and in-flight effects must be explicit.",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "M06",
+      "title": "Bounded task planning and plant-specific recovery",
+      "planned_paths": [
+        "synapdrive_ai/cognition/",
+        "synapdrive_ai/simulation/",
+        "synapdrive_ai/neuro/task_planner.py"
+      ],
+      "boundary": "Simulation constraint satisfaction is not physical safety certification.",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "M07",
+      "title": "Qualified adaptation and user-model interaction",
+      "planned_paths": [
+        "synapdrive_ai/adaptation/",
+        "synapdrive_ai/runtime/shadow.py"
+      ],
+      "boundary": "No promotion from self-generated semantic labels alone.",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "M08",
+      "title": "Privacy, authorship and isolated proposal workers",
+      "planned_paths": [
+        "synapdrive_ai/privacy/",
+        "synapdrive_ai/access/communication.py",
+        "synapdrive_ai/workers/"
+      ],
+      "boundary": "Integrity, privacy and intended meaning are separate properties.",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "M09",
+      "title": "Replay capsules and lifecycle recovery",
+      "planned_paths": [
+        "synapdrive_ai/replay/",
+        "synapdrive_ai/assurance/",
+        "synapdrive_ai/lifecycle/"
+      ],
+      "boundary": "Private data omitted from a run cannot later be reconstructed for exact replay.",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "M10",
+      "title": "Independent evaluation and failure analysis",
+      "planned_paths": [
+        "synapdrive_ai/benchmarking/",
+        "synapdrive_ai/stress/",
+        "benchmarks/v2/"
+      ],
+      "boundary": "Offline, simulated, hardware, human and deployment evidence remain distinct.",
+      "implementation_status": "planned"
+    }
+  ],
+  "_historical_snapshot": true,
+  "_current_implementation_status": "../../REQUIREMENT_STATUS.json"
+}

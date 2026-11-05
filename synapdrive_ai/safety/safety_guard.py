@@ -1,7 +1,8 @@
 class SafetyGuard:
     """
-    Ensures cognitive decisions remain within safe, logical, and ethical bounds.
-    Rejects unsafe or anomalous intent packets.
+    Apply a configured prohibited-phrase list and minimum-confidence check.
+
+    This lexical filter supplements the canonical runtime admission checks.
     """
 
     def __init__(self):

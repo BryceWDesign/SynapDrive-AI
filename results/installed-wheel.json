@@ -1,0 +1,10 @@
+{
+  "installed_wheel_import": true,
+  "version": "2.0.0",
+  "demo_exit_code": 0,
+  "eeg_exit_code": 0,
+  "recording_exit_code": 0,
+  "replay_exit_code": 0,
+  "replay_evidence_verified": true,
+  "recorded_eeg_predictions_reproduced": true
+}

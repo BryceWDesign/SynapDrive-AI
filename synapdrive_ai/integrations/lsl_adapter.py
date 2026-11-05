@@ -22,6 +22,7 @@ class LSLSnapshot:
     stream_name: str
     stream_type: str
     rms: float
+    timestamps: tuple[float, ...] = ()
 
     def metadata(self) -> Dict[str, Any]:
         return {
@@ -31,6 +32,7 @@ class LSLSnapshot:
             "stream_name": self.stream_name,
             "stream_type": self.stream_type,
             "rms": self.rms,
+            "timestamps": list(self.timestamps),
         }
 
 
@@ -97,11 +99,13 @@ class LSLIntentSource:
         nominal_srate = float(getattr(info, "nominal_srate", lambda: 0.0)() or 0.0)
 
         samples: List[List[float]] = []
+        timestamps: list[float] = []
         start = time.monotonic()
         while (time.monotonic() - start) < self.snapshot_seconds:
             chunk, _timestamps = inlet.pull_chunk(timeout=0.2, max_samples=self.max_chunk_samples)
             if chunk:
                 samples.extend(chunk)
+                timestamps.extend(float(t) for t in _timestamps)
 
         if not samples:
             data = np.empty((0, 0), dtype=float)
@@ -121,6 +125,7 @@ class LSLIntentSource:
             stream_name=name,
             stream_type=stream_type,
             rms=rms,
+            timestamps=tuple(timestamps),
         )
 
     def next_observation(self) -> LSLSnapshot:

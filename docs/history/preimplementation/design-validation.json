@@ -1,0 +1,47 @@
+{
+  "schema": "synapdrive.design.validation.v1",
+  "scope": "specification_consistency_only",
+  "runtime_version": "1.0.0",
+  "runtime_implementation_verified": false,
+  "passed": true,
+  "counts": {
+    "source": 27,
+    "module": 10,
+    "pain": 15,
+    "requirement": 40,
+    "test": 40,
+    "experiment": 10
+  },
+  "baseline_files": 145,
+  "baseline_files_unchanged": 137,
+  "baseline_publication_edits": 7,
+  "baseline_regenerated_files": [
+    "RELEASE_MANIFEST.sha256"
+  ],
+  "unresolved_parameter_ids": [
+    "B01",
+    "B02",
+    "B03",
+    "B04",
+    "B05",
+    "B06"
+  ],
+  "runtime_release_ready": false,
+  "runtime_requirements_implemented": 0,
+  "runtime_acceptance_cases_passed": 0,
+  "negative_controls": {
+    "missing_acceptance_link_detected": true,
+    "unsupported_pass_claim_detected": true,
+    "post_cutoff_source_detected": true,
+    "external_dispatch_enablement_detected": true,
+    "implementation_without_evidence_detected": true,
+    "lost_audit_finding_detected": true,
+    "dependency_cycle_detected": true,
+    "publication_digest_mismatch_detected": true,
+    "unlisted_baseline_change_detected": true
+  },
+  "known_baseline_limitation": "Original v1 RELEASE_VALIDATION.json hash differs from its historical manifest; current package checksums are regenerated in RELEASE_MANIFEST.sha256.",
+  "errors": [],
+  "_historical_snapshot": true,
+  "_current_implementation_status": "../../REQUIREMENT_STATUS.json"
+}

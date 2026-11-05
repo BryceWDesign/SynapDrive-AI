@@ -4,8 +4,7 @@ from collections import Counter, deque
 
 class EpisodicMemory:
     """
-    Maintains a memory bank of recent intent episodes and supports
-    pattern recognition, frequency recall, and adaptive memory shaping.
+    Store recent intent records in a bounded queue and report frequency counts.
 
     Episodic structure:
         {
@@ -20,7 +19,7 @@ class EpisodicMemory:
         self.memory_bank = deque(maxlen=max_memory)
 
     def store_event(self, intent_packet):
-        """Store a cognitive/motor event into memory."""
+        """Store an intent record."""
         episode = {
             "timestamp": time.time(),
             "intent": intent_packet.get("intent"),

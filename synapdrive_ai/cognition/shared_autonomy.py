@@ -41,6 +41,6 @@ class SharedAutonomyArbiter:
         return SharedAutonomyProposal(
             user_intent=user_intent,
             selected_action=selected,
-            preserved_user_goal=selected is not None,
+            preserved_user_goal=(choice.selected is not None and choice.selected.goal_score > 0),
             ranked=choice.ranked,
         )

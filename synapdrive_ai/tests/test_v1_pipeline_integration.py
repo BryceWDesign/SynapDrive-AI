@@ -10,7 +10,7 @@ def test_pipeline_exposes_runtime_reality_memory_and_evidence():
     assert out["status"] == "success"
     assert out["runtime"]["allowed"] is True
     assert out["reality"]["aligned"] is True
-    assert out["memory"]["state"] == "validated"
+    assert out["memory"]["state"] == "unconfirmed"
     assert len(out["evidence"]["event_hash"]) == 64
 
 
@@ -31,7 +31,7 @@ def test_quarantined_memory_does_not_boost_legacy_optimizer():
 
 def test_validated_memory_is_context_not_confidence_inflation():
     pipe = SynapDrivePipeline(simulate_delay=False)
-    first = pipe.run_text_command("move left")
+    first = pipe.run_text_command("move left", feedback={"accepted": True})
     second = pipe.run_text_command("move left")
     assert second["intent"]["confidence"] == first["intent"]["confidence"]
     assert first["intent"]["history_support_count"] == 0

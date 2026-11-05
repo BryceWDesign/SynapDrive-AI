@@ -1,0 +1,16 @@
+{
+  "schema": "synapdrive.demo.v2",
+  "evidence": "software-and-declared-plant-simulation",
+  "negated_command": "blocked",
+  "normal_action": "success",
+  "rejected_feedback_memory": "quarantined",
+  "replayed_memory": "quarantined",
+  "fallback": {
+    "status": "stopped",
+    "position": 0.8199999999999996,
+    "velocity": 0.0,
+    "inside": true
+  },
+  "exact_approved_local_output": "Please move the chair closer.",
+  "rollback": "baseline"
+}

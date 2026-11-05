@@ -33,15 +33,20 @@ def test_world_model_unknown_does_not_invent_effects():
 
 def test_counterfactual_planner_penalizes_risk():
     world = WorldModel({"goal": 0})
-    world.register_many([
-        ActionModel("safe", effects={"goal": 1}, predicted_risk=0.1),
-        ActionModel("risky", effects={"goal": 1}, predicted_risk=0.9),
-    ])
+    world.register_many(
+        [
+            ActionModel("safe", effects={"goal": 1}, predicted_risk=0.1),
+            ActionModel("risky", effects={"goal": 1}, predicted_risk=0.9),
+        ]
+    )
     planner = CounterfactualPlanner(world)
-    choice = planner.rank([
-        CandidateAction("safe", 1.0, 0.9),
-        CandidateAction("risky", 1.0, 0.9),
-    ], lambda s: float(cast(int | float, s.get("goal", 0))))
+    choice = planner.rank(
+        [
+            CandidateAction("safe", 1.0, 0.9),
+            CandidateAction("risky", 1.0, 0.9),
+        ],
+        lambda s: float(cast(int | float, s.get("goal", 0))),
+    )
     assert choice.selected is not None
     assert choice.selected.action == "safe"
 

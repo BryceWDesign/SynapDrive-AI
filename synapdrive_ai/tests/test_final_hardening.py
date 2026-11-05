@@ -7,7 +7,6 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from synapdrive_ai.agi.cognitive_optimizer import CognitiveOptimizer
 from synapdrive_ai.bci.intent_generator import generate_intent
 from synapdrive_ai.benchmarking.dataset import EpochDataset
 from synapdrive_ai.benchmarking.decoders import SpectralCentroidDecoder
@@ -16,6 +15,7 @@ from synapdrive_ai.cognition.world_model import WorldModel
 from synapdrive_ai.neuro.eeg_loader import EEGLoader, EEGRecording
 from synapdrive_ai.neuro.session_analyzer import SessionAnalyzer
 from synapdrive_ai.pipeline import SynapDrivePipeline
+from synapdrive_ai.processing.cognitive_optimizer import CognitiveOptimizer
 from synapdrive_ai.vision.visual_inference import VisualInferenceEngine
 
 
@@ -174,9 +174,7 @@ def _install_fake_lsl(monkeypatch: pytest.MonkeyPatch, sampling_rate: float = 25
             self.calls += 1
             if self.calls == 1:
                 t = np.arange(64) / 256.0
-                samples = np.stack(
-                    [np.sin(2 * np.pi * 10 * t), np.sin(2 * np.pi * 12 * t)], axis=1
-                )
+                samples = np.stack([np.sin(2 * np.pi * 10 * t), np.sin(2 * np.pi * 12 * t)], axis=1)
                 return samples.tolist(), t.tolist()
             return [], []
 
@@ -203,7 +201,7 @@ def test_lsl_without_decoder_abstains(monkeypatch: pytest.MonkeyPatch) -> None:
     assert packet["analysis_only"] is True
 
 
-def test_repository_contains_no_retired_fabricated_routes() -> None:
+def test_repository_excludes_unsupported_vendor_routes() -> None:
     root = Path(__file__).resolve().parents[2]
     retired = ("Tesla" + "AutonomySystem", "SpaceX" + "CommandCore", "Hyperloop" + "Ops")
     for path in root.rglob("*.py"):
@@ -211,7 +209,7 @@ def test_repository_contains_no_retired_fabricated_routes() -> None:
             continue
         text = path.read_text(encoding="utf-8")
         for marker in retired:
-            assert marker not in text, f"retired fabricated route {marker!r} remains in {path}"
+            assert marker not in text, f"unsupported vendor route {marker!r} remains in {path}"
 
 
 def test_qualified_decoder_adapter_connects_to_session_analyzer() -> None:

@@ -63,9 +63,7 @@ def epoch_recording(
         start = int(round((event.onset_s + tmin_s) * sr))
         end = start + n_samples
         if start < 0 or end > recording.n_samples:
-            raise ValueError(
-                f"event {event.label!r} at {event.onset_s}s exceeds recording bounds"
-            )
+            raise ValueError(f"event {event.label!r} at {event.onset_s}s exceeds recording bounds")
         epochs.append(selected[:, start:end])
         labels.append(event.label)
     if not epochs:

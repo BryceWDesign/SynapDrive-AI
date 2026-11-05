@@ -24,7 +24,7 @@ def test_record_and_replay_roundtrip(tmp_path):
     records = list(iter_jsonl(rec_path))
     assert len(records) == 1
     r = records[0]
-    assert r["schema"] == "synapdrive.replay.v1"
+    assert r["schema"] == "synapdrive.replay.v2"
     assert r["mode"] == "text"
     assert "intent_packet" in r
     assert "output_summary" in r

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Dict
@@ -32,7 +33,7 @@ class RuntimePolicy:
         for name, value in bounded:
             if not 0.0 <= float(value) <= 1.0:
                 raise ValueError(f"{name} must be in [0, 1]")
-        if self.max_drift_score <= 0:
+        if not math.isfinite(self.max_drift_score) or self.max_drift_score <= 0:
             raise ValueError("max_drift_score must be > 0")
 
     def to_dict(self) -> Dict[str, Any]:

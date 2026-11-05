@@ -31,16 +31,19 @@ class PermissionGate:
         self.allow_patterns: Tuple[str, ...] = tuple(allow_patterns)
         self.deny_patterns: Tuple[str, ...] = tuple(deny_patterns)
         self._revoked = False
+        self.version = 0
 
     def revoke_all(self) -> None:
         self._revoked = True
+        self.version += 1
 
     def restore(self) -> None:
         self._revoked = False
+        self.version += 1
 
     def evaluate(self, action: str) -> PermissionDecision:
         normalized = (action or "unknown").strip().lower()
-        if any(token in normalized for token in ("halt", "stop", "hold_position")):
+        if normalized in {"halt", "halt_all_motion", "stop", "hold_position"}:
             return PermissionDecision(True, "safe-state action permitted")
         if self._revoked:
             return PermissionDecision(False, "all non-safe capabilities revoked")

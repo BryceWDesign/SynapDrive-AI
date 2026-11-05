@@ -1,0 +1,1268 @@
+{
+  "schema": "synapdrive.design.requirements.v1",
+  "requirements": [
+    {
+      "id": "R-001",
+      "title": "Strict mode-specific input contracts",
+      "pain_ids": [
+        "P04",
+        "P12"
+      ],
+      "module_ids": [
+        "M01",
+        "M05"
+      ],
+      "statement": "Reject missing, wrong-type, non-finite and out-of-domain required values before any ordinary actuation; do not substitute favorable defaults for required evidence.",
+      "source_ids": [
+        "S20",
+        "S22"
+      ],
+      "acceptance_test_ids": [
+        "T-001"
+      ],
+      "phase": "R1",
+      "evidence_level": "software",
+      "baseline_finding_ids": [
+        "F01",
+        "F02",
+        "F06",
+        "F13"
+      ],
+      "depends_on": [],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-002",
+      "title": "Acquisition and processing identity",
+      "pain_ids": [
+        "P03",
+        "P04"
+      ],
+      "module_ids": [
+        "M01",
+        "M03"
+      ],
+      "statement": "Bind qualification to named ordered channels, units, reference/montage, sampling, window and preprocessing identities, modality and supported task.",
+      "source_ids": [
+        "S11",
+        "S20",
+        "S22"
+      ],
+      "acceptance_test_ids": [
+        "T-002"
+      ],
+      "phase": "R1",
+      "evidence_level": "software",
+      "baseline_finding_ids": [
+        "F10"
+      ],
+      "depends_on": [
+        "R-001"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-003",
+      "title": "Timing and observation freshness",
+      "pain_ids": [
+        "P04",
+        "P08"
+      ],
+      "module_ids": [
+        "M01",
+        "M05"
+      ],
+      "statement": "Preserve source time, sample sequence, clock domain and estimated offset/uncertainty; action profiles require bounded age.",
+      "source_ids": [
+        "S21"
+      ],
+      "acceptance_test_ids": [
+        "T-003"
+      ],
+      "phase": "R1",
+      "evidence_level": "software",
+      "baseline_finding_ids": [
+        "F06"
+      ],
+      "depends_on": [
+        "R-001"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-004",
+      "title": "Per-channel exclusions and usable subsets",
+      "pain_ids": [
+        "P03",
+        "P04"
+      ],
+      "module_ids": [
+        "M02",
+        "M03"
+      ],
+      "statement": "Apply required finite-sample and sensor-health exclusions per channel; permit channel-subset degradation only for independently qualified subset models.",
+      "source_ids": [
+        "S20",
+        "S22"
+      ],
+      "acceptance_test_ids": [
+        "T-004"
+      ],
+      "phase": "R1",
+      "evidence_level": "software",
+      "baseline_finding_ids": [
+        "F04"
+      ],
+      "depends_on": [
+        "R-001",
+        "R-002"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-005",
+      "title": "Independent fault outcomes",
+      "pain_ids": [
+        "P04",
+        "P10"
+      ],
+      "module_ids": [
+        "M02",
+        "M10"
+      ],
+      "statement": "Derive expected fault responses from independently declared scenario conditions rather than the detector score under test.",
+      "source_ids": [
+        "S19"
+      ],
+      "acceptance_test_ids": [
+        "T-005"
+      ],
+      "phase": "R1",
+      "evidence_level": "software",
+      "baseline_finding_ids": [
+        "F05"
+      ],
+      "depends_on": [
+        "R-001",
+        "R-004"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-006",
+      "title": "Consistent decoder evidence",
+      "pain_ids": [
+        "P02",
+        "P06"
+      ],
+      "module_ids": [
+        "M03",
+        "M05"
+      ],
+      "statement": "Derive uncertainty from validated decoder evidence; preserve explicit justified mappings from class to assisted action; disallow arbitrary uncertainty reductions.",
+      "source_ids": [
+        "S09",
+        "S16"
+      ],
+      "acceptance_test_ids": [
+        "T-006"
+      ],
+      "phase": "R1",
+      "evidence_level": "software",
+      "baseline_finding_ids": [
+        "F03"
+      ],
+      "depends_on": [
+        "R-001"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-007",
+      "title": "No-command and engagement states",
+      "pain_ids": [
+        "P01",
+        "P02",
+        "P11"
+      ],
+      "module_ids": [
+        "M03",
+        "M04",
+        "M05"
+      ],
+      "statement": "Model no-command, ambiguity and active engagement explicitly; represent absence of a command separately from movement classes.",
+      "source_ids": [
+        "S03",
+        "S09",
+        "S15",
+        "S23",
+        "S27"
+      ],
+      "acceptance_test_ids": [
+        "T-007"
+      ],
+      "phase": "R2",
+      "evidence_level": "offline_data",
+      "baseline_finding_ids": [],
+      "depends_on": [
+        "R-002",
+        "R-004",
+        "R-006"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-008",
+      "title": "Grouped immutable qualification",
+      "pain_ids": [
+        "P03",
+        "P10"
+      ],
+      "module_ids": [
+        "M03",
+        "M10"
+      ],
+      "statement": "Split by declared subject/session/run/parent trial before fitting learned processing and preserve immutable split hashes.",
+      "source_ids": [
+        "S19",
+        "S20",
+        "S23",
+        "S26"
+      ],
+      "acceptance_test_ids": [
+        "T-008"
+      ],
+      "phase": "R2",
+      "evidence_level": "offline_data",
+      "baseline_finding_ids": [
+        "F10"
+      ],
+      "depends_on": [
+        "R-001",
+        "R-002"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-009",
+      "title": "Qualification binds deployed artifact",
+      "pain_ids": [
+        "P03",
+        "P14"
+      ],
+      "module_ids": [
+        "M03",
+        "M07",
+        "M09"
+      ],
+      "statement": "Bind qualification to the exact deployed artifact and declared retraining procedure; expiry propagates when dependencies change.",
+      "source_ids": [
+        "S06",
+        "S10",
+        "S20"
+      ],
+      "acceptance_test_ids": [
+        "T-009"
+      ],
+      "phase": "R1",
+      "evidence_level": "software",
+      "baseline_finding_ids": [
+        "F10"
+      ],
+      "depends_on": [
+        "R-001",
+        "R-002"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-010",
+      "title": "Calibration and selective risk",
+      "pain_ids": [
+        "P02",
+        "P03"
+      ],
+      "module_ids": [
+        "M03",
+        "M10"
+      ],
+      "statement": "Use separate calibration/evaluation partitions and report conditional command error, opportunity error, coverage and interval assumptions.",
+      "source_ids": [
+        "S09",
+        "S19"
+      ],
+      "acceptance_test_ids": [
+        "T-010"
+      ],
+      "phase": "R2",
+      "evidence_level": "offline_data",
+      "baseline_finding_ids": [],
+      "depends_on": [
+        "R-008",
+        "R-009"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-011",
+      "title": "Decoder family and resource comparison",
+      "pain_ids": [
+        "P01",
+        "P13"
+      ],
+      "module_ids": [
+        "M03",
+        "M10"
+      ],
+      "statement": "Compare strong compact baselines with optional foundation or transformation-based adapters using identical permitted data.",
+      "source_ids": [
+        "S10",
+        "S12",
+        "S24",
+        "S26"
+      ],
+      "acceptance_test_ids": [
+        "T-011"
+      ],
+      "phase": "R2",
+      "evidence_level": "offline_data",
+      "baseline_finding_ids": [],
+      "depends_on": [
+        "R-008",
+        "R-010"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-012",
+      "title": "Exact capabilities and independent veto",
+      "pain_ids": [
+        "P02",
+        "P06",
+        "P08"
+      ],
+      "module_ids": [
+        "M04",
+        "M05"
+      ],
+      "statement": "Use exact capability identifiers; a trusted user veto/stop is independent of neural confidence, ordinary admission and ordinary logging availability.",
+      "source_ids": [
+        "S03",
+        "S18"
+      ],
+      "acceptance_test_ids": [
+        "T-012"
+      ],
+      "phase": "R1",
+      "evidence_level": "software",
+      "baseline_finding_ids": [
+        "F07",
+        "F08"
+      ],
+      "depends_on": [
+        "R-001"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-013",
+      "title": "Immutable action permits",
+      "pain_ids": [
+        "P06",
+        "P12"
+      ],
+      "module_ids": [
+        "M05"
+      ],
+      "statement": "Bind each permit to action/parameters, evidence and state versions, capability/policy epochs, validity and a single-use nonce.",
+      "source_ids": [
+        "S18",
+        "S21"
+      ],
+      "acceptance_test_ids": [
+        "T-013"
+      ],
+      "phase": "R1",
+      "evidence_level": "software",
+      "baseline_finding_ids": [
+        "F06",
+        "F08",
+        "F11"
+      ],
+      "depends_on": [
+        "R-001",
+        "R-003",
+        "R-009",
+        "R-012"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-014",
+      "title": "Pre-dispatch durability and bounded audit failure",
+      "pain_ids": [
+        "P09",
+        "P12"
+      ],
+      "module_ids": [
+        "M05",
+        "M09"
+      ],
+      "statement": "Prepare an ordinary command record before irreversible external dispatch and reconcile outcomes after crashes; emergency baseline control does not wait for audit I/O.",
+      "source_ids": [
+        "S18"
+      ],
+      "acceptance_test_ids": [
+        "T-014"
+      ],
+      "phase": "R1",
+      "evidence_level": "software",
+      "baseline_finding_ids": [
+        "F02",
+        "F09"
+      ],
+      "depends_on": [
+        "R-013"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-015",
+      "title": "Task prerequisite enforcement",
+      "pain_ids": [
+        "P06",
+        "P08"
+      ],
+      "module_ids": [
+        "M06",
+        "M05"
+      ],
+      "statement": "Express dependencies and distinguish defer-independent-step, pause-plan and abort; invalidated prerequisites cancel dependent permits.",
+      "source_ids": [
+        "S18",
+        "S25"
+      ],
+      "acceptance_test_ids": [
+        "T-015"
+      ],
+      "phase": "R1",
+      "evidence_level": "software",
+      "baseline_finding_ids": [
+        "F12"
+      ],
+      "depends_on": [
+        "R-013"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-016",
+      "title": "Recoverability before fallback switching",
+      "pain_ids": [
+        "P08"
+      ],
+      "module_ids": [
+        "M06",
+        "M05"
+      ],
+      "statement": "A physical-profile simulation needs explicit dynamics, state-error/disturbance bounds, recovery set and monitor/actuator delay assumptions.",
+      "source_ids": [
+        "S18",
+        "S21"
+      ],
+      "acceptance_test_ids": [
+        "T-016"
+      ],
+      "phase": "R3",
+      "evidence_level": "simulation",
+      "baseline_finding_ids": [
+        "F11"
+      ],
+      "depends_on": [
+        "R-003",
+        "R-005",
+        "R-013",
+        "R-015"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-017",
+      "title": "State-dependent fallback and handover",
+      "pain_ids": [
+        "P01",
+        "P08"
+      ],
+      "module_ids": [
+        "M06",
+        "M04"
+      ],
+      "statement": "Select baseline behavior for the action domain and observed state; entering a fallback state does not prove fallback completion.",
+      "source_ids": [
+        "S18"
+      ],
+      "acceptance_test_ids": [
+        "T-017"
+      ],
+      "phase": "R3",
+      "evidence_level": "simulation",
+      "baseline_finding_ids": [
+        "F07",
+        "F11"
+      ],
+      "depends_on": [
+        "R-012",
+        "R-016"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-018",
+      "title": "Bounded assistance with original goal retained",
+      "pain_ids": [
+        "P01",
+        "P06"
+      ],
+      "module_ids": [
+        "M04",
+        "M06"
+      ],
+      "statement": "Preserve original goal hypotheses and user-selected assistance limits; planning proposes and never directly actuates.",
+      "source_ids": [
+        "S13",
+        "S14",
+        "S25"
+      ],
+      "acceptance_test_ids": [
+        "T-018"
+      ],
+      "phase": "R3",
+      "evidence_level": "simulation",
+      "baseline_finding_ids": [
+        "F14"
+      ],
+      "depends_on": [
+        "R-013",
+        "R-015"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-019",
+      "title": "Clarification and compatible progress hypothesis",
+      "pain_ids": [
+        "P01",
+        "P02",
+        "P06"
+      ],
+      "module_ids": [
+        "M03",
+        "M04",
+        "M06"
+      ],
+      "statement": "Compare clarification, waiting and reversible common progress across retained goal hypotheses, all within current authorization and plant constraints.",
+      "source_ids": [
+        "S09",
+        "S25"
+      ],
+      "acceptance_test_ids": [
+        "T-019"
+      ],
+      "phase": "R3",
+      "evidence_level": "simulation",
+      "baseline_finding_ids": [],
+      "depends_on": [
+        "R-007",
+        "R-010",
+        "R-018"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-020",
+      "title": "User-selected automation scope",
+      "pain_ids": [
+        "P05",
+        "P06",
+        "P14"
+      ],
+      "module_ids": [
+        "M04",
+        "M05"
+      ],
+      "statement": "Offer adjustable manual, assisted and bounded-task modes with accessible revision and veto; preferences do not expand system safety bounds.",
+      "source_ids": [
+        "S01",
+        "S05",
+        "S14"
+      ],
+      "acceptance_test_ids": [
+        "T-020"
+      ],
+      "phase": "R5",
+      "evidence_level": "human_study",
+      "baseline_finding_ids": [],
+      "depends_on": [
+        "R-012",
+        "R-018",
+        "R-037"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-021",
+      "title": "Adaptive input continuity",
+      "pain_ids": [
+        "P01",
+        "P04",
+        "P05"
+      ],
+      "module_ids": [
+        "M01",
+        "M03",
+        "M04",
+        "M09"
+      ],
+      "statement": "Advertise available qualified inputs and support deliberate or pre-authorized transitions without pretending a missing modality exists.",
+      "source_ids": [
+        "S01",
+        "S04",
+        "S05"
+      ],
+      "acceptance_test_ids": [
+        "T-021"
+      ],
+      "phase": "R3",
+      "evidence_level": "simulation",
+      "baseline_finding_ids": [],
+      "depends_on": [
+        "R-002",
+        "R-004",
+        "R-009",
+        "R-012",
+        "R-032"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-022",
+      "title": "Accessible setup and self-recovery",
+      "pain_ids": [
+        "P01",
+        "P05"
+      ],
+      "module_ids": [
+        "M04",
+        "M09"
+      ],
+      "statement": "Provide one usable input for setup/stop/recovery, compatible targets/dwell preferences and understandable diagnosis of unavailable functions.",
+      "source_ids": [
+        "S01",
+        "S03",
+        "S05"
+      ],
+      "acceptance_test_ids": [
+        "T-022"
+      ],
+      "phase": "R5",
+      "evidence_level": "human_study",
+      "baseline_finding_ids": [],
+      "depends_on": [
+        "R-021",
+        "R-037"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-023",
+      "title": "Transparent communication stages",
+      "pain_ids": [
+        "P06",
+        "P11"
+      ],
+      "module_ids": [
+        "M04",
+        "M08"
+      ],
+      "statement": "Separate decoder-supported candidates, machine suggestions, edited drafts and user-authorized output; never label language-prior support as proof of intended meaning.",
+      "source_ids": [
+        "S05",
+        "S15",
+        "S16"
+      ],
+      "acceptance_test_ids": [
+        "T-023"
+      ],
+      "phase": "R3",
+      "evidence_level": "simulation",
+      "baseline_finding_ids": [],
+      "depends_on": [
+        "R-012",
+        "R-013",
+        "R-024"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-024",
+      "title": "Explicit privacy modes",
+      "pain_ids": [
+        "P11",
+        "P14"
+      ],
+      "module_ids": [
+        "M04",
+        "M08",
+        "M09"
+      ],
+      "statement": "Distinguish locked, private-no-content-retention, local-audited and explicitly consented research modes with separate capture/processing/output/export permissions.",
+      "source_ids": [
+        "S04",
+        "S15",
+        "S16"
+      ],
+      "acceptance_test_ids": [
+        "T-024"
+      ],
+      "phase": "R1",
+      "evidence_level": "software",
+      "baseline_finding_ids": [],
+      "depends_on": [
+        "R-012",
+        "R-013"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-025",
+      "title": "Safe content retention and honest replay limits",
+      "pain_ids": [
+        "P09",
+        "P11"
+      ],
+      "module_ids": [
+        "M08",
+        "M09"
+      ],
+      "statement": "Keep sensitive content separately encrypted or unretained; do not treat hashes of guessable text as anonymization, or imply reconstructability of unrecorded private content.",
+      "source_ids": [
+        "S04",
+        "S15",
+        "S20"
+      ],
+      "acceptance_test_ids": [
+        "T-025"
+      ],
+      "phase": "R1",
+      "evidence_level": "software",
+      "baseline_finding_ids": [],
+      "depends_on": [
+        "R-024",
+        "R-032"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-026",
+      "title": "Isolated proposal workers",
+      "pain_ids": [
+        "P12",
+        "P13"
+      ],
+      "module_ids": [
+        "M05",
+        "M08"
+      ],
+      "statement": "Experimental decoders/planners/LLMs lack executor credentials and use bounded typed IPC; arbitrary Python callbacks are not a security sandbox.",
+      "source_ids": [
+        "S17",
+        "S18"
+      ],
+      "acceptance_test_ids": [
+        "T-026"
+      ],
+      "phase": "R1",
+      "evidence_level": "software",
+      "baseline_finding_ids": [],
+      "depends_on": [
+        "R-001",
+        "R-013",
+        "R-034"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-027",
+      "title": "Artifact and input threat boundaries",
+      "pain_ids": [
+        "P12",
+        "P14"
+      ],
+      "module_ids": [
+        "M01",
+        "M07",
+        "M08",
+        "M09"
+      ],
+      "statement": "Verify model/configuration provenance and authenticity where trust requires it; prevent source data or instructions from changing authority.",
+      "source_ids": [
+        "S17",
+        "S20"
+      ],
+      "acceptance_test_ids": [
+        "T-027"
+      ],
+      "phase": "R1",
+      "evidence_level": "software",
+      "baseline_finding_ids": [],
+      "depends_on": [
+        "R-002",
+        "R-009",
+        "R-013"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-028",
+      "title": "Controlled decoder-update lifecycle",
+      "pain_ids": [
+        "P03",
+        "P07"
+      ],
+      "module_ids": [
+        "M03",
+        "M07",
+        "M09"
+      ],
+      "statement": "Use immutable baseline/candidate/shadow/qualified/promoted/rolled-back states; promotion requires independent evidence and exact artifact identity.",
+      "source_ids": [
+        "S06",
+        "S07",
+        "S08"
+      ],
+      "acceptance_test_ids": [
+        "T-028"
+      ],
+      "phase": "R4",
+      "evidence_level": "offline_data",
+      "baseline_finding_ids": [],
+      "depends_on": [
+        "R-009",
+        "R-029",
+        "R-031",
+        "R-032"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-029",
+      "title": "Label and feedback provenance",
+      "pain_ids": [
+        "P06",
+        "P07",
+        "P09"
+      ],
+      "module_ids": [
+        "M04",
+        "M07",
+        "M09"
+      ],
+      "statement": "Separate task success, user acceptance, explicit ground-truth labels and error-potential hypotheses; delayed contradictions revise dependent learning state.",
+      "source_ids": [
+        "S06",
+        "S08",
+        "S16"
+      ],
+      "acceptance_test_ids": [
+        "T-029"
+      ],
+      "phase": "R4",
+      "evidence_level": "software",
+      "baseline_finding_ids": [
+        "F09",
+        "F14"
+      ],
+      "depends_on": [
+        "R-001",
+        "R-032"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-030",
+      "title": "Co-adaptation stability experiments",
+      "pain_ids": [
+        "P01",
+        "P07"
+      ],
+      "module_ids": [
+        "M07",
+        "M10"
+      ],
+      "statement": "Separate fast control from slower adaptation; test user/decoder interactions over learning-rate and feedback-delay ranges.",
+      "source_ids": [
+        "S08"
+      ],
+      "acceptance_test_ids": [
+        "T-030"
+      ],
+      "phase": "R4",
+      "evidence_level": "simulation",
+      "baseline_finding_ids": [],
+      "depends_on": [
+        "R-028"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-031",
+      "title": "Locked audit data and adaptive-selection control",
+      "pain_ids": [
+        "P07",
+        "P10"
+      ],
+      "module_ids": [
+        "M07",
+        "M10"
+      ],
+      "statement": "Prevent repeated candidate selection from silently consuming the final audit set; disclose sequential testing and target-label availability.",
+      "source_ids": [
+        "S06",
+        "S09",
+        "S19"
+      ],
+      "acceptance_test_ids": [
+        "T-031"
+      ],
+      "phase": "R4",
+      "evidence_level": "offline_data",
+      "baseline_finding_ids": [],
+      "depends_on": [
+        "R-008",
+        "R-010"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-032",
+      "title": "Complete versioned run capsules",
+      "pain_ids": [
+        "P09",
+        "P10"
+      ],
+      "module_ids": [
+        "M09"
+      ],
+      "statement": "Capture all permitted decision-relevant policy, permissions, models, processing, initial state, timing, feedback and event ordering with schema/version identities.",
+      "source_ids": [
+        "S19",
+        "S20",
+        "S21"
+      ],
+      "acceptance_test_ids": [
+        "T-032"
+      ],
+      "phase": "R1",
+      "evidence_level": "software",
+      "baseline_finding_ids": [
+        "F09"
+      ],
+      "depends_on": [
+        "R-001"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-033",
+      "title": "Independent evidence completeness verification",
+      "pain_ids": [
+        "P09",
+        "P12"
+      ],
+      "module_ids": [
+        "M09",
+        "M10"
+      ],
+      "statement": "An independent verifier checks expected run ID, entry count and final commitment against retained authenticated checkpoints, not only an internally consistent chain.",
+      "source_ids": [
+        "S18",
+        "S20"
+      ],
+      "acceptance_test_ids": [
+        "T-033"
+      ],
+      "phase": "R1",
+      "evidence_level": "software",
+      "baseline_finding_ids": [
+        "F14"
+      ],
+      "depends_on": [
+        "R-032"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-034",
+      "title": "Bounded resources and local continuity",
+      "pain_ids": [
+        "P01",
+        "P13"
+      ],
+      "module_ids": [
+        "M03",
+        "M05",
+        "M08",
+        "M09"
+      ],
+      "statement": "Keep a qualified local baseline and bounded queues/work budgets; drop expired work instead of replaying stale commands after overload.",
+      "source_ids": [
+        "S10",
+        "S12",
+        "S21",
+        "S26"
+      ],
+      "acceptance_test_ids": [
+        "T-034"
+      ],
+      "phase": "R1",
+      "evidence_level": "software",
+      "baseline_finding_ids": [],
+      "depends_on": [
+        "R-003",
+        "R-012"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-035",
+      "title": "Defensive numerical robustness without inflated security claims",
+      "pain_ids": [
+        "P03",
+        "P12"
+      ],
+      "module_ids": [
+        "M02",
+        "M03",
+        "M10"
+      ],
+      "statement": "Measure clean/corrupted/shifted/adversarial input outcomes under explicit attacker access and perturbation bounds.",
+      "source_ids": [
+        "S17"
+      ],
+      "acceptance_test_ids": [
+        "T-035"
+      ],
+      "phase": "R4",
+      "evidence_level": "offline_data",
+      "baseline_finding_ids": [],
+      "depends_on": [
+        "R-004",
+        "R-008",
+        "R-026",
+        "R-027"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-036",
+      "title": "Useful access and denominator integrity",
+      "pain_ids": [
+        "P01",
+        "P05",
+        "P10"
+      ],
+      "module_ids": [
+        "M04",
+        "M10"
+      ],
+      "statement": "Evaluate successful meaningful tasks, usable time, burden, errors, coverage and failures together; an always-abstain system cannot pass usefulness.",
+      "source_ids": [
+        "S01",
+        "S02",
+        "S04",
+        "S05"
+      ],
+      "acceptance_test_ids": [
+        "T-036"
+      ],
+      "phase": "R5",
+      "evidence_level": "human_study",
+      "baseline_finding_ids": [],
+      "depends_on": [
+        "R-007",
+        "R-008",
+        "R-020",
+        "R-022",
+        "R-023"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-037",
+      "title": "Versioned user preferences and constrained caregiver roles",
+      "pain_ids": [
+        "P05",
+        "P06",
+        "P14"
+      ],
+      "module_ids": [
+        "M04",
+        "M05",
+        "M09"
+      ],
+      "statement": "Allow accessible preference updates, portable profiles and limited caregiver assistance without silently replacing user choice or granting new action scopes.",
+      "source_ids": [
+        "S01",
+        "S05"
+      ],
+      "acceptance_test_ids": [
+        "T-037"
+      ],
+      "phase": "R1",
+      "evidence_level": "software",
+      "baseline_finding_ids": [],
+      "depends_on": [
+        "R-009",
+        "R-012"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-038",
+      "title": "Evidence classification and honest release status",
+      "pain_ids": [
+        "P10",
+        "P15"
+      ],
+      "module_ids": [
+        "M10",
+        "M09"
+      ],
+      "statement": "Classify source review, design-model checks, software tests, offline data, simulation, hardware, human study and deployment evidence separately.",
+      "source_ids": [
+        "S02",
+        "S18",
+        "S23"
+      ],
+      "acceptance_test_ids": [
+        "T-038"
+      ],
+      "phase": "R1",
+      "evidence_level": "software",
+      "baseline_finding_ids": [],
+      "depends_on": [
+        "R-032",
+        "R-033"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-039",
+      "title": "Cross-modality and cohort boundaries",
+      "pain_ids": [
+        "P03",
+        "P10",
+        "P15"
+      ],
+      "module_ids": [
+        "M01",
+        "M03",
+        "M10"
+      ],
+      "statement": "Keep scalp EEG, intracortical, EMG, gaze and declared input artifacts distinct; population and task scope must accompany every result.",
+      "source_ids": [
+        "S02",
+        "S04",
+        "S08",
+        "S15",
+        "S20"
+      ],
+      "acceptance_test_ids": [
+        "T-039"
+      ],
+      "phase": "R2",
+      "evidence_level": "software",
+      "baseline_finding_ids": [],
+      "depends_on": [
+        "R-002",
+        "R-008"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    },
+    {
+      "id": "R-040",
+      "title": "Deployment and support continuity",
+      "pain_ids": [
+        "P01",
+        "P05",
+        "P14"
+      ],
+      "module_ids": [
+        "M09",
+        "M04",
+        "M10"
+      ],
+      "statement": "Provide explicit offline support boundaries, supported-version policy, export/migration and graceful loss of optional services.",
+      "source_ids": [
+        "S01",
+        "S04",
+        "S05"
+      ],
+      "acceptance_test_ids": [
+        "T-040"
+      ],
+      "phase": "R1",
+      "evidence_level": "software",
+      "baseline_finding_ids": [],
+      "depends_on": [
+        "R-009",
+        "R-032",
+        "R-034",
+        "R-037"
+      ],
+      "implementation_status": "planned",
+      "evidence_status": "not_run"
+    }
+  ],
+  "_historical_snapshot": true,
+  "_current_implementation_status": "../../REQUIREMENT_STATUS.json"
+}

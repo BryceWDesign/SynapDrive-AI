@@ -1,457 +1,140 @@
-# SynapDrive-AI
+# SynapDrive-AI 2.0.0
 
-SynapDrive-AI is a **simulation-first, evidence-producing neuroadaptive shared-autonomy research runtime**.
+Executable research software for recorded-EEG decoding, governed simulated actions,
+local access tasks, and reproducible failure analysis. Apache-2.0 code; the bundled
+EEG-derived data have separate attribution terms in `synapdrive_ai/assets/DATA_LICENSE.txt`.
 
-Its core question is deliberately narrow:
+This release implements working software beyond the earlier v2 design package.
+It does **not** complete the entire research roadmap. The measured EEG results below
+are insufficient to claim dependable assistive neural control.
 
-> Given a declared or decoded action candidate, what evidence and gates should exist before a system is allowed to execute even a simulated action?
+## Run it
 
-The repository separates acquisition, decoding, uncertainty, permission, world-state prediction, action admission, simulated execution, feedback, memory consequence, adaptation, and evidence. It is designed so that missing knowledge produces an abstention or blocked cycle rather than an invented answer.
-
-## Claim boundary
-
-SynapDrive-AI is research software. It is **not**:
-
-- a medical device;
-- a clinical neural decoder;
-- proof that a decoded class equals a person's true intent;
-- evidence of human BCI accuracy unless a real labeled dataset and appropriate study design are supplied externally;
-- a safe physical-control system;
-- a cybersecurity certification;
-- an AGI, consciousness, or sentience system.
-
-The bundled actuator is simulated. The bundled deterministic synthetic signals are software verification fixtures, not physiological performance evidence.
-
-See `docs/CLAIM_BOUNDARIES.md` before publishing results derived from this repository.
-
-## What v1.0 actually implements
-
-### Governed canonical runtime
-
-Every action candidate passes through a single canonical pipeline in `synapdrive_ai/pipeline.py`:
-
-```text
-input packet
-  -> context enrichment without confidence inflation
-  -> class/action distribution
-  -> uncertainty estimation
-  -> signal-quality / drift / permission / world-model checks
-  -> fail-closed runtime admission
-  -> compatibility lexical guard
-  -> simulated action router, only when admitted
-  -> explicit symbolic world-state commit for modeled successful actions
-  -> result and optional user/ErrP feedback reconciliation
-  -> validated or quarantined evidence memory
-  -> assurance receipt
-  -> SHA-256 linked evidence entry
-```
-
-Unknown, analysis-only, unmodeled, low-confidence, high-uncertainty, low-quality, excessive-drift, permission-denied, or excessive-risk packets cannot reach the simulated action router.
-
-### Explicit provenance
-
-Packets can state:
-
-- `inference_authority`;
-- `confidence_semantics`;
-- `neural_decode_performed`;
-- `analysis_only`;
-- signal quality and drift measurements;
-- action probabilities;
-- a stricter task-level confidence requirement.
-
-A deterministic text parser is labeled as a declared-command path. A synthetic fixture label is labeled as synthetic ground truth. Hardware acquisition with no decoder is labeled acquisition-only and abstains.
-
-### Signal integrity
-
-`SignalQualityAnalyzer` checks:
-
-- non-finite samples;
-- flatline behavior;
-- zero-valued dropout;
-- observed-extrema clipping;
-- line-frequency power.
-
-Its aggregate score is an engineering heuristic used by the software gate. It is not a clinical EEG quality index.
-
-### Offline EEG-style analysis
-
-The lightweight loader supports:
-
-- EDF;
-- BDF with signed 24-bit sample decoding;
-- CSV;
-- NPY.
-
-`BandPowerAnalyzer` computes delta, theta, alpha, beta, and gamma power plus ratio features. Its historical `confidence` field is explicitly an **uncalibrated spectral heuristic score**.
-
-`SessionAnalyzer` without a decoder is analysis-only. Band ratios do not become movement commands. If an explicit decoder callback is supplied, its packet still passes through the canonical governed runtime.
-
-### Decoder benchmark arena
-
-Built-in inspectable baselines:
-
-- spectral centroid decoder;
-- log-Euclidean covariance centroid decoder;
-- probability-averaging ensemble.
-
-The arena reports:
-
-- accuracy;
-- balanced accuracy;
-- multiclass Brier score;
-- expected calibration error;
-- abstention coverage;
-- selective accuracy.
-
-The benchmark consumes explicit labeled epochs. Missing labels are not invented.
-
-### Locally qualified decoder bridge
-
-`QualifiedDecoderAdapter` connects a benchmark decoder to runtime use only after deterministic held-out qualification.
-
-It requires:
-
-- configured balanced-accuracy, calibration, Brier, and coverage gates;
-- a complete decoder-label to simulation-action map;
-- matching runtime channel count;
-- matching runtime sampling rate;
-- confidence above the configured abstention threshold.
-
-Failure yields an explicit abstention. Passing these local gates does not establish clinical validity, participant generalization, or hardware safety.
-
-### Uncertainty and calibration
-
-The neuro runtime includes:
-
-- normalized class distributions;
-- normalized entropy;
-- top-class margin uncertainty;
-- ensemble disagreement;
-- a reliability calibrator fitted from supplied confidence/correctness observations.
-
-### Decoder drift
-
-`FeatureDriftMonitor` uses a fitted Mahalanobis-distance baseline. It has no meaningful baseline until the caller supplies calibration features.
-
-### Multimodal fusion
-
-`WeightedEvidenceFusion` combines caller-supplied probability distributions for modalities such as EEG, EMG, gaze, or context using explicit reliability weights. It does not fabricate modality reliability.
-
-### ErrP research path
-
-`ErrPFeatureExtractor` produces event-window features. `ErrPLDAClassifier` must be trained on supplied labeled calibration features before use.
-
-An externally derived ErrP probability or explicit rejection can contradict an otherwise successful simulated execution, which causes the corresponding evidence memory to be quarantined rather than reinforced.
-
-### Symbolic world model
-
-The bundled world model predicts only registered simulation actions. An unknown action is infeasible, preserves state, and receives maximal software risk.
-
-Successful modeled actions commit their predicted symbolic state. The built-in risk values are transparent repository policy fixtures, not empirical physical-risk probabilities.
-
-### Counterfactual planning and shared autonomy
-
-`CounterfactualPlanner` ranks a bounded caller-supplied action set using explicit fixed software-policy weights over:
-
-- alignment with the supplied request;
-- decoder confidence;
-- caller goal score;
-- reversibility;
-- registered software risk.
-
-`SharedAutonomyArbiter` proposes only. It does not bypass governance or directly actuate.
-
-### Simplex and shadow control components
-
-`SimplexController` dispatches to an advanced controller only after an allowed runtime decision; otherwise it invokes a caller-supplied reversionary controller.
-
-`ShadowController` lets an experimental policy produce comparison decisions while granting it no authority over the trusted action path.
-
-### Evidence-gated memory
-
-Aligned successful cycles can enter evidence memory as `validated`. Contradicted cycles enter as `quarantined`.
-
-Historical successful episodes can be attached as review context, but they do **not** increase decoder/parser confidence.
-
-### Guarded adaptation
-
-`GuardedThresholdAdapter` evaluates a candidate confidence threshold on caller-supplied held-out records. Promotion requires improved defined utility without increasing unsafe accepts on that supplied validation set.
-
-This is bounded threshold adaptation, not autonomous model self-rewriting.
-
-### Evidence, replay, and signing
-
-Each canonical cycle produces:
-
-- an assurance receipt;
-- a SHA-256 linked evidence-chain entry.
-
-The evidence CLI can:
-
-- verify a chain;
-- generate Ed25519 keys;
-- sign an evidence ledger;
-- verify a detached signature.
-
-Hashing and signatures provide integrity/authenticity properties for recorded bytes. They do not prove sensor truth or scientific validity.
-
-### Deterministic fault injection
-
-The stress surface includes deterministic seeded injection for:
-
-- Gaussian noise;
-- contiguous dropout;
-- clipping;
-- line-frequency contamination;
-- channel swaps.
-
-Campaign results state which defined invariant was expected and whether the tested callback failed closed.
-
-## Installation
-
-Python 3.11 or newer is required.
-
-### Windows PowerShell
+Python 3.11–3.13. From the repository directory, on Windows PowerShell:
 
 ```powershell
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-python -m pip install -e ".[dev]"
-```
-
-### Linux/macOS
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -e ".[dev]"
-```
-
-Optional acquisition dependencies are intentionally separate:
-
-```text
-pip install -r requirements-brainflow.txt
-pip install -r requirements-lsl.txt
-```
-
-## Quick verification
-
-```text
-python -m compileall -q synapdrive_ai core scripts
+python -m pip install -e ".[dev,eeg]"
+python -m synapdrive_ai.v2 demo
+python -m synapdrive_ai.v2 eeg --out results/eeg-reproduced
 python -m pytest -q
-python -m scripts.run_v1_validation
+python -m scripts.validate_release
 ```
 
-With development dependencies installed:
+On Linux/macOS, use `python3 -m venv .venv` and `source .venv/bin/activate`, then
+run the same Python commands. Scientific dependencies are needed for EEG evaluation;
+`pip install -e .` is sufficient for the ordinary simulation and local-task demo.
+The processed recorded-EEG epochs are included, so evaluation needs no data download.
+An internet connection is required for the initial dependency installation.
+
+`demo` exercises rejected commands, execution, rejected-feedback replay, actual
+simulated braking, exact-output approval, and supervised adaptation rollback.
+`eeg` trains the recorded-signal models, calibrates on a separate run, evaluates a
+held-out run, writes portable models/reports, and sends qualified predictions through
+the canonical pipeline. Repeating the experiment reproduces the same evidence;
+it is not a new independent study or permission to tune against its audit labels.
+
+## Implemented in this release
+
+- Finite, typed, bounded packet validation before any action; independently derived
+  uncertainty cannot be lowered by an input packet.
+- Exact command grammar, exact stop capability identifiers, and an independent
+  trusted operator stop API that does not wait for journal writes.
+- Action-bound, expiring, single-use permits checked at the executor boundary;
+  current world/policy/capability binding and SQLite prepared/outcome records.
+- Interrupted-dispatch reconciliation: unresolved outcomes block new ordinary
+  actions and are never automatically retried.
+- Per-channel signal exclusions, time-ordered fresh stream windows, exact
+  acquisition identities, and duplicate/replayed-window rejection.
+- A real trained CSP + shrinkage-LDA EEG decoder, separate temperature calibration,
+  no refit on audit data, numeric-only NPZ artifacts, artifact mutation/expiry checks,
+  and locked audit/fit overlap checks.
+- Local access tasks: qualified-input transitions, distinct-evidence sequential
+  confirmation, user-owned preferences, original draft/suggestion separation,
+  exact-content single-use approval, privacy lock, export consent and encrypted content.
+- Decoder-update evaluation tied to exact trained candidates, consumed audit trial
+  identities, evaluator-owned metrics, promotion checks, and dependent rollback.
+- Versioned replay capsules containing policy, capabilities, action models, initial
+  state and feedback; built-in plant state is replayed and divergence fails explicitly.
+- Unconfirmed versus confirmed versus contradicted memory; delayed rejection retracts
+  associated history and can invalidate dependent model updates.
+- Signed run checkpoints that verify run identity, count and final ledger head.
+- An independent 1D plant, state-dependent braking, recovery-envelope monitoring,
+  labeled fault oracles, and bounded run/permit budgets.
+
+The direct Python API is a **trusted simulation API**. It is not a security sandbox
+against arbitrary code running under the same account. The local task output is an
+in-memory workspace, not a live email, operating-system input or physical endpoint.
+
+## Recorded EEG results
+
+Dataset: PhysioNet EEG Motor Movement/Imagery Dataset v1.0.0, subjects S001–S008.
+Runs 04/08/12 contain left/right fist imagery and intervening rest. The split is fixed:
+R04 training, R08 temperature calibration, R12 evaluation. One nonoverlapping
+0.5–3.5 second epoch per annotation; nine named channels; three classes.
+
+| Participant | Held-out balanced accuracy | Local decoder gates | Simulated actions admitted | Incorrect admitted actions |
+| --- | ---: | --- | ---: | ---: |
+| S001 | 62.98% | Fail | 0 | 0 |
+| S002 | 52.58% | Fail | 0 | 0 |
+| S003 | 41.03% | Fail | 0 | 0 |
+| S004 | 61.31% | Pass | 7 | 3 |
+| S005 | 42.26% | Fail | 0 | 0 |
+| S006 | 37.50% | Fail | 0 | 0 |
+| S007 | 58.69% | Pass | 0 | 0 |
+| S008 | 39.80% | Fail | 0 | 0 |
+
+Mean balanced accuracy: **49.52%**; participant-cluster bootstrap 95% interval:
+**42.92–56.32%**. Two models pass the declared local numerical gates, but only one
+produces actions after the complete runtime gates. Across 240 evaluation epochs,
+seven actions were admitted: four correct and three incorrect. There were no
+admitted rest epochs in this small experiment. Abstaining on 233 epochs does not
+establish useful access, and local qualification is not a reliability certification.
+
+These are within-person, held-out-run results, not cross-person or cross-session
+validation, live closed-loop use, or evidence of benefit for people with disabilities.
+The spectral filtering uses the complete three-second epoch; this is windowed
+research inference, not a measured low-latency streaming neural interface.
+
+All participant results, label-permutation controls, predictions, error counts,
+abstention reasons and artifact identities are in [results/eeg/recorded-eeg.json](results/eeg/recorded-eeg.json).
+No failed participant was removed. All 24 downloaded EDF sources were checked against
+the dataset's official SHA-256 manifest; provenance is in [results/EEG_SOURCES.json](results/EEG_SOURCES.json).
+
+## Verification
 
 ```text
-ruff check .
-pyright
-```
-
-`make quality` runs compile, the complete pytest suite, and the release validator.
-
-## Main CLI
-
-Declared text command:
-
-```text
+python -m ruff check .
+python -m pyright
+python -m pytest -q --cov=synapdrive_ai --cov=core --cov-branch
+python -m scripts.validate_release
 python -m synapdrive_ai --text "move left" --no-delay
-python -m synapdrive_ai --text "stop" --no-delay
-python -m synapdrive_ai --text "switch mode to assistive" --no-delay
-```
-
-Explicit synthetic fixture label:
-
-```text
-python -m synapdrive_ai --signal walk --no-delay
-python -m synapdrive_ai --signal stop --no-delay
-```
-
-`--signal` uses bundled deterministic-by-seed synthetic fixtures. It is not a neural decoder demonstration.
-
-Optional caller-declared visual context:
-
-```text
-python -m synapdrive_ai --text "move left" --image road --no-delay
-```
-
-The bundled visual path maps a declared label only. It does not run image inference and it does not increase intent confidence.
-
-## BrainFlow and LSL acquisition
-
-```text
-python -m synapdrive_ai --brainflow --bf-board-id -1 --bf-seconds 2 --no-delay
-python -m synapdrive_ai --lsl --lsl-type EEG --lsl-seconds 2 --no-delay
-```
-
-The CLI deliberately has **no implicit hardware decoder**. These acquisition commands therefore abstain after collecting/quality-checking data.
-
-Library users can supply a decoder callback to `BrainFlowIntentSource` or `LSLIntentSource`. `QualifiedDecoderAdapter` is the provided path for connecting a locally evaluated built-in decoder.
-
-## Prepare a labeled benchmark dataset
-
-Event CSV contract:
-
-```csv
-onset_s,label
-1.0,left
-3.0,right
-5.0,left
-7.0,right
-```
-
-Create epochs:
-
-```text
-synapdrive-prepare-dataset recording.edf events.csv --out epochs.npz --tmin 0 --tmax 1
-```
-
-Then benchmark:
-
-```text
-synapdrive-benchmark epochs.npz --decoder all --seed 7 --abstain 0.60
-```
-
-See `docs/BENCHMARKING.md` for the complete contract and qualification boundary.
-
-## Offline spectral analysis
-
-Synthetic analysis demo:
-
-```text
-python -m synapdrive_ai.neuro.cli demo
-```
-
-The demo injects a deterministic synthetic spectral burst. It does not claim neural intent.
-
-Analyze a file:
-
-```text
-python -m synapdrive_ai.neuro.cli analyze session.edf --channel C3 --out results
-```
-
-List channels:
-
-```text
-python -m synapdrive_ai.neuro.cli analyze session.edf --channels
-```
-
-Sweep the uncalibrated spectral heuristic score:
-
-```text
-python -m synapdrive_ai.neuro.cli threshold session.edf --min-conf 0.4 0.5 0.6 0.7
-```
-
-That command is descriptive only. It does not report decoder accuracy or successful control.
-
-## Sequential task plans
-
-```text
-python -m synapdrive_ai.neuro.cli plan --list
-python -m synapdrive_ai.neuro.cli plan --task reach_grasp
-```
-
-Per-step minimum confidence is enforced **before** the simulated action router. A rejected step can freeze/defer or abort according to the plan fallback.
-
-## Record and deterministic decision replay
-
-```text
-python -m synapdrive_ai --text "move left" --record runs.jsonl --no-delay
+python -m synapdrive_ai --text "move left" --reject-feedback --record runs.jsonl --no-delay
 python -m synapdrive_ai --replay runs.jsonl
 ```
 
-Replay reproduces the stored software decision input. It is not a re-acquisition of original neural signals.
+The independent release validator exercises 120 labeled fault cases, 933 recoverable
+plant scenarios and 800 cycles across eight threads. Its complete results are in
+[results/software-validation.json](results/software-validation.json). These are
+software/simulation checks, not physiological or physical safety evidence.
+GitHub Actions is configured for Python 3.11, 3.12 and 3.13. Remote CI is **unverified**
+until the workflow actually runs on the uploaded repository.
 
-## Evidence chain
+## Documentation
 
-```text
-python -m synapdrive_ai --text "move left" --no-delay --evidence-out run.evidence.jsonl
-synapdrive-evidence verify-chain run.evidence.jsonl
-```
+- [Implemented scope and audit resolution](docs/V2_IMPLEMENTED.md)
+- [Results and remaining gaps](RESULTS.md)
+- [Current architecture](docs/ARCHITECTURE.md)
+- [Migration from v1](docs/MIGRATION_V2.md)
+- [Data attribution and reproduction](docs/RECORDED_EEG.md)
+- [Original design snapshot](docs/history/PREIMPLEMENTATION_DESIGN.md), retained as historical context
 
-Generate signing keys:
+## Boundaries
 
-```text
-synapdrive-evidence keygen --private evidence-private.pem --public evidence-public.pem
-```
-
-Sign and verify:
-
-```text
-synapdrive-evidence sign run.evidence.jsonl --private evidence-private.pem --out run.signature.json
-synapdrive-evidence verify-signature run.evidence.jsonl --public evidence-public.pem --signature run.signature.json
-```
-
-Keep private keys out of source control.
-
-## Stress campaign
-
-```text
-synapdrive-stress --runs 100 --seed 7
-```
-
-The campaign is a defined negative-control surface, not exhaustive proof of safety.
-
-## Local dashboard
-
-```text
-python -m synapdrive_ai.interface.web_dashboard
-```
-
-Open `http://127.0.0.1:5055` locally.
-
-The dashboard routes text and synthetic fixture events through the canonical governed pipeline. It contains no fabricated external cloud/device routes.
-
-## Repository layout
-
-```text
-synapdrive_ai/
-  adaptation/       guarded threshold adaptation
-  assurance/        receipts, hash chain, Ed25519 signing
-  bci/              declared command + synthetic fixture surfaces
-  benchmarking/     datasets, epoching, decoders, arena, runtime qualification
-  cognition/        world model, counterfactual planning, shared autonomy, expectation deltas
-  governance/       policy and permissions
-  integrations/     BrainFlow and LSL acquisition with explicit decoder boundary
-  memory/           episodic compatibility memory + evidence-state memory
-  neuro/            quality, uncertainty, drift, fusion, ErrP, EEG loading/analysis
-  replay/           JSONL decision replay
-  runtime/          governed admission, reality reconciliation, Simplex, shadow control
-  stress/           deterministic fault injection
-  vision/           declared visual-context mapping only
-  tests/            unit, integration, negative-control, format, and tamper tests
-scripts/
-  run_v1_validation.py
-core/
-  legacy compatibility imports routed to deterministic implementations
-```
-
-## CI
-
-GitHub Actions tests Python 3.11, 3.12, and 3.13. Each matrix job installs development dependencies, runs Ruff, Pyright, pytest with coverage, and the release validator. Coverage XML and validation JSON are uploaded as workflow artifacts.
-
-## Donor provenance
-
-The upgrade was informed by the supplied IX, IX-IntentRealityLoop, IX-Sally, IX-Autonomy-Assurance-Case-Runtime, and IX-Operator repositories. The donor code was not blindly merged.
-
-Licensing and import decisions are documented in `docs/DONOR_PROVENANCE.md`. In particular, source-available donors were not bulk-copied, and the evaluated IX-Operator transport path was not imported after a donor test exposed a tamper-detection failure in that evaluated environment.
-
-## Additional documentation
-
-- `docs/ARCHITECTURE.md`
-- `docs/ARCHITECTURE_V1.md`
-- `docs/BENCHMARKING.md`
-- `docs/SAFETY_MODEL.md`
-- `docs/EVIDENCE_AND_REPLAY.md`
-- `docs/FAULT_INJECTION.md`
-- `docs/CLAIM_BOUNDARIES.md`
-- `docs/DONOR_PROVENANCE.md`
-- `SECURITY.md`
-
-## License
-
-Apache License 2.0. See `LICENSE`.
+No medical-device, clinical, autonomous-authority, cybersecurity-certification or
+safe physical-control claim is made. Intended-user/caregiver studies, hardware
+validation, OS-enforced worker isolation, broader decoder comparisons, physiological
+co-adaptation studies and longitudinal deployment remain incomplete. The original
+40-requirement design remains broader than the implemented release; its complete
+status mapping is in `docs/REQUIREMENT_STATUS.json`.

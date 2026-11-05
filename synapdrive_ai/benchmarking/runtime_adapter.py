@@ -87,8 +87,10 @@ class QualifiedDecoderAdapter:
             abstain_threshold=self.policy.abstain_threshold,
         )
         self.qualification = self._qualify(self.report)
-        if self.qualification.qualified:
-            self.decoder.fit(dataset.epochs, dataset.labels, dataset.sampling_rate)
+        # Keep the exact artifact that was evaluated; never refit on held-out data.
+        from synapdrive_ai.runtime.dispatch import digest
+
+        self.qualification_id = digest(self.qualification.to_dict())
 
     def _qualify(self, report: BenchmarkReport) -> DecoderQualification:
         failures: list[str] = []
@@ -130,6 +132,12 @@ class QualifiedDecoderAdapter:
                 f"got {sampling_rate}, expected {self.dataset.sampling_rate}"
             )
 
+        if samples.shape[1] != self.dataset.epochs.shape[2] or not np.isfinite(samples).all():
+            return self._abstention("epoch shape or finite-data mismatch")
+        if metadata.get("channel_names", self.dataset.channel_names) != self.dataset.channel_names:
+            return self._abstention("channel-order mismatch")
+        if metadata.get("units", self.dataset.units) != self.dataset.units:
+            return self._abstention("units mismatch")
         probabilities = self.decoder.predict_proba(samples[None, :, :], sampling_rate)[0]
         classes = np.asarray(self.decoder.classes_)
         best_idx = int(np.argmax(probabilities))
@@ -159,6 +167,9 @@ class QualifiedDecoderAdapter:
 
         return {
             "intent": action,
+            "qualification_id": self.qualification_id,
+            "signal_quality": float(metadata.get("signal_quality", 1.0)),
+            "drift_score": float(metadata.get("drift_score", 0.0)),
             "confidence": confidence,
             "probabilities": action_probabilities,
             "source": f"qualified-decoder/{type(self.decoder).__name__}",

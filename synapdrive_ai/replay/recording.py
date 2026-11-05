@@ -30,6 +30,7 @@ class ReplayRecord:
     image_label: Optional[str]
     intent_packet: Dict[str, Any]
     output_summary: Dict[str, Any]
+    capsule: Dict[str, Any] | None = None
 
 
 class JsonlRecorder:
@@ -46,9 +47,10 @@ class JsonlRecorder:
             "image_label": record.image_label,
             "intent_packet": record.intent_packet,
             "output_summary": record.output_summary,
+            "capsule": record.capsule,
         }
         with self.path.open("a", encoding="utf-8") as f:
-            f.write(json.dumps(payload, ensure_ascii=False) + "\n")
+            f.write(json.dumps(payload, ensure_ascii=False, allow_nan=False) + "\n")
 
 
 def make_record(
@@ -75,13 +77,14 @@ def make_record(
     }
 
     return ReplayRecord(
-        schema="synapdrive.replay.v1",
+        schema="synapdrive.replay.v2",
         created_utc_epoch_s=_utc_epoch_s(),
         mode=mode,
         raw_input=raw_input,
         image_label=image_label,
         intent_packet=intent_packet,
         output_summary=summary,
+        capsule=pipeline_output.get("replay_context"),
     )
 
 
@@ -93,3 +96,41 @@ def iter_jsonl(path: str | Path) -> Iterator[Dict[str, Any]]:
             if not line:
                 continue
             yield json.loads(line)
+
+
+def replay_capsule(capsule: Dict[str, Any]) -> Dict[str, Any]:
+    """Restore the decision context and fail on unexplained behavioral divergence."""
+    from synapdrive_ai.cognition.world_model import ActionModel, WorldModel
+    from synapdrive_ai.governance.permission import PermissionGate
+    from synapdrive_ai.governance.policy import RuntimePolicy
+    from synapdrive_ai.pipeline import SynapDrivePipeline
+    from synapdrive_ai.runtime.governed_runtime import GovernedRuntime
+
+    if capsule.get("schema") != "synapdrive.capsule.v2":
+        raise ValueError("unsupported or incomplete run capsule")
+    if not capsule.get("replay_supported", True):
+        raise ValueError("custom endpoint/fallback cannot be reconstructed by this replay schema")
+    caps = capsule["capabilities"]
+    gate = PermissionGate(caps["allow"], caps["deny"])
+    gate._revoked, gate.version = caps["revoked"], caps["version"]
+    world = WorldModel(capsule["world_state"])
+    world.register_many(ActionModel(**a) for a in capsule["actions"])
+    runtime = GovernedRuntime(RuntimePolicy(**capsule["policy"]), gate, world)
+    pipe = SynapDrivePipeline(False, runtime)
+    if capsule.get("lexical_guard"):
+        pipe.guard.min_confidence_threshold = capsule["lexical_guard"]["min_confidence"]
+        pipe.guard.risk_keywords = list(capsule["lexical_guard"]["risk_keywords"])
+    if capsule.get("simulation_state") is not None:
+        from synapdrive_ai.simulation import Plant, PlantEndpoint
+
+        plant = Plant(**capsule["simulation_state"])
+        pipe.router = PlantEndpoint(plant)
+        pipe.fallback_controller = plant.fallback
+    if capsule["stopped"]:
+        pipe.dispatch.veto()
+    if capsule["unresolved"]:
+        pipe.dispatch.journal.prepare("replayed-unresolved", {})
+    out = pipe.run_intent_packet(capsule["packet"], capsule["image_label"], capsule["feedback"])
+    if out["replay_context"]["expected"] != capsule["expected"]:
+        raise ValueError("replay divergence")
+    return out

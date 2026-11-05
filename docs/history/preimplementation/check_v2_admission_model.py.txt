@@ -1,0 +1,185 @@
+"""Explore a bounded abstract admission protocol, not the production runtime.
+
+Checks atomic dispatch against action identity, capability/state versions, expiry,
+single use, prepared audit state and veto. Counterexamples must be found when
+each guard is deliberately removed. The model does not cover neural validity,
+OS isolation, network delivery, physical cancellation or scheduler timing.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+from collections import deque
+from collections.abc import Iterator
+from dataclasses import asdict, dataclass, replace
+from pathlib import Path
+
+GUARDS = (
+    "action_identity",
+    "capability_epoch",
+    "world_epoch",
+    "deadline",
+    "single_use",
+    "prepared_audit",
+    "veto",
+)
+
+
+@dataclass(frozen=True)
+class Permit:
+    action: int
+    capability_epoch: int
+    world_epoch: int
+    expires_at: int
+
+
+@dataclass(frozen=True)
+class State:
+    action: int = 0
+    capability_epoch: int = 0
+    permission: bool = True
+    world_epoch: int = 0
+    tick: int = 0
+    permit: Permit | None = None
+    consumed: bool = False
+    prepared: bool = False
+    veto: bool = False
+
+
+def dispatch_conditions(state: State) -> dict[str, bool]:
+    permit = state.permit
+    if permit is None:
+        return {name: False for name in GUARDS}
+    return {
+        "action_identity": state.action == permit.action,
+        "capability_epoch": state.capability_epoch == permit.capability_epoch,
+        "world_epoch": state.world_epoch == permit.world_epoch,
+        "deadline": state.tick < permit.expires_at,
+        "single_use": not state.consumed,
+        "prepared_audit": state.prepared,
+        "veto": not state.veto,
+    }
+
+
+def transitions(state: State) -> Iterator[tuple[str, State, bool]]:
+    if state.action == 0:
+        yield "replace_action", replace(state, action=1), False
+    if state.permission and state.capability_epoch < 2:
+        yield (
+            "revoke",
+            replace(state, capability_epoch=state.capability_epoch + 1, permission=False),
+            False,
+        )
+    if not state.permission and state.capability_epoch < 2:
+        yield (
+            "restore_new_epoch",
+            replace(state, capability_epoch=state.capability_epoch + 1, permission=True),
+            False,
+        )
+    if state.world_epoch == 0:
+        yield "change_world", replace(state, world_epoch=1), False
+    if state.tick < 3:
+        yield "advance_clock", replace(state, tick=state.tick + 1), False
+    if not state.veto:
+        yield "veto", replace(state, veto=True), False
+    if state.permit is None and state.permission and not state.veto:
+        permit = Permit(state.action, state.capability_epoch, state.world_epoch, state.tick + 1)
+        yield "issue_permit", replace(state, permit=permit), False
+    if state.permit is not None and not state.prepared:
+        yield "prepare_audit", replace(state, prepared=True), False
+
+
+def explore(omitted_guard: str | None = None) -> dict:
+    initial = State()
+    queue = deque([initial])
+    paths: dict[State, tuple[str, ...]] = {initial: ()}
+    edges = 0
+    admitted = 0
+    while queue:
+        state = queue.popleft()
+        path = paths[state]
+        next_steps = list(transitions(state))
+        checks = dispatch_conditions(state)
+        may_dispatch = (
+            state.permit is not None
+            and state.permission
+            and all(value for key, value in checks.items() if key != omitted_guard)
+        )
+        if may_dispatch:
+            next_steps.append(("dispatch", replace(state, consumed=True), True))
+        for event, next_state, dispatch in next_steps:
+            edges += 1
+            if dispatch:
+                admitted += 1
+                failed = [name for name, value in checks.items() if not value]
+                if failed:
+                    return {
+                        "property_holds": False,
+                        "states_visited": len(paths),
+                        "transitions_checked": edges,
+                        "dispatch_edges": admitted,
+                        "counterexample": {
+                            "events": list(path + (event,)),
+                            "failed_obligations": failed,
+                            "pre_dispatch_state": asdict(state),
+                        },
+                    }
+            if next_state not in paths:
+                paths[next_state] = path + (event,)
+                queue.append(next_state)
+    return {
+        "property_holds": True,
+        "states_visited": len(paths),
+        "transitions_checked": edges,
+        "dispatch_edges": admitted,
+        "counterexample": None,
+    }
+
+
+def run() -> dict:
+    normal = explore()
+    controls = {name: explore(name) for name in GUARDS}
+    all_detected = all(not outcome["property_holds"] for outcome in controls.values())
+    return {
+        "schema": "synapdrive.design.admission-model.v1",
+        "scope": "bounded_abstract_protocol_only",
+        "runtime_implementation_verified": False,
+        "bounds": {
+            "permits": 1,
+            "action_values": 2,
+            "world_changes": 1,
+            "capability_epoch": [0, 1, 2],
+            "clock_ticks": [0, 1, 2, 3],
+            "dispatch": "atomic abstract event; no in-flight physical cancellation modeled",
+        },
+        "unmodeled": [
+            "decoder and sensor truth",
+            "policy/consent/artifact dependencies beyond the modeled capability version",
+            "OS scheduler, isolation, memory ordering and implementation races",
+            "multi-process or network delivery/acknowledgment",
+            "physical dynamics and post-dispatch cancellation",
+            "unbounded permits, time or version histories",
+        ],
+        "normal_protocol": normal,
+        "guard_removal_counterexamples": controls,
+        "all_guard_removals_detected": all_detected,
+        "passed": normal["property_holds"] and all_detected,
+    }
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--out", type=Path)
+    args = parser.parse_args()
+    report = run()
+    encoded = json.dumps(report, indent=2) + "\n"
+    if args.out:
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(encoded, encoding="utf-8")
+    print(encoded, end="")
+    return 0 if report["passed"] else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

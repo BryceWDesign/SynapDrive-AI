@@ -1,74 +1,49 @@
-# Architecture
+# Architecture: executable v2.0.0
 
-## Purpose
+The canonical trusted simulation API is `SynapDrivePipeline`. Input records pass
+strict finite/type/size validation before optimization, uncertainty computation,
+policy, permission, quality, drift and registered-world checks. Admission creates
+an action/policy/capability/world-bound single-use permit. The executor journals a
+prepared record before calling its endpoint and records the observed outcome.
+Unresolved dispatches block future ordinary work until explicitly reconciled.
 
-SynapDrive-AI is a simulation-first, evidence-producing runtime for studying how a declared or decoded action candidate moves through uncertainty, permission, prediction, execution, feedback, memory, and replay.
+The default endpoint logs simulated actions. `PlantEndpoint` connects the independent
+1D integrator and braking monitor to this same pipeline. Rejected cycles invoke a
+configured baseline controller and retain its reported result. Emergency stop uses a
+separate trusted operator API; it bypasses ordinary journal availability and latches
+future dispatch off. It does not preempt an arbitrary running Python callback or
+replace a physical emergency-stop circuit.
 
-The canonical implementation is `synapdrive_ai/pipeline.py`. Compatibility wrappers route into that pipeline rather than maintaining parallel control loops.
+The EEG path is `EEGDecoder`: fixed filtering, training-only CSP and shrinkage LDA,
+separate temperature calibration, a disjoint held-out evaluation, exact artifact
+qualification, and optional fresh-window admission by `StreamDecoder`. Acquisition
+identity includes ordered channels, units, reference, preprocessing, epoch length,
+sampling rate, modality and source device. The bundled profile identifies the
+recorded dataset; applying it to another device fails identity matching. A live
+integration needs its own measured acquisition contract and qualification data.
 
-## Canonical cycle
+`AccessSession` retains user-selected assistance scope, proposes explicit input
+transitions, requires distinct supported windows for sequential confirmation, and
+separates decoded evidence, suggestions, drafts and approved local output. Private
+mode keeps content in volatile process memory and forbids export. Audited/research
+exports require separate explicit consent; content is omitted or encrypted with a
+caller-owned Fernet key. This is application-level data handling, not protection
+against a compromised OS or arbitrary code in the same process.
 
-```text
-input packet
-  -> context enrichment without confidence inflation
-  -> probability distribution and uncertainty
-  -> permission + signal quality + drift + world-model risk
-  -> governed pre-action decision
-  -> lexical compatibility guard
-  -> simulated router, only when admitted
-  -> explicit world-state commit for modeled successful actions
-  -> reality reconciliation
-  -> validated or quarantined evidence memory
-  -> assurance receipt
-  -> SHA-256 linked evidence entry
-```
+`DecoderUpdates` owns evaluation of exact candidate models. `ModelLifecycle` records
+parent/feedback lineage, consumes independent audit identities and gates promotion.
+Delayed contradictions can retract memory and roll back promoted descendants. This
+is supervised software lifecycle control, not a demonstrated solution to biological
+co-adaptation.
 
-Blocked, analysis-only, unknown, unmodeled, low-quality, high-uncertainty, excessive-drift, permission-denied, or excessive-risk inputs do not reach the simulated action router.
+Replay capsules retain the trusted simulation decision context, feedback and built-in
+plant state. Replay compares behavioral summaries and refuses divergence. Custom
+fallback callbacks cannot be serialized and are explicitly marked unsupported.
+Detached signed checkpoints bind ledger run identity, count and final hash; a retained
+checkpoint and trusted public key are necessary to establish completeness. Ledger
+integrity does not establish scientific truth.
 
-## Intent packet
-
-The minimum runtime contract is:
-
-- `intent`: proposed simulation action name;
-- `confidence`: numeric value in `[0, 1]` with explicit semantics supplied by the producer;
-- `source`: provenance string.
-
-Important optional fields include:
-
-- `probabilities`: class/action probability distribution;
-- `signal_quality`: engineering quality score;
-- `drift_score`: fitted feature-drift score;
-- `required_confidence`: caller-requested stricter pre-action threshold;
-- `analysis_only`: prevents actuation even when other gates pass;
-- `inference_authority`: provenance category such as `declared-command`, `synthetic-ground-truth`, or `locally-qualified-decoder`;
-- `confidence_semantics`: explanation of what the numeric confidence means;
-- `neural_decode_performed`: explicit boolean provenance flag.
-
-## Acquisition is not decoding
-
-`BrainFlowIntentSource` and `LSLIntentSource` acquire samples and compute signal-quality metadata. They do not infer intent from RMS amplitude or another hidden heuristic.
-
-Without an explicitly supplied decoder callback, both adapters emit an analysis-only abstention. A decoder callback must return a packet that still passes the canonical governed runtime.
-
-## Qualified decoder bridge
-
-`QualifiedDecoderAdapter` is the concrete bridge from the built-in decoder benchmark surface to runtime use. It requires:
-
-1. deterministic held-out evaluation;
-2. local metric gates;
-3. a complete explicit decoder-label to simulation-action map;
-4. exact runtime channel-count agreement;
-5. exact runtime sampling-rate agreement;
-6. confidence above the configured abstention threshold.
-
-Failure at any point yields an abstention. Passing these local software gates is not clinical, participant, or physical-system validation.
-
-## Evidence
-
-Every canonical cycle produces an assurance receipt and an entry in a SHA-256 linked evidence chain. Exported ledgers can also be signed with Ed25519.
-
-The chain and signature establish integrity properties of recorded bytes. They do not prove that sensor measurements, decoder interpretations, or scientific claims are true.
-
-## Compatibility namespaces
-
-The historical `synapdrive_ai.agi` package name remains for import compatibility. Canonical v1 code does not claim AGI. Its retained classes are deterministic mappers, context handling, compatibility diagnostics, and disabled legacy adaptation surfaces.
+Python callers, model/configuration loaders and the operating account remain trusted.
+No experimental model gets an implicit live endpoint. OS-level process isolation is
+not implemented. Direct low-level router/actuator classes are simulation utilities,
+not independent governance boundaries.

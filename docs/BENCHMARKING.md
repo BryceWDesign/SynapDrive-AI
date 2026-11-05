@@ -44,7 +44,9 @@ The deterministic split is stratified by class. It is a repository engineering b
 
 `QualifiedDecoderAdapter` is available to library users who want to connect a benchmark decoder to BrainFlow, LSL, `SessionAnalyzer`, or the canonical pipeline.
 
-Construction performs deterministic held-out evaluation using `QualificationPolicy`. A decoder is not locally qualified unless it meets all configured metric gates and every decoder class has an explicit action mapping. A qualified adapter is then refit on the supplied dataset.
+Construction performs deterministic held-out evaluation using `QualificationPolicy`. A decoder is not locally qualified unless it meets all configured metric gates and every decoder class has an explicit action mapping. The exact evaluated artifact is retained; it is not refit on held-out data.
+This compatibility adapter reports local trial-split results only. Prefer the v2
+recorded-data workflow in `RECORDED_EEG.md` for grouped evaluation and full identity binding.
 
 At runtime it still abstains when:
 

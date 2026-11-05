@@ -32,7 +32,7 @@ install:
 
 install-dev:
 	$(PY) -m pip install --upgrade pip
-	$(PY) -m pip install -e ".[dev]"
+	$(PY) -m pip install -e ".[dev,eeg]"
 
 run:
 	$(PY) -m synapdrive_ai --text "move left" --image road --no-delay
@@ -67,7 +67,7 @@ typecheck:
 quality:
 	$(PY) -m compileall -q synapdrive_ai core scripts
 	$(PY) -m pytest -q
-	$(PY) -m scripts.run_v1_validation
+	$(PY) -m scripts.validate_release
 
 record:
 	$(PY) -m synapdrive_ai --text "move left" --image road --record runs.jsonl --no-delay

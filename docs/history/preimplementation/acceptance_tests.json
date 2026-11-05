@@ -1,0 +1,527 @@
+{
+  "schema": "synapdrive.design.tests.v1",
+  "tests": [
+    {
+      "id": "T-001",
+      "requirement_ids": [
+        "R-001"
+      ],
+      "procedure": "Exercise missing source, bool-as-number, NaN/Infinity, malformed distributions, invalid duration, empty/ragged channels and analysis-only input through every canonical entry point.",
+      "independent_oracle": "An independent actuator spy records zero ordinary dispatches; a bounded invalid-input result exists without a post-actuation exception.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-001.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-002",
+      "requirement_ids": [
+        "R-002"
+      ],
+      "procedure": "Swap channels without changing count; alter units/reference/window/processing/task; use an EEG decoder on an incompatible modality.",
+      "independent_oracle": "Reject or explicitly requalify each mismatched contract; no silent relabel or generic shape-only acceptance.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-002.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-003",
+      "requirement_ids": [
+        "R-003"
+      ],
+      "procedure": "Inject late, duplicate, missing, reordered samples, clock reset and uncertain offsets across acquisition and executor clocks.",
+      "independent_oracle": "Expired or unbounded-age evidence cannot authorize a time-sensitive action; gaps and effective sample timing remain reviewable.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-003.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-004",
+      "requirement_ids": [
+        "R-004"
+      ],
+      "procedure": "Use nonzero flatline, partial NaNs, pure mains, clipping, one failed required channel and a qualified alternate subset.",
+      "independent_oracle": "Required-channel faults do not average into acceptance; the qualified usable subset remains available where its contract permits.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-004.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-005",
+      "requirement_ids": [
+        "R-005"
+      ],
+      "procedure": "Run fault labels with clean tolerable controls and an intentionally ineffective detector/always-abstain controller.",
+      "independent_oracle": "The ineffective detector and always-abstain policy fail the appropriate detection/usefulness requirements.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-005.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-006",
+      "requirement_ids": [
+        "R-006"
+      ],
+      "procedure": "Submit intent/probability disagreement, normalized-looking malformed distributions, externally overridden uncertainty and a legitimate declared assisted transformation.",
+      "independent_oracle": "Inconsistent packets fail; a qualified estimator and explicit bounded transformation are handled through distinct contracts.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-006.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-007",
+      "requirement_ids": [
+        "R-007"
+      ],
+      "procedure": "Replay rest, cued imagery, distractor transitions, changed goals and correlated overlapping windows.",
+      "independent_oracle": "Report false activations per annotated no-command time and misses/latency; no multiplication of independent evidence from duplicate windows.",
+      "required_evidence_level": "offline_data",
+      "expected_artifact": "evidence/v2/T-007.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-008",
+      "requirement_ids": [
+        "R-008"
+      ],
+      "procedure": "Attempt duplicate/overlap contamination, label permutation, preprocessing fit on test data and undeclared target-session adaptation.",
+      "independent_oracle": "Contaminated protocols are rejected; negative controls and all exclusions are published; no test-set fitting.",
+      "required_evidence_level": "offline_data",
+      "expected_artifact": "evidence/v2/T-008.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-009",
+      "requirement_ids": [
+        "R-009"
+      ],
+      "procedure": "Refit or replace a model, calibrator, processing graph, action map or user profile after qualification.",
+      "independent_oracle": "Changed dependent artifacts cannot reuse prior authority; qualification scope and expiry are explicit.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-009.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-010",
+      "requirement_ids": [
+        "R-010"
+      ],
+      "procedure": "Compare confidence, calibrated selective and conformal gates on chronological held-out sessions at matched coverage.",
+      "independent_oracle": "No nominal distribution-free guarantee is claimed under unchecked shift; failures and utility loss remain in denominators.",
+      "required_evidence_level": "offline_data",
+      "expected_artifact": "evidence/v2/T-010.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-011",
+      "requirement_ids": [
+        "R-011"
+      ],
+      "procedure": "Evaluate CSP/linear and covariance/compact neural baselines before optional larger encoders or forward-pass transformed ensembles.",
+      "independent_oracle": "Promotion requires measured risk/coverage/latency/resource benefit; architecture size is not a success criterion.",
+      "required_evidence_level": "offline_data",
+      "expected_artifact": "evidence/v2/T-011.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-012",
+      "requirement_ids": [
+        "R-012"
+      ],
+      "procedure": "Exercise stop with bad EEG, logger failure, overloaded worker, conflicting phrases, revocation and custom names containing stop/halt.",
+      "independent_oracle": "Only exact stop capabilities reach the baseline path; bad neural evidence cannot suppress an independently available veto.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-012.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-013",
+      "requirement_ids": [
+        "R-013"
+      ],
+      "procedure": "Interleave action substitution, permission revoke/restore, state changes, expiry and repeated consume between assessment and dispatch.",
+      "independent_oracle": "Independent executor rejects stale/mismatched/spent permits at the dispatch linearization point.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-013.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-014",
+      "requirement_ids": [
+        "R-014"
+      ],
+      "procedure": "Terminate at each prepare/send/ack/result boundary and inject full disk, partial write, corrupt record and restart.",
+      "independent_oracle": "No unrecorded ordinary external dispatch, no automatic duplicate side effect, explicit uncertain outcomes and an available baseline path.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-014.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-015",
+      "requirement_ids": [
+        "R-015"
+      ],
+      "procedure": "Defer reach or grasp and then attempt dependent lift/commit; separately defer a truly independent step.",
+      "independent_oracle": "Dependent action never dispatches; independent continuation occurs only under an explicit dependency graph.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-015.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-016",
+      "requirement_ids": [
+        "R-016"
+      ],
+      "procedure": "Inject model mismatch within and outside declared bounds, moving obstacles, estimator delay and solver timeout.",
+      "independent_oracle": "Published results distinguish bounded safety claims from out-of-envelope behavior; intervention is required before loss of modeled recoverability.",
+      "required_evidence_level": "simulation",
+      "expected_artifact": "evidence/v2/T-016.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-017",
+      "requirement_ids": [
+        "R-017"
+      ],
+      "procedure": "Test moving versus stationary plant, cursor typing, unavailable substitute modality and failed fallback acknowledgment.",
+      "independent_oracle": "Measured safe-state acknowledgment or explicit unresolved state; no universal hold-position assumption.",
+      "required_evidence_level": "simulation",
+      "expected_artifact": "evidence/v2/T-017.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-018",
+      "requirement_ids": [
+        "R-018"
+      ],
+      "procedure": "Present misleading context, an infeasible user command, alternate route and changed goal during a task.",
+      "independent_oracle": "Only authorized task scope executes; goal preservation is checked against an explicit predicate rather than candidate membership.",
+      "required_evidence_level": "simulation",
+      "expected_artifact": "evidence/v2/T-018.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-019",
+      "requirement_ids": [
+        "R-019"
+      ],
+      "procedure": "Use shared-prefix, incompatible-goal, misleading-prior and goal-change cases against fixed assistance.",
+      "independent_oracle": "No committed wrong-goal step; hypothesized utility gain must survive matched-risk comparisons and a no-common-action case.",
+      "required_evidence_level": "simulation",
+      "expected_artifact": "evidence/v2/T-019.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-020",
+      "requirement_ids": [
+        "R-020"
+      ],
+      "procedure": "Run identical tasks across automation scopes and attempt an unapproved scope escalation or caregiver overwrite.",
+      "independent_oracle": "No silent escalation; compare task effort, intervention, usability and perceived control with intended users.",
+      "required_evidence_level": "human_study",
+      "expected_artifact": "evidence/v2/T-020.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-021",
+      "requirement_ids": [
+        "R-021"
+      ],
+      "procedure": "Fail the preferred input, restore it and change capabilities while a local draft or cursor task is active.",
+      "independent_oracle": "No phantom fallback; preserve draft/state and measure recovery burden and failed transitions.",
+      "required_evidence_level": "simulation",
+      "expected_artifact": "evidence/v2/T-021.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-022",
+      "requirement_ids": [
+        "R-022"
+      ],
+      "procedure": "Test cold start, electrode issue, network outage, font/target changes and recovery without hand-dependent controls.",
+      "independent_oracle": "Intended users and caregivers can attempt the full flow; report completion, assistance minutes, failed starts and abandonment.",
+      "required_evidence_level": "human_study",
+      "expected_artifact": "evidence/v2/T-022.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-023",
+      "requirement_ids": [
+        "R-023"
+      ],
+      "procedure": "Inject fluent wrong suggestions, negation, names, rare words, numerical changes and hostile contextual text.",
+      "independent_oracle": "Sensitive output binds approval to exact text/target/revision; rejected suggestions cannot become intent training labels.",
+      "required_evidence_level": "simulation",
+      "expected_artifact": "evidence/v2/T-023.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-024",
+      "requirement_ids": [
+        "R-024"
+      ],
+      "procedure": "Toggle modes during inference, recording, worker failure, restart, export and pending feedback.",
+      "independent_oracle": "No forbidden content in logs, crash dumps or exports under the tested process boundary; recorded minimal metadata is disclosed.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-024.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-025",
+      "requirement_ids": [
+        "R-025"
+      ],
+      "procedure": "Inspect evidence, backups under project control, content erasure, key rotation and private-mode replay.",
+      "independent_oracle": "Metadata-only replay is labeled incomplete; deletion scope and remaining artifacts are explicit.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-025.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-026",
+      "requirement_ids": [
+        "R-026"
+      ],
+      "procedure": "Use malformed/oversized messages, timeout, memory exhaustion and attempted direct actuator/file/network access under a declared OS isolation profile.",
+      "independent_oracle": "Only validated proposals cross IPC; unavailable enforced isolation blocks claims about untrusted workers.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-026.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-027",
+      "requirement_ids": [
+        "R-027"
+      ],
+      "procedure": "Replace model/config data, tamper with evidence, revoke keys and inject instruction-like dataset/context content.",
+      "independent_oracle": "No authority change from data content; signatures prove bytes/key possession only; privileged-host compromise remains outside the basic profile.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-027.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-028",
+      "requirement_ids": [
+        "R-028"
+      ],
+      "procedure": "Run beneficial, harmful and no-improvement candidates plus interrupted promotion and rollback.",
+      "independent_oracle": "Candidate never actuates while shadowed; rollback restores the full compatible dependency set atomically.",
+      "required_evidence_level": "offline_data",
+      "expected_artifact": "evidence/v2/T-028.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-029",
+      "requirement_ids": [
+        "R-029"
+      ],
+      "procedure": "Deliver late/reordered feedback, contradictory acceptance and ErrP estimates after a candidate update.",
+      "independent_oracle": "Unconfirmed outcomes remain unconfirmed; affected training samples and dependent qualification are invalidated or reassessed.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-029.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-030",
+      "requirement_ids": [
+        "R-030"
+      ],
+      "procedure": "Use multiple disclosed simulated-user models and then a suitable participant protocol; include frozen, aggressive and bounded adapters.",
+      "independent_oracle": "No claim about human learning from a single simulated-user model or EMG-to-EEG transfer; failures and burdens are reported.",
+      "required_evidence_level": "simulation",
+      "expected_artifact": "evidence/v2/T-030.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-031",
+      "requirement_ids": [
+        "R-031"
+      ],
+      "procedure": "Repeatedly select from noisy candidates, reuse audit IDs and inject model-generated labels.",
+      "independent_oracle": "Final audit data is blocked from tuning; supervised and unsupervised claims are separate.",
+      "required_evidence_level": "offline_data",
+      "expected_artifact": "evidence/v2/T-031.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-032",
+      "requirement_ids": [
+        "R-032"
+      ],
+      "procedure": "Replay explicit rejection, revoked permission, nondefault policy, adaptation, custom world state and numerical platform changes.",
+      "independent_oracle": "Stable decisions and learning consequences reproduce within declared numerical support; divergence fails verification.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-032.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-033",
+      "requirement_ids": [
+        "R-033"
+      ],
+      "procedure": "Truncate to a valid prefix or empty chain, reorder feedback and swap complete ledgers between runs.",
+      "independent_oracle": "Missing history or wrong-run substitution fails against the retained expected checkpoint.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-033.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-034",
+      "requirement_ids": [
+        "R-034"
+      ],
+      "procedure": "Disconnect network, stall a large model, saturate queues and simulate power/process interruption on declared reference hardware.",
+      "independent_oracle": "No stale catch-up dispatch; baseline and veto meet measured profile requirements or the function is unavailable.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-034.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-035",
+      "requirement_ids": [
+        "R-035"
+      ],
+      "procedure": "Compare independent held-out corruptions and bounded perturbations with ordinary artifact and timestamp faults.",
+      "independent_oracle": "Report attack-conditioned results and tradeoffs; do not claim poisoning/evasion or secure acquisition solved by a signature or one defense.",
+      "required_evidence_level": "offline_data",
+      "expected_artifact": "evidence/v2/T-035.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-036",
+      "requirement_ids": [
+        "R-036"
+      ],
+      "procedure": "Compare the user's existing access method, direct decoding, simple gates, fixed assistance and the full proposed system with matched conditions.",
+      "independent_oracle": "Report subject/session variability, failures, exclusions and all denominators; preferences and benefit require intended-user evidence.",
+      "required_evidence_level": "human_study",
+      "expected_artifact": "evidence/v2/T-036.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-037",
+      "requirement_ids": [
+        "R-037"
+      ],
+      "procedure": "Change assistance preferences, import an old profile and attempt caregiver-triggered data export or scope escalation.",
+      "independent_oracle": "Version/consent mismatches require appropriate resolution; support and control roles remain distinguishable.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-037.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-038",
+      "requirement_ids": [
+        "R-038"
+      ],
+      "procedure": "Attempt to release with missing planned tests, unspecified thresholds, nonexistent evidence files or a simulator result mislabeled as human evidence.",
+      "independent_oracle": "Release readiness is false; a green design validator cannot confer runtime or clinical readiness.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-038.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-039",
+      "requirement_ids": [
+        "R-039"
+      ],
+      "procedure": "Request promotion using an intracortical result for an EEG claim, or healthy-cohort data for an impaired-cohort efficacy claim.",
+      "independent_oracle": "Unsupported transfer is flagged and prevents the broader claim; compatible research adapters remain optional.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-039.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    },
+    {
+      "id": "T-040",
+      "requirement_ids": [
+        "R-040"
+      ],
+      "procedure": "Remove a model/service dependency, restore a user profile and migrate a capsule across a version boundary.",
+      "independent_oracle": "No silent unsupported operation or lost local drafts; unavailable capabilities and limitations remain visible.",
+      "required_evidence_level": "software",
+      "expected_artifact": "evidence/v2/T-040.json",
+      "status": "not_run",
+      "result_artifact": null,
+      "result_sha256": null
+    }
+  ],
+  "_historical_snapshot": true,
+  "_current_implementation_status": "../../REQUIREMENT_STATUS.json"
+}

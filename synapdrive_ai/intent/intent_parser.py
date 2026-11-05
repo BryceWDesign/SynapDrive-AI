@@ -46,7 +46,7 @@ class IntentParser:
 
         text = input_text.strip().lower()
         for pattern, handler in self._patterns.items():
-            match = re.search(pattern, text)
+            match = re.fullmatch(pattern, text)
             if match:
                 return handler(match)
         return None

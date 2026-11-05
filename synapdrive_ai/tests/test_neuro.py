@@ -221,7 +221,7 @@ class TestTaskPlanner:
     def test_impossible_confidence_defers(self):
         plan = TaskPlan(
             name="impossible",
-            steps=[TaskStep("move left", min_confidence=1.1, fallback="freeze")],
+            steps=[TaskStep("unrecognized prerequisite", min_confidence=0.9, fallback="freeze")],
         )
         bridge = ExecutorBridge(simulate_delay=False)
         trace = bridge.execute(plan)
@@ -232,7 +232,7 @@ class TestTaskPlanner:
         plan = TaskPlan(
             name="abort test",
             steps=[
-                TaskStep("move left", min_confidence=1.1, fallback="abort"),
+                TaskStep("unrecognized prerequisite", min_confidence=0.9, fallback="abort"),
                 TaskStep("stop", min_confidence=0.0),
             ],
         )
@@ -245,7 +245,7 @@ class TestTaskPlanner:
     def test_complete_fallback_proceeds(self):
         plan = TaskPlan(
             name="complete test",
-            steps=[TaskStep("move left", min_confidence=1.1, fallback="complete")],
+            steps=[TaskStep("unrecognized prerequisite", min_confidence=0.9, fallback="complete")],
         )
         bridge = ExecutorBridge(simulate_delay=False)
         trace = bridge.execute(plan)
@@ -295,9 +295,7 @@ def test_bdf_24bit_single_channel_loading(tmp_path):
     encoded = bytearray()
     for sample in samples:
         unsigned = sample if sample >= 0 else sample + (1 << 24)
-        encoded.extend(
-            [unsigned & 0xFF, (unsigned >> 8) & 0xFF, (unsigned >> 16) & 0xFF]
-        )
+        encoded.extend([unsigned & 0xFF, (unsigned >> 8) & 0xFF, (unsigned >> 16) & 0xFF])
 
     path = tmp_path / "tiny.bdf"
     path.write_bytes(bytes(fixed) + bytes(signal_header) + bytes(encoded))

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "synapdrive-ai"
-version = "1.0.0"
+version = "2.0.0"
 description = "Governed neuroadaptive shared-autonomy runtime for simulation and labeled EEG research data"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -15,6 +15,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+eeg = ["scipy>=1.11,<2", "scikit-learn>=1.4,<2", "mne>=1.7,<2"]
 dev = [
   "coverage>=7.6.0,<8.0",
   "pyright>=1.1.380,<2.0",
@@ -24,6 +25,7 @@ dev = [
 ]
 
 [project.scripts]
+synapdrive-v2 = "synapdrive_ai.v2:main"
 synapdrive-ai = "synapdrive_ai.main.cli:main"
 synapdrive-dashboard = "synapdrive_ai.interface.web_dashboard:main"
 synapdrive-benchmark = "synapdrive_ai.benchmarking.cli:main"
@@ -37,7 +39,7 @@ exclude = ["synapdrive_ai.tests*"]
 namespaces = false
 
 [tool.setuptools.package-data]
-synapdrive_ai = ["interface/templates/*.html"]
+synapdrive_ai = ["interface/templates/*.html", "assets/*.npz", "assets/*.txt"]
 
 [tool.pytest.ini_options]
 testpaths = ["synapdrive_ai/tests"]

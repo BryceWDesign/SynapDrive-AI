@@ -65,10 +65,3 @@ class LabeledSignalMapper:
             rms = 0.0
             n_samples = 0
         return {"label": label, "n_samples": n_samples, "rms": round(rms, 6)}
-
-
-class AGICoreReasoner(LabeledSignalMapper):
-    """Deprecated compatibility name for :class:`LabeledSignalMapper`.
-
-    No AGI capability is claimed or implemented by this class.
-    """

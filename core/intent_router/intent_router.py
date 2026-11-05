@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Dict, Optional
 
 from core.execution.executor_bridge import ExecutorBridge
-from core.planning.agi_planner import DeterministicPlanner
+from core.planning.deterministic_planner import DeterministicPlanner
 
 
 class IntentRouter:

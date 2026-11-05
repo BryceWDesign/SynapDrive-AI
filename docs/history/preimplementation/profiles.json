@@ -1,0 +1,84 @@
+{
+  "schema": "synapdrive.design.profiles.v1",
+  "status": "proposed_not_implemented",
+  "profiles": [
+    {
+      "id": "PROFILE_SIMULATION",
+      "purpose": "Declared or recorded inputs controlling local simulated tasks",
+      "permitted_endpoints": [
+        "local_task_simulator"
+      ],
+      "external_dispatch": false,
+      "neural_authority": "research_hypothesis_only"
+    },
+    {
+      "id": "PROFILE_LIVE_SHADOW",
+      "purpose": "Acquire live input and compare proposals without external action",
+      "permitted_endpoints": [
+        "local_shadow_view"
+      ],
+      "external_dispatch": false,
+      "neural_authority": "no_actuation_authority"
+    },
+    {
+      "id": "PROFILE_DIGITAL_PILOT",
+      "purpose": "Future approved accessible digital-control pilot",
+      "permitted_endpoints": [],
+      "external_dispatch": false,
+      "neural_authority": "blocked_until_endpoint_and_user_protocol_qualified"
+    },
+    {
+      "id": "PROFILE_PHYSICAL_RESEARCH",
+      "purpose": "Future hardware integration research",
+      "permitted_endpoints": [],
+      "external_dispatch": false,
+      "neural_authority": "blocked_until_independent_plant_and_hardware_safety_evidence"
+    }
+  ],
+  "unresolved_release_parameters": [
+    {
+      "id": "B01",
+      "parameter": "accepted command risk/coverage and task usefulness thresholds",
+      "needed_before": "R2 result promotion",
+      "value": null,
+      "resolution": "Choose per application and cohort before locked evaluation; justify with intended users."
+    },
+    {
+      "id": "B02",
+      "parameter": "clock uncertainty, observation age, dispatch and veto deadlines",
+      "needed_before": "R3 end-to-end profile qualification",
+      "value": null,
+      "resolution": "Derive from plant/endpoint behavior and measure on declared hardware."
+    },
+    {
+      "id": "B03",
+      "parameter": "calibration sample size and adaptation promotion/rollback bounds",
+      "needed_before": "R4 promotion",
+      "value": null,
+      "resolution": "Predefine power/precision and sequential selection policy for the chosen protocol."
+    },
+    {
+      "id": "B04",
+      "parameter": "accessible controls, confirmation scope and acceptable burden",
+      "needed_before": "R5 participant pilot",
+      "value": null,
+      "resolution": "Co-design with the intended cohort and caregivers; compare existing access method."
+    },
+    {
+      "id": "B05",
+      "parameter": "reference hardware memory/compute/power and queue budgets",
+      "needed_before": "R3 live or end-to-end qualification",
+      "value": null,
+      "resolution": "Profile the selected decoder and controller; do not guess universal latency numbers."
+    },
+    {
+      "id": "B06",
+      "parameter": "physical plant dynamics, disturbances and recovery envelope",
+      "needed_before": "physical-profile qualification",
+      "value": null,
+      "resolution": "A hardware-specific engineering program must supply independent validated bounds."
+    }
+  ],
+  "_historical_snapshot": true,
+  "_current_implementation_status": "../../REQUIREMENT_STATUS.json"
+}

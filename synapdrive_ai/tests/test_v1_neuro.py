@@ -85,10 +85,12 @@ def test_signal_quality_detects_dropout():
 
 
 def test_fusion_prefers_reliable_modality():
-    result = WeightedEvidenceFusion().fuse([
-        ModalityEvidence("eeg", {"left": 0.9, "right": 0.1}, 0.2),
-        ModalityEvidence("gaze", {"left": 0.1, "right": 0.9}, 1.0),
-    ])
+    result = WeightedEvidenceFusion().fuse(
+        [
+            ModalityEvidence("eeg", {"left": 0.9, "right": 0.1}, 0.2),
+            ModalityEvidence("gaze", {"left": 0.1, "right": 0.9}, 1.0),
+        ]
+    )
     assert result.intent == "right"
     assert result.weights["gaze"] > result.weights["eeg"]
 

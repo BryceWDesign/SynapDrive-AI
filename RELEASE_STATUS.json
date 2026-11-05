@@ -1,0 +1,54 @@
+{
+  "schema": "synapdrive.release-status.v2",
+  "date_local": "2026-11-02",
+  "timezone": "America/Phoenix",
+  "runtime_version": "2.0.0",
+  "executable_upgrade_implemented": true,
+  "software_verification_passed": true,
+  "tests": {
+    "tests": 225,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "lint": "passed",
+  "typecheck": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "coverage": {
+    "statements": 73.31618334892423,
+    "branches": 57.04365079365079,
+    "combined": 70.21196063588191
+  },
+  "build": "sdist and wheel passed; installed-wheel commands passed outside source checkout",
+  "environment": {
+    "os": "Linux",
+    "architecture": "x86_64",
+    "python": "3.12.14"
+  },
+  "entire_original_design_complete": false,
+  "requirement_status_counts": {
+    "implemented-scoped": 24,
+    "partial": 12,
+    "external-validation-required": 2,
+    "not-implemented": 2
+  },
+  "dependable_neural_control_established": false,
+  "intended_user_benefit_established": false,
+  "hardware_validated": false,
+  "os_sandbox_implemented": false,
+  "remote_github_ci_verified": false,
+  "recorded_eeg": {
+    "subjects": 8,
+    "evaluation_epochs": 240,
+    "mean_balanced_accuracy": 0.495188492063492,
+    "qualified_models": 2,
+    "admitted_actions": 7,
+    "correct_admitted": 4,
+    "incorrect_admitted": 3,
+    "idle_false_activations_observed": 0
+  },
+  "remaining_gaps_document": "docs/REQUIREMENT_STATUS.json",
+  "warning": "One third-party AnyIO pytest-plugin deprecation warning; no tests failed or skipped."
+}

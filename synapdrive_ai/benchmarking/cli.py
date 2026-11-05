@@ -43,9 +43,7 @@ def main(argv=None) -> int:
     elif args.decoder == "riemannian":
         decoder = RiemannianCentroidDecoder()
     else:
-        decoder = EnsembleDecoder(
-            [SpectralCentroidDecoder(), RiemannianCentroidDecoder()]
-        )
+        decoder = EnsembleDecoder([SpectralCentroidDecoder(), RiemannianCentroidDecoder()])
     report = evaluate_decoder(
         decoder,
         dataset,

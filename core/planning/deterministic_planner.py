@@ -1,9 +1,4 @@
-"""Legacy deterministic planning compatibility surface.
-
-The historical module name is retained for import compatibility. No AGI, learned model,
-or predictive planner is implemented here. Plans are deterministic templates over parsed,
-caller-declared intents.
-"""
+"""Deterministic plan templates over parsed, caller-declared intents."""
 
 from __future__ import annotations
 
@@ -68,7 +63,3 @@ class DeterministicPlanner:
             for step in steps
         )
         return f"Plan: {body}"
-
-
-class AGIPlanner(DeterministicPlanner):
-    """Deprecated compatibility name for :class:`DeterministicPlanner`."""

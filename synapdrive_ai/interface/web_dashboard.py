@@ -115,12 +115,7 @@ class DashboardApplication:
         )
         return [payload]
 
-    def _dispatch(
-        self,
-        method: str,
-        path: str,
-        environ: WSGIEnvironment
-    ) -> tuple[str, str, bytes]:
+    def _dispatch(self, method: str, path: str, environ: WSGIEnvironment) -> tuple[str, str, bytes]:
         if method == "GET" and path == "/":
             return "200 OK", "text/html; charset=utf-8", _TEMPLATE.read_bytes()
         if method == "GET" and path == "/api/log":
@@ -137,9 +132,7 @@ class DashboardApplication:
             data = self._read_json(environ)
             command = str(data.get("text") or "").strip()
             image = data.get("image")
-            return self._json_response(
-                self.pipeline.run_text_command(command, image_label=image)
-            )
+            return self._json_response(self.pipeline.run_text_command(command, image_label=image))
         if method == "POST" and path == "/api/run/signal":
             data = self._read_json(environ)
             label = data.get("label")
